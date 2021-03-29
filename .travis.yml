@@ -25,4 +25,4 @@ deploy:
     local_dir: ./docs/build/html/
     keep_history: true
     on:
-      all_branchs: true
+      all_branches: true

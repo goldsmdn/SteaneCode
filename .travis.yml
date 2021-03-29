@@ -18,7 +18,7 @@ script:
     - touch build/html/.nojekyll
     - cd ..
 deploy:
-  - provider: pages:git
+  - provider: pages
     skip_cleanup: true
     verbose: true
     github_token: GITHUB_TOKEN

@@ -8,5 +8,17 @@ install:
   pip install qiskit
 # command to run tests
 script:
-# need to change directory
     - pytest --cov
+# need to change directory before building docs
+    - cd docs
+    - sphinx-build . build/html
+    - touch docs/build/html/.nojekyll
+    - cd ..
+deploy:
+  - provider: pages:git
+    skip_cleanup: true
+    verbose: true
+    token: $GITHUB_TOKEN
+    edge: true
+    local_dir: ./docs/build/html/
+    keep_history: true

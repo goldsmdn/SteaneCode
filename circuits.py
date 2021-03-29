@@ -1,15 +1,27 @@
+"""Class to handle logical qubits for the Steane code"""
+
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 
 class SteaneCodeLogicalQubit(QuantumCircuit):
-    """Generates the gates for one or two logical Qubits of the Steane code"""
-    def __init__(self, d, parity_check_matrix, correct_errors,*args, **kwargs):
-        """initialise.  Uses super to inherit methods from default.
-        Args:
-            d (int): Number of logical "data" qubits to be initialised. Should be either 1 or 2 at present.
-            parity_check_matrix(list) : holds the parity check matrix from which the gates will be constructed.
-            correct_errors(bool): True if need to make a circuit to correct errors. 
+    """Generates the gates for one or two logical Qubits of the Steane code
+
+        Parameters
+        ----------
+        d : int
+            Number of logical "data" qubits to be initialised. Should be either 1 or 2 at present.
+        parity_check_matrix : list
+            Holds the parity check matrix from which the gates will be constructed.
+        correct_errors : bool 
+            True if need to make a circuit to correct errors. 
+    
+        Notes
+        -----
+        Uses super to inherit methods from parent.
         """
+
+    def __init__(self, d, parity_check_matrix, correct_errors,*args, **kwargs):
+        """Initialise qubit"""
         self.__correct_errors = correct_errors
         if self.__correct_errors:
             if d > 1:
@@ -109,8 +121,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def set_up_logical_zero(self, logical_qubit):
         """Set up logical zero for data qubit
-         Args:
-            logical_qubit(int): Number of the logical "data" qubits to be initialised. Should be either 0 or 1 at present.
+
+        Parameters
+        ----------
+        logical_qubit : int
+            Number of the logical "data" qubits to be initialised. Should be either 0 or 1 at present.
+
         """
         self._validate_logical_qubit_number(logical_qubit)
         
@@ -146,10 +162,15 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             raise ValueError('Unable to construct matrix as parity matrix does not match the ancilla needed')   
 
     def force_X_error(self,qubit,logical_qubit):
-        """ Force an X error
-            Args:
-                logical_qubit(int): Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
-                qubit(int):  Number of qubit to force error on.
+        """ Force an X error on one physical qubit
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
+            qubit : int
+                Number of qubit to force error on.
+
         """
         self._validate_logical_qubit_number(logical_qubit)
         if qubit > self.__num_data - 1 :
@@ -165,10 +186,15 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         
 
     def force_Z_error(self,qubit,logical_qubit):
-        """ Force an X error
-            Args:
-                logical_qubit(int): Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
-                qubit(int):  Number of qubit to force error on.
+        """ Force Z error on one physical qubit
+
+            Parameters
+            ---------- 
+            logical_qubit: int
+                Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
+            qubit : int
+                Number of qubit to force error on.
+
         """
         self._validate_logical_qubit_number(logical_qubit)
         if qubit > self.__num_data - 1 :
@@ -184,8 +210,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def set_up_ancilla(self,logical_qubit):
         """set up gates for ancilla based on entries in the parity matrix
-            Args:
-                logical_qubit(int): Number of the logical "data" qubits to set up ancilla.  Should be either 0 or 1 at present.
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to set up ancilla gates for. Should be either 0 or 1 at present.
+
         """
         self._validate_logical_qubit_number(logical_qubit)
         #apply hadamards to all ancillas
@@ -225,6 +255,14 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 raise ValueError("Unable to set up ancillas")
 
     def logical_measure(self,logical_qubit):
+        """Makes gates to measure a logical qubit
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to measure. Should be either 0 or 1 at present.
+
+        """
         self._validate_logical_qubit_number(logical_qubit)
         for index in range(self.__num_ancilla):
             # need to swap measurement qubits so that the measurements match the normal format of the codewords
@@ -258,10 +296,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def correct_errors(self,logical_qubit):
         """ produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out.
-            Args:
-                logical_qubit(int): Number of the logical "data" qubits to correct errors for.
-                NB, errors can only be corrected for one logical qubit at present.  
-                Argument is for upwards compatibility but is not currently used.
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits on which to correct error. Should be either 0 or 1 at present.
+
         """
         if logical_qubit !=0:
             raise ValueError("errors can only be corrected for one logical qubit at present")
@@ -364,8 +404,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def decode(self, logical_qubit):
         """Uncomputer setting up logical zero for data qubit.  This is the encoding circuit reversed.
-            Args:
-                logical_qubit(int): Number of the logical "data" qubits to create decoding circuit for.
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to set up logical zero for. Should be either 0 or 1 at present.
+
         """
         self._validate_logical_qubit_number(logical_qubit)
 
@@ -401,8 +445,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def logical_gate_X(self, logical_qubit):
         """Apply a logical X gate
-            Args:
-                logical_qubit(int): Number of the logical "data" qubit on which to apply logical X gate.
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to apply logical X gate to. Should be either 0 or 1 at present.
+
         """
 
         self._validate_logical_qubit_number(logical_qubit)
@@ -416,8 +464,11 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def logical_gate_H(self, logical_qubit):
         """Apply a logical H gate
-            Args:
-                logical_qubit(int): Number of the logical "data" qubit on which to apply logical H gate.
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to apply Hadamard on. Should be either 0 or 1 at present.
         """
 
         self._validate_logical_qubit_number(logical_qubit)
@@ -431,8 +482,11 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def logical_gate_Z(self, logical_qubit):
         """Apply a logical Z gate
-            Args:
-                logical_qubit(int): Number of the logical "data" qubit on which to apply logical Z gate.
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to apply logical Z gate on. Should be either 0 or 1 at present.
         """
 
         self._validate_logical_qubit_number(logical_qubit)
@@ -446,9 +500,15 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
     
     def logical_gate_CX(self, logical_control_qubit, logical_target_qubit):
         """Apply a logical CX gate
-            Args:
-                logical_control_qubit(int): Number of the logical "data" qubit which controls the CX gate
-                logical_target_qubit(int): Number of the logical "data" qubit which is the target for the CX gate
+            
+            Parameters
+            ----------
+
+                logical_control_qubit : int
+                    Number of the logical "data" qubit which controls the CX gate
+                logical_target_qubit : int
+                    Number of the logical "data" qubit which is the target for the CX gate
+
         """
         self._validate_logical_qubit_number(logical_control_qubit)
         self._validate_logical_qubit_number(logical_target_qubit)
@@ -476,8 +536,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def _validate_logical_qubit_number(self, q):
         """Validates the logical qubit number.  Code might be enhanced in the future.
-            Args:
-                q(int): Number of the logical "data" qubit to check
+
+            Parameters:
+            -----------
+
+            q : int
+                Number of the logical "data" qubit to check
         """
         if q not in [0, 1]:
             raise ValueError("The qubit to be processed must be indexed as 0 or 1 at present")

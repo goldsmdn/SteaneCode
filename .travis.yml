@@ -14,7 +14,7 @@ script:
 # need to change directory before building docs
     - cd docs
     - sphinx-build . build/html
-    - touch docs/build/html/.nojekyll
+    - touch build/html/.nojekyll
     - cd ..
 deploy:
   - provider: pages:git

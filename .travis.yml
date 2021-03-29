@@ -11,7 +11,8 @@ script:
     - pytest --cov
 # need to change directory before building docs
     - cd docs
-    - sphinx-build . build/html
+    #- sphinx-build . build/html
+    - make html . build/html
     - touch docs/build/html/.nojekyll
     - cd ..
 deploy:

@@ -4,24 +4,24 @@ python:
   - "3.8"
 # command to install dependencies
 install:
-  pip install requests pyyaml pytest pytest-cov
-  pip install qiskit
-  pip install Sphinx
-  pip install sphinx_rtd_theme
+  - pip install requests pyyaml pytest pytest-cov
+  - pip install qiskit
+  - pip install Sphinx
+  - pip install sphinx_rtd_theme
   
 # command to run tests
 script:
-    - pytest
+  - pytest
 # need to change directory before building docs
-    - cd docs
-    - sphinx-build . build/html
-    - touch build/html/.nojekyll
-    - cd ..
+  - cd docs
+  - sphinx-build . build/html
+  - touch build/html/.nojekyll
+  - cd ..
 deploy:
   - provider: pages
     skip_cleanup: true
     verbose: true
-    token: GITHUB_TOKEN
+    token: $GITHUB_TOKEN
     edge: true
     local_dir: ./docs/build/html/
     keep_history: true

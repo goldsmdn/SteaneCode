@@ -21,7 +21,7 @@ deploy:
   - provider: pages:git
     skip_cleanup: true
     verbose: true
-    token: $GITHUB_TOKEN
+    token: GITHUB_TOKEN
     edge: true
     local_dir: ./docs/build/html/
     keep_history: true

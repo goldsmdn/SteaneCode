@@ -6,13 +6,13 @@ python:
 install:
   pip install requests pyyaml pytest pytest-cov
   pip install qiskit
+  pip install Sphinx
 # command to run tests
 script:
     - pytest --cov
 # need to change directory before building docs
     - cd docs
-    #- sphinx-build . build/html
-    - make html . build/html
+    - sphinx-build . build/html
     - touch docs/build/html/.nojekyll
     - cd ..
 deploy:

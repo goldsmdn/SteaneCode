@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Documentation" href="documentation.html" />
-    <link rel="prev" title="Steane Code automaticaly generated project documentation" href="index.html" /> 
+    <link rel="prev" title="Steane Code automatically generated project documentation" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -159,24 +159,26 @@
             
   <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
-<p>Quantum computers can carry out certain calculations quicker than classical computers.</p>
-<p>However, error rates in quantum computers are high, and a range of techniques including quantum error correcting codes (QECCs) are needed to mitigate errors.</p>
-<p>The aim of much current research is to design, simulate, and implement QECCs that can operate fault tolerantly.</p>
+<p>Quantum computers can carry out certain calculations quicker than classical computers.  However, error rates in quantum computers
+are high, and a range of techniques including quantum error correcting codes (QECCs) are needed to mitigate errors.
+The aim of much current research is to design, simulate, and implement QECCs that can operate fault tolerantly.</p>
 <p>The seven qubit Steane code is derived from the classical Hamming code and corrects both bit flip and phase flip errors,
-unlike the repetition code, which only corrects bit flip errors.</p>
-<p>The module circuits.py generates circuits to:</p>
+unlike the repetition code, which only corrects bit flip errors.  One logical qubit is encoded as seven physical qubits.</p>
+<p>The module circuits.py generates circuits for the Steane code for up to two logical qubits and has methods that:</p>
 <ol class="arabic simple">
 <li><p>Set up a logical zero</p></li>
 <li><p>Perform a logical Hadamard</p></li>
 <li><p>Peform a logical CX to entangle the two logical qubits</p></li>
 <li><p>Set up ancilla based on the parity matrix</p></li>
-<li><p>Correct single qubit errors</p></li>
+<li><p>Correct single physical qubit errors</p></li>
 <li><p>“Uncompute” the set up</p></li>
 </ol>
 <p>The code is based on <a class="reference external" href="https://qiskit.org/">Qiskit</a>. The class <code class="docutils literal notranslate"><span class="pre">SteaneCodeLogicalQubit</span></code> extends the standard Qiskit class <code class="docutils literal notranslate"><span class="pre">QuantumCircuit</span></code> and so
 inherits its methods.</p>
 <p>The set up of the logical zero, the ancilla and the ancilla correction is
 based on a parity_check_matrix which needs to be input.</p>
+<p>At present only 32 physical qubits are allowed on Qiskit because it needs too much computing power to handle more.
+Because of this the circuit to correct errors can only be built for one logical qubit</p>
 <p>It is envisaged that the code will be called from Jupyter notebooks and examples are provided in this repository.</p>
 </div>
 
@@ -187,7 +189,7 @@ based on a parity_check_matrix which needs to be input.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="documentation.html" class="btn btn-neutral float-right" title="Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="index.html" class="btn btn-neutral float-left" title="Steane Code automaticaly generated project documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Steane Code automatically generated project documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

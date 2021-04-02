@@ -1,15 +1,17 @@
 .. Steane Code MSc project documentation master file, created by
    sphinx-quickstart on Sun Mar 28 18:21:51 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to Steane Code MSc project's documentation!
-===================================================
+
+Steane Code automaticaly generated project documentation
+=============================================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   overview
+   documentation
+   notebooks
    modules
 
 

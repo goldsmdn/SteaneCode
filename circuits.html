@@ -206,6 +206,23 @@
 </dd></dl>
 
 <dl class="py method">
+<dt id="circuits.SteaneCodeLogicalQubit.define_data">
+<code class="sig-name descname"><span class="pre">define_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.define_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>define standing data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="circuits.SteaneCodeLogicalQubit.define_registers">
+<code class="sig-name descname"><span class="pre">define_registers</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.define_registers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up registers used based on number of logical qubits and whether error checking is needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>int</em>) – Number of the logical “data” qubits to be initialised. Should be either 0 or 1 at present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="circuits.SteaneCodeLogicalQubit.force_X_error">
 <code class="sig-name descname"><span class="pre">force_X_error</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.force_X_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Force an X error on one physical qubit</p>
@@ -213,7 +230,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on. Should be either 0 or 1 at present.</p></li>
-<li><p><strong>qubit</strong> (<em>physical</em>) – Number of qubit to force error on.</p></li>
+<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force error on.</p></li>
 </ul>
 </dd>
 </dl>
@@ -227,7 +244,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on. Should be either 0 or 1 at present.</p></li>
-<li><p><strong>qubit</strong> (<em>physical</em>) – Number of qubit to force error on.</p></li>
+<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force error on.</p></li>
 </ul>
 </dd>
 </dl>

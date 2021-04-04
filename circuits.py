@@ -145,7 +145,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             ----------
             logical_qubit: int
                 Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
-            physical qubit : int
+            physical_qubit : int
                 Number of qubit to force error on.
 
         """
@@ -160,7 +160,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             ---------- 
             logical_qubit: int
                 Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
-            physical qubit : int
+            physical_qubit : int
                 Number of qubit to force error on.
 
         """

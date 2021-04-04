@@ -27,6 +27,14 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             if d > 1:
                 raise ValueError("Can't correct errors with two logical qubits due to memory size restrictions")
         self.__parity_check_matrix = parity_check_matrix
+        self.define_data()
+        list_of_all_registers = self.define_registers(d)
+        # extend quantum circuits
+        super().__init__(*list_of_all_registers)
+        self.validate_parity_matrix()
+
+    def define_data(self):
+        """define standing data"""
         # define valid codewords to check they are orthogonal to the parity check matrix.
         self.__codewords = [[0,0,0,0,0,0,0],   
                             [1,0,1,0,1,0,1],
@@ -36,7 +44,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                             [1,0,1,1,0,1,0],
                             [0,1,1,1,1,0,0],
                             [1,1,0,1,0,0,1]]
-        
         self.__num_data = 7             #seven data qubits for the Steane code
         self.__num_ancilla = 3          #six ancilla qubits, three x and three z
         self.__num_extra_ancilla = 4    #four extra ancilla for decoding
@@ -49,8 +56,17 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         self.__mx_classical = []
         self.__mz_classical = []
         self.__extra_ancilla_classical = []
+
+    def define_registers(self, d):
+        """Set up registers used based on number of logical qubits and whether error checking is needed.
+
+        Parameters
+        ----------
+        d : int
+            Number of the logical "data" qubits to be initialised. Should be either 0 or 1 at present.
+
+        """
         list_of_all_registers = []
-        #self.__qubit_no = str(0)
         
         for index in range (d):
             
@@ -77,11 +93,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 self.__extra_ancilla_classical.append(
                     ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no))
                 list_of_all_registers.append(self.__extra_ancilla_classical[index]) 
-        
-        super().__init__(*list_of_all_registers)
-
-        self.validate_parity_matrix()
-
+        return (list_of_all_registers)
+    
     def validate_parity_matrix(self):
         """validate the parity matrix against the allowed codewords"""
         if self.__parity_check_matrix == []:

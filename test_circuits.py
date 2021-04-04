@@ -18,8 +18,11 @@ def test_parity_validation():
         qubit.set_up_ancilla(0)
         qubit.decode(0)
         result = execute(qubit, SIMULATOR, shots=SHOTS).result()
-        length = len(result.get_counts(qubit))
-        assert length == 1
+        counts = result.get_counts(qubit)
+        for key in counts.keys():
+            assert(key[-7:]) == "0000000"
+        #length = len(result.get_counts(qubit))
+        #assert length == 1
     
 
        

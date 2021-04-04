@@ -41,58 +41,121 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         self.__num_ancilla = 3          #six ancilla qubits, three x and three z
         self.__num_extra_ancilla = 4    #four extra ancilla for decoding
 
-        self.__qubit_no = str(0)
+        self.__data = []
+        self.__mx = []
+        self.__mz = []
+        self.__extra_ancilla = []
+        self.__data_classical = []
+        self.__mx_classical = []
+        self.__mz_classical = []
+        self.__extra_ancilla_classical = []
+        list_of_all_registers = []
+        #self.__qubit_no = str(0)
         
-        self.__data_0 = QuantumRegister(self.__num_data, "data " + self.__qubit_no)
-        self.__mx_0 = QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no)
-        self.__mz_0 = QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no)
+        for index in range (d):
+            
+            self.__qubit_no = str(index)
+            # Quantum registers
+            self.__data.append(QuantumRegister(self.__num_data, "data " + self.__qubit_no))
+            self.__mx.append(QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no))
+            self.__mz.append(QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no))
+            list_of_all_registers.append(self.__data[index])
+            list_of_all_registers.append(self.__mx[index])
+            list_of_all_registers.append(self.__mz[index])
+
+            if self.__correct_errors:
+                self.__extra_ancilla.append(QuantumRegister(self.__num_extra_ancilla, name="extra_ancilla" + self.__qubit_no)) 
+                list_of_all_registers.append(self.__extra_ancilla[index])
+            # Classical registers
+            self.__data_classical.append(ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no))
+            self.__mx_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no))
+            self.__mz_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no))
+            list_of_all_registers.append(self.__data_classical[index])
+            list_of_all_registers.append(self.__mx_classical[index]) 
+            list_of_all_registers.append(self.__mz_classical[index])
+            if self.__correct_errors:
+                self.__extra_ancilla_classical.append(
+                    ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no))
+                list_of_all_registers.append(self.__extra_ancilla_classical[index]) 
+        
+        super().__init__(*list_of_all_registers)
+
+        #    list_of_all_registers = [self.__data[0], self.__mx[0], self.__mz[0], self.__extra_ancilla[0],
+        #                    self.__data_classical[0], self.__mx_classical[0], self.__mz_classical[0], self.__extra_ancilla_classical[0]]
+
+        
+        #self.__data_0 = QuantumRegister(self.__num_data, "data " + self.__qubit_no)
+        #self.__mx_0 = QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no)
+        #self.__mz_0 = QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no)
+        
 
         # Spare ancillas (e.g. for readout)
-        if self.__correct_errors:
-            self.__extra_ancilla_0 = QuantumRegister(self.__num_extra_ancilla, name="extra_ancilla" + self.__qubit_no)
+        #if self.__correct_errors:
+        #    self.__extra_ancilla_0 = QuantumRegister(self.__num_extra_ancilla, name="extra_ancilla" + self.__qubit_no)
 
         #classical registers
-        self.__data_classical_0 = ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no)
-        self.__mx_classical_0 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no)
-        self.__mz_classical_0 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no)
-        if self.__correct_errors:
-            self.__extra_ancilla_classical_0 = ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no)
+        #self.__data_classical_0 = ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no)
+        #self.__mx_classical_0 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no)
+        #self.__mz_classical_0 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no)
+        #if self.__correct_errors:
+        #    self.__extra_ancilla_classical_0 = ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no)
 
-        if d == 2:
-            self.__qubit_no = str(d-1)
-            self.__data_1 = QuantumRegister(self.__num_data, "data " + self.__qubit_no)
-            self.__mx_1 = QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no)
-            self.__mz_1 = QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no)
+        #if d == 2:
+        #    self.__qubit_no = str(d-1)
+        #    self.__data_1 = QuantumRegister(self.__num_data, "data " + self.__qubit_no)
+        #    self.__mx_1 = QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no)
+        #    self.__mz_1 = QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no)
 
             # Spare ancillas (e.g. for readout)
             #self.__extra_ancilla_1 = QuantumRegister(self.__num_extra_ancilla, name="extra_ancilla" + self.__qubit_no)
 
             #classical registers
-            self.__data_classical_1 = ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no)
-            self.__mx_classical_1 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no)
-            self.__mz_classical_1 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no)
+        #    self.__data_classical_1 = ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no)
+        #    self.__mx_classical_1 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no)
+        #    self.__mz_classical_1 = ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no)
 
         # user super to inherit all methods from Quantum circuits
-        if d == 1:
-                if self.__correct_errors:
-                    super().__init__(self.__data_0, self.__mx_0, self.__mz_0, self.__extra_ancilla_0,
-                            self.__data_classical_0, self.__mx_classical_0, self.__mz_classical_0, self.__extra_ancilla_classical_0)
-                else:
-                    # don't need extra ancilla if don't correct errors.
-                    super().__init__(self.__data_0, self.__mx_0, self.__mz_0,
-                        self.__data_classical_0, self.__mx_classical_0, self.__mz_classical_0)
+        #if d == 1:
+        #        if self.__correct_errors:
+        #            list_of_all_registers = [self.__data[0], self.__mx[0], self.__mz[0], self.__extra_ancilla[0],
+        #                    self.__data_classical[0], self.__mx_classical[0], self.__mz_classical[0], self.__extra_ancilla_classical[0]]
+        #            print("list_of_all_registers", list_of_all_registers)
+        #            super().__init__(*list_of_all_registers)
+        #        else:
+        #            # don't need extra ancilla if don't correct errors.
+        #            super().__init__(self.__data[0], self.__mx[0], self.__mz[0],
+        #                self.__data_classical[0], self.__mx_classical[0], self.__mz_classical[0])
 
-        elif d == 2:
-            super().__init__(
-                    self.__data_0, self.__mx_0, self.__mz_0,
-                    self.__data_classical_0, self.__mx_classical_0, self.__mz_classical_0,
-                    self.__data_1, self.__mx_1, self.__mz_1,
-                    self.__data_classical_1, self.__mx_classical_1, self.__mz_classical_1)
+        #elif d == 2:
+        #    super().__init__(
+        #            self.__data[0], self.__mx[0], self.__mz[0],
+        ##            self.__data_classical[0], self.__mx_classical[0], self.__mz_classical[0],
+         #           self.__data[1], self.__mx[1], self.__mz[1],
+         #           self.__data_classical[1], self.__mx_classical[1], self.__mz_classical[1])
+
+                # user super to inherit all methods from Quantum circuits
+        #if d == 1:
+        #        if self.__correct_errors:
+        #            super().__init__(self.__data, self.__mx_0, self.__mz_0, self.__extra_ancilla_0,
+        #                    self.__data_classical_0, self.__mx_classical_0, self.__mz_classical_0, self.__extra_ancilla_classical_0)
+        #        else:
+        #            # don't need extra ancilla if don't correct errors.
+        #            super().__init__(self.__data_0, self.__mx_0, self.__mz_0,
+        #                self.__data_classical_0, self.__mx_classical_0, self.__mz_classical_0)
+
+        #elif d == 2:
+        #    super().__init__(
+        #            self.__data_0, self.__mx_0, self.__mz_0,
+        #            self.__data_classical_0, self.__mx_classical_0, self.__mz_classical_0,
+        #            self.__data_1, self.__mx_1, self.__mz_1,
+        #            self.__data_classical_1, self.__mx_classical_1, self.__mz_classical_1)
         
-        else:
-            raise ValueError('Please enter 1 or 2 when initialising the qubits.  Currently only up to two qubits are supported')
+        #else:
+        #    raise ValueError('Please enter 1 or 2 when initialising the qubits.  Currently only up to two qubits are supported')
 
         self.validate_parity_matrix()
+
+    #def update_registers(self)
 
 
     def validate_parity_matrix(self):
@@ -140,23 +203,25 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         for index in range (self.__num_data):
             if parity_matrix_totals[index] == 1:
                 count = count + 1
-                if logical_qubit == 0:
-                    self.h(self.__data_0[index])
-                elif logical_qubit == 1:
-                    self.h(self.__data_1[index])
-                else:
-                    raise ValueError("not able to set up logical zero")
+                #if logical_qubit == 0:
+                #    self.h(self.__data_0[index])
+                #elif logical_qubit == 1:
+                #    self.h(self.__data_1[index])
+                #else:
+                #    raise ValueError("not able to set up logical zero")
+                self.h(self.__data[logical_qubit][index])
                 for parity_row in self.__parity_check_matrix:
                     if parity_row[index] == 1:              #correct row to build ancilla from
                         for column_number in range(self.__num_data):
                             if column_number != index:
                                 if parity_row[column_number] == 1:
-                                    if logical_qubit == 0:
-                                        self.cx(self.__data_0[index],self.__data_0[column_number])
-                                    elif logical_qubit == 1:
-                                        self.cx(self.__data_1[index],self.__data_1[column_number])
-                                    else:
-                                        raise ValueError("not able to set up logical zero")
+                                    self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
+                                #    if logical_qubit == 0:
+                                #        self.cx(self.__data_0[index],self.__data_0[column_number])
+                                #    elif logical_qubit == 1:
+                                #        self.cx(self.__data_1[index],self.__data_1[column_number])
+                                #    else:
+                                #        raise ValueError("not able to set up logical zero")
 
         if count != self.__num_ancilla:
             raise ValueError('Unable to construct matrix as parity matrix does not match the ancilla needed')   
@@ -177,12 +242,15 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             raise ValueError("Qubit index must be in range of data qubits")
         if qubit < 0:
             raise ValueError("Qubit index must be in range of data qubits")
-        if logical_qubit == 0:
-            self.x(self.__data_0[qubit])
-        elif logical_qubit == 1:
-            self.x(self.__data_1[qubit])
-        else:
-            raise ValueError("Unable to force an X error on the logical qubit")
+
+        self.x(self.__data[logical_qubit][qubit])
+
+        #if logical_qubit == 0:
+        #    self.x(self.__data_0[qubit])
+        #elif logical_qubit == 1:
+        #    self.x(self.__data_1[qubit])
+        #else:
+        #    raise ValueError("Unable to force an X error on the logical qubit")
         
 
     def force_Z_error(self,qubit,logical_qubit):
@@ -201,12 +269,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             raise ValueError("Qubit index must be in range of data qubits")
         if qubit < 0:
             raise ValueError("Qubit index must be in range of data qubits")
-        if logical_qubit == 0:
-            self.z(self.__data_0[qubit])
-        elif logical_qubit == 1:
-            self.z(self.__data_1[qubit])
-        else:
-            raise ValueError("Unable to force an Z error on the logical qubit")
+        self.z(self.__data[logical_qubit][qubit])
+        #if logical_qubit == 0:
+        #    self.z(self.__data_0[qubit])
+        #elif logical_qubit == 1:
+        #    self.z(self.__data_1[qubit])
+        #else:
+        #    raise ValueError("Unable to force an Z error on the logical qubit")
 
     def set_up_ancilla(self,logical_qubit):
         """set up gates for ancilla based on entries in the parity matrix
@@ -219,40 +288,44 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         """
         self._validate_logical_qubit_number(logical_qubit)
         #apply hadamards to all ancillas
-        for index in range (self.__num_ancilla):
-            if logical_qubit == 0:
-                self.h(self.__mx_0[index])
-                self.h(self.__mz_0[index])
-            elif logical_qubit == 1:
-                self.h(self.__mx_1[index])
-                self.h(self.__mz_1[index])
-            else:
-                raise ValueError("Unable to set up ancillas")
-
+        #for index in range (self.__num_ancilla):
+        #    if logical_qubit == 0:
+        #        self.h(self.__mx_0[index])
+        #        self.h(self.__mz_0[index])
+        #    elif logical_qubit == 1:
+        #        self.h(self.__mx_1[index])
+        #        self.h(self.__mz_1[index])
+        #   else:
+        #        raise ValueError("Unable to set up ancillas")
+        self.h(self.__mx[logical_qubit])
+        self.h(self.__mz[logical_qubit])
         #apply CX gates according to the parity index
         for index in range (self.__num_ancilla):
             parity_row = self.__parity_check_matrix[index]
             for column_number in range(self.__num_data):
                 if parity_row[column_number] ==1:
-                    if logical_qubit == 0:
-                        self.cx(self.__mx_0[index],self.__data_0[column_number])
-                        self.cz(self.__mz_0[index],self.__data_0[column_number]) 
-                    elif logical_qubit == 1:
-                        self.cx(self.__mx_1[index],self.__data_1[column_number])
-                        self.cz(self.__mz_1[index],self.__data_1[column_number])    
-                    else:
-                        raise ValueError("Unable to set up ancillas")                   
-
+                #    if logical_qubit == 0:
+                #        self.cx(self.__mx_0[index],self.__data_0[column_number])
+                #        self.cz(self.__mz_0[index],self.__data_0[column_number]) 
+                #    elif logical_qubit == 1:
+                #        self.cx(self.__mx_1[index],self.__data_1[column_number])
+                #        self.cz(self.__mz_1[index],self.__data_1[column_number])    
+                #    else:
+                #        raise ValueError("Unable to set up ancillas")      
+                    self.cx(self.__mx[logical_qubit][index],self.__data[logical_qubit][column_number])             
+                    self.cz(self.__mz[logical_qubit][index],self.__data[logical_qubit][column_number])  
         #apply final hadamards to all ancillas
         for index in range (self.__num_ancilla):
-            if logical_qubit == 0:
-                self.h(self.__mx_0[index])
-                self.h(self.__mz_0[index])
-            elif logical_qubit == 1:
-                self.h(self.__mx_1[index])
-                self.h(self.__mz_1[index])
-            else:
-                raise ValueError("Unable to set up ancillas")
+            #if logical_qubit == 0:
+            #    self.h(self.__mx_0[index])
+            #    self.h(self.__mz_0[index])
+            #elif logical_qubit == 1:
+            #    self.h(self.__mx_1[index])
+            #    self.h(self.__mz_1[index])
+            #else:
+            #    raise ValueError("Unable to set up ancillas")
+            self.h(self.__mx[logical_qubit][index])
+            self.h(self.__mz[logical_qubit][index])
 
     def logical_measure(self,logical_qubit):
         """Makes gates to measure a logical qubit
@@ -266,33 +339,38 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         self._validate_logical_qubit_number(logical_qubit)
         for index in range(self.__num_ancilla):
             # need to swap measurement qubits so that the measurements match the normal format of the codewords
-            if logical_qubit == 0:
-                self.measure(self.__mx_0[index], self.__mx_classical_0[self.__num_ancilla - index-1])
-                self.measure(self.__mz_0[index], self.__mz_classical_0[self.__num_ancilla - index-1])
-            elif logical_qubit == 1:
-                self.measure(self.__mx_1[index], self.__mx_classical_1[self.__num_ancilla - index-1])
-                self.measure(self.__mz_1[index], self.__mz_classical_1[self.__num_ancilla - index-1])
-            else:
-                raise ValueError("Unable to meaure qubits")
+            #if logical_qubit == 0:
+            #    self.measure(self.__mx_0[index], self.__mx_classical_0[self.__num_ancilla - index-1])
+            #    self.measure(self.__mz_0[index], self.__mz_classical_0[self.__num_ancilla - index-1])
+            #elif logical_qubit == 1:
+            #    self.measure(self.__mx_1[index], self.__mx_classical_1[self.__num_ancilla - index-1])
+            #    self.measure(self.__mz_1[index], self.__mz_classical_1[self.__num_ancilla - index-1])
+            #else:
+            #    raise ValueError("Unable to meaure qubits")
+            self.measure(self.__mx[logical_qubit][index], self.__mx_classical[logical_qubit][self.__num_ancilla - index-1])
+            self.measure(self.__mz[logical_qubit][index], self.__mz_classical[logical_qubit][self.__num_ancilla - index-1])
 
         if self.__correct_errors:
             for index in range(self.__num_extra_ancilla):
-                if logical_qubit == 0:
-                    self.measure(self.__extra_ancilla_0[index], self.__extra_ancilla_classical_0[self.__num_extra_ancilla - index- 1])
+                #if logical_qubit == 0:
+                #    self.measure(self.__extra_ancilla_0[index], self.__extra_ancilla_classical_0[self.__num_extra_ancilla - index- 1])
                 #elif logical_qubit == 1:
                     # should not be called at present - for future expansion
                     #self.measure(self.__extra_ancilla_1[index],self.__extra_ancilla_classical_1[self.__num_extra_ancilla - index- 1])
-                else:
-                    raise ValueError("Unable to meaure qubits")
+                #else:
+                #    raise ValueError("Unable to meaure qubits")
+                self.measure(self.__extra_ancilla[logical_qubit][index], 
+                            self.__extra_ancilla_classical[logical_qubit][self.__num_extra_ancilla - index- 1])
 
         for index in range(self.__num_data):
             # need to swap measurement qubits so that the measurements match the normal format of the codewords
-            if logical_qubit == 0:
-                self.measure(self.__data_0[index], self.__data_classical_0[self.__num_data - index-1])
-            elif logical_qubit == 1:
-                self.measure(self.__data_1[index], self.__data_classical_1[self.__num_data - index-1])
-            else:
-                raise ValueError("Unable to meaure qubits")
+            #if logical_qubit == 0:
+            #    self.measure(self.__data_0[index], self.__data_classical_0[self.__num_data - index-1])
+            #elif logical_qubit == 1:
+            #    self.measure(self.__data_1[index], self.__data_classical_1[self.__num_data - index-1])
+            #else:
+            #    raise ValueError("Unable to meaure qubits")
+            self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][self.__num_data - index-1])
 
     def correct_errors(self,logical_qubit):
         """ produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out.
@@ -327,9 +405,11 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 if count == 1:
                     for bit_index in range(self.__num_ancilla): 
                         if bit_list[bit_index] == 1:
-                            self.cx(self.__mz_0[bit_index], self.__data_0[qubit])
+                            #self.cx(self.__mz_0[bit_index], self.__data_0[qubit])
+                            self.cx(self.__mz[logical_qubit][bit_index], self.__data[logical_qubit][qubit])    
                             single_CX_updates_list.append([qubit, bit_index])
-                            self.cz(self.__mx_0[bit_index], self.__data_0[qubit])
+                            self.cz(self.__mx[logical_qubit][bit_index], self.__data[logical_qubit][qubit])                     
+                            #self.cz(self.__mx_0[bit_index], self.__data_0[qubit])
 
             extra_ancilla = 0   
             for qubit in range(self.__num_data):
@@ -348,39 +428,73 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                                     else:
                                         second_bit = bit_index
                 ## need to add a ccx gate
-                    self.ccx(self.__mz_0[first_bit], self.__mz_0[second_bit], self.__extra_ancilla_0[extra_ancilla])
-                    self.cx(self.__extra_ancilla_0[extra_ancilla], self.__data_0[qubit])
-                    self.cz(self.__extra_ancilla_0[extra_ancilla], self.__data_0[qubit])
+                    #self.ccx(self.__mz_0[first_bit], self.__mz_0[second_bit], self.__extra_ancilla_0[extra_ancilla])
+                    #self.cx(self.__extra_ancilla_0[extra_ancilla], self.__data_0[qubit])
+                    #self.cz(self.__extra_ancilla_0[extra_ancilla], self.__data_0[qubit])
+                    self.ccx(self.__mz[logical_qubit][first_bit], 
+                             self.__mz[logical_qubit][second_bit], 
+                             self.__extra_ancilla[logical_qubit][extra_ancilla])
+                    self.cx(self.__extra_ancilla[logical_qubit][extra_ancilla], 
+                            self.__data[logical_qubit][qubit])
+                    self.cz(self.__extra_ancilla[logical_qubit][extra_ancilla], 
+                            self.__data[logical_qubit][qubit])
+
                     for items in single_CX_updates_list:
                         other_impacted_qubit = items[0]
                         bit_index = items[1]
                         if first_bit == bit_index or second_bit == bit_index:
                             # need a CX / CZ gate to reverse out changes from count 1 gates, or these will show the wrong answer.
-                            self.cx(self.__extra_ancilla_0[extra_ancilla], self.__data_0[other_impacted_qubit]) 
-                            self.cz(self.__extra_ancilla_0[extra_ancilla], self.__data_0[other_impacted_qubit]) 
+                            #self.cx(self.__extra_ancilla_0[extra_ancilla], self.__data_0[other_impacted_qubit]) 
+                            #self.cz(self.__extra_ancilla_0[extra_ancilla], self.__data_0[other_impacted_qubit]) 
+                            self.cx(self.__extra_ancilla[logical_qubit][extra_ancilla], 
+                                    self.__data[logical_qubit][other_impacted_qubit]) 
+                            self.cz(self.__extra_ancilla[logical_qubit][extra_ancilla], 
+                                    self.__data[logical_qubit][other_impacted_qubit]) 
                     extra_ancilla = extra_ancilla + 1
 
             for qubit in range(self.__num_data):
                 qubit_data_item = qubit_data.get(qubit)
                 count = qubit_data_item.get("count")  
                 if count == 3:
-                    self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[1], self.__extra_ancilla_0[3]) 
-                    self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
-                    self.ccx(self.__extra_ancilla_0[1], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
+                    #self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[1], self.__extra_ancilla_0[3]) 
+                    #self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
+                    #self.ccx(self.__extra_ancilla_0[1], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
+                    self.ccx(self.__extra_ancilla[logical_qubit][0], 
+                             self.__extra_ancilla[logical_qubit][1], 
+                             self.__extra_ancilla[logical_qubit][3]) 
+                    self.ccx(self.__extra_ancilla[logical_qubit][0], 
+                             self.__extra_ancilla[logical_qubit][2], 
+                             self.__extra_ancilla[logical_qubit][3]) 
+                    self.ccx(self.__extra_ancilla[logical_qubit][1], 
+                             self.__extra_ancilla[logical_qubit][2], 
+                             self.__extra_ancilla[logical_qubit][3]) 
                     #need to undo impact of all gates made earlier as odd parity by inspection of codes.
                     #maybe later could add code to check the changes made, and show they have odd parity.
                     for gate_needed in range(self.__num_data):
-                        self.cx(self.__extra_ancilla_0[3], self.__data_0[gate_needed])
-                        self.cz(self.__extra_ancilla_0[3], self.__data_0[gate_needed])
+                        #self.cx(self.__extra_ancilla_0[3], self.__data_0[gate_needed])
+                        #self.cz(self.__extra_ancilla_0[3], self.__data_0[gate_needed])
+                        self.cx(self.__extra_ancilla[logical_qubit][3], 
+                                self.__data[logical_qubit][gate_needed])
+                        self.cz(self.__extra_ancilla[logical_qubit][3], 
+                                self.__data[logical_qubit][gate_needed])
 
             #need to reverse CCX gates
             for qubit in range(self.__num_data):
                 qubit_data_item = qubit_data.get(qubit)
                 count = qubit_data_item.get("count")  
                 if count == 3:
-                    self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[1], self.__extra_ancilla_0[3]) 
-                    self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
-                    self.ccx(self.__extra_ancilla_0[1], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
+                    #self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[1], self.__extra_ancilla_0[3]) 
+                    #self.ccx(self.__extra_ancilla_0[0], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
+                    #self.ccx(self.__extra_ancilla_0[1], self.__extra_ancilla_0[2], self.__extra_ancilla_0[3]) 
+                    self.ccx(self.__extra_ancilla[logical_qubit][0], 
+                             self.__extra_ancilla[logical_qubit][1], 
+                             self.__extra_ancilla[logical_qubit][3]) 
+                    self.ccx(self.__extra_ancilla[logical_qubit][0], 
+                             self.__extra_ancilla[logical_qubit][2], 
+                             self.__extra_ancilla[logical_qubit][3]) 
+                    self.ccx(self.__extra_ancilla[logical_qubit][1], 
+                             self.__extra_ancilla[logical_qubit][2], 
+                             self.__extra_ancilla[logical_qubit][3]) 
 
             extra_ancilla = 0   
             for qubit in range(self.__num_data):
@@ -399,7 +513,10 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                                     else:
                                         second_bit = bit_index
                 ## need to add a ccx gate
-                    self.ccx(self.__mz_0[first_bit], self.__mz_0[second_bit], self.__extra_ancilla_0[extra_ancilla])
+                    #self.ccx(self.__mz_0[first_bit], self.__mz_0[second_bit], self.__extra_ancilla_0[extra_ancilla])
+                    self.ccx(self.__mz[logical_qubit][first_bit], 
+                             self.__mz[logical_qubit][second_bit], 
+                             self.__extra_ancilla[logical_qubit][extra_ancilla])
                     extra_ancilla = extra_ancilla + 1
 
     def decode(self, logical_qubit):
@@ -426,22 +543,23 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                         for column_number in range(self.__num_data):
                             if column_number != index:
                                 if parity_row[column_number] == 1:
-                                        if logical_qubit == 0:
-                                            self.cx(self.__data_0[index], self.__data_0[column_number])
-                                        elif logical_qubit == 1:
-                                            self.cx(self.__data_1[index], self.__data_1[column_number])
-                                        else:
-                                            raise ValueError("Unable to decode logical qubit")
-
+                                        #if logical_qubit == 0:
+                                        #    self.cx(self.__data_0[index], self.__data_0[column_number])
+                                        #elif logical_qubit == 1:
+                                        #    self.cx(self.__data_1[index], self.__data_1[column_number])
+                                        #else:
+                                        #    raise ValueError("Unable to decode logical qubit")
+                                        self.cx(self.__data[logical_qubit][index], self.__data[logical_qubit][column_number])
 
         for index in range (self.__num_data):
             if parity_matrix_totals[index] == 1:
-                if logical_qubit == 0:
-                    self.h(self.__data_0[index])
-                elif logical_qubit == 1:
-                    self.h(self.__data_1[index])
-                else:
-                    raise ValueError("Unable to decode logical qubit")
+                #if logical_qubit == 0:
+                #    self.h(self.__data_0[index])
+                #elif logical_qubit == 1:
+                #    self.h(self.__data_1[index])
+                #else:
+                #    raise ValueError("Unable to decode logical qubit")
+                self.h(self.__data[logical_qubit][index])
 
     def logical_gate_X(self, logical_qubit):
         """Apply a logical X gate
@@ -455,12 +573,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
         self._validate_logical_qubit_number(logical_qubit)
         for index in range(self.__num_data):
-            if logical_qubit == 0:
-                self.x(self.__data_0[index])
-            elif logical_qubit == 1:
-                self.x(self.__data_1[index])
-            else:
-                raise ValueError("Unable to apply X gate")
+            #if logical_qubit == 0:
+            #    self.x(self.__data_0[index])
+            #elif logical_qubit == 1:
+            #    self.x(self.__data_1[index])
+            #else:
+            #    raise ValueError("Unable to apply X gate")
+            self.x(self.__data[logical_qubit][index])
 
     def logical_gate_H(self, logical_qubit):
         """Apply a logical H gate
@@ -473,12 +592,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
         self._validate_logical_qubit_number(logical_qubit)
         for index in range(self.__num_data):
-            if logical_qubit == 0:
-                self.h(self.__data_0[index])
-            elif logical_qubit == 1:
-                self.h(self.__data_1[index])
-            else:
-                raise ValueError("Unable to apply X gate")
+            #if logical_qubit == 0:
+            #    self.h(self.__data_0[index])
+            #elif logical_qubit == 1:
+            #    self.h(self.__data_1[index])
+            #else:
+            #    raise ValueError("Unable to apply X gate")
+            self.h(self.__data[logical_qubit][index])
 
     def logical_gate_Z(self, logical_qubit):
         """Apply a logical Z gate
@@ -491,12 +611,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
         self._validate_logical_qubit_number(logical_qubit)
         for index in range(self.__num_data):
-            if logical_qubit == 0:
-                self.z(self.__data_0[index])
-            elif logical_qubit == 1:
-                self.z(self.__data_1[index])
-            else:
-                raise ValueError("Unable to apply Z gate")
+            #if logical_qubit == 0:
+            #    self.z(self.__data_0[index])
+            #elif logical_qubit == 1:
+            #    self.z(self.__data_1[index])
+            #else:
+            #    raise ValueError("Unable to apply Z gate")
+            self.z(self.__data[logical_qubit][index])
     
     def logical_gate_CX(self, logical_control_qubit, logical_target_qubit):
         """Apply a logical CX gate
@@ -515,12 +636,14 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         if logical_control_qubit == logical_target_qubit:   
             raise ValueError("the control and target qubits for the logical CX must be different")
         for index in range(self.__num_data):
-            if logical_control_qubit == 0:
-                self.cx(self.__data_0[index], self.__data_1[index])
-            elif logical_control_qubit == 1:
-                self.cx(self.__data_1[index], self.__data_0[index])
-            else:
-                raise ValueError("Unable to apply CX gate")
+            #if logical_control_qubit == 0:
+            #    self.cx(self.__data_0[index], self.__data_1[index])
+            #elif logical_control_qubit == 1:
+            #    self.cx(self.__data_1[index], self.__data_0[index])
+            #else:
+            #    raise ValueError("Unable to apply CX gate")
+            self.cx(self.__data[logical_control_qubit][index], 
+                    self.__data[logical_target_qubit][index])
     
     def _transpose_parity(self):
         """transposes the parity check matrix"""

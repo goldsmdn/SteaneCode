@@ -7,7 +7,13 @@ are high, and a range of techniques including quantum error correcting codes (QE
 The aim of much current research is to design, simulate, and implement QECCs that can operate fault tolerantly.  
 
 The seven qubit Steane code is derived from the classical Hamming code and corrects both bit flip and phase flip errors, 
-unlike the repetition code, which only corrects bit flip errors.  One logical qubit is encoded as seven physical qubits.  
+unlike the repetition code, which only corrects bit flip errors.  One logical qubit is encoded as seven physical qubits. 
+
+A diagram of the Steane code is shown below:
+
+.. image:: Python_Steane_code.jpg
+  :width: 800
+  :alt: Steane code
 
 The module circuits.py generates circuits for the Steane code for up to two logical qubits and has methods that:  
 

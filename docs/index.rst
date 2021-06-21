@@ -11,7 +11,6 @@ Steane Code automatically generated project documentation
 
    overview
    documentation
-   notebooks
    modules
 
 

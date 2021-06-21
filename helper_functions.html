@@ -1,0 +1,404 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>helper_functions module &mdash; Steane Code 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="test_circuits module" href="test_circuits.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Steane Code
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">SteaneCode</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="circuits.html">circuits module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_circuits.html">test_circuits module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">helper_functions module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Steane Code</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">SteaneCode</a> &raquo;</li>
+        
+      <li>helper_functions module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/helper_functions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-helper_functions">
+<span id="helper-functions-module"></span><h1>helper_functions module<a class="headerlink" href="#module-helper_functions" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.correct_qubit">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">correct_qubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.correct_qubit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the corrected data bit string calculated from the ancilla settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em>) – input data bit string</p></li>
+<li><p><strong>ancilla</strong> (<em>str</em>) – three bit ancilla X code</p></li>
+<li><p><strong>data_qubits</strong> (<em>int</em>) – length of bit string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data_out</strong> – corrected data bit string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The ancilla number calculation needs to take into account that the ancilla bit string is reversed
+compared to numbering of the databits shown on the qiskit diagrams</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.count_valid_output_strings">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">count_valid_output_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the number of valid and invalid output bit strings in a given position in a dictionary representing
+the counts for each output bit string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>dictionary</em>) – holds the observed populations for each combination of qubit</p></li>
+<li><p><strong>codewords</strong> (<em>list</em>) – holds allowed codewords</p></li>
+<li><p><strong>data_position</strong> (<em>int</em>) – position of the data string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Count_valid</strong> (<em>int</em>) – Number of valid bit strings</p></li>
+<li><p><strong>Count_invalid</strong> (<em>int</em>) – Number of invalid bit strings</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.find_ancilla_values">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_ancilla_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.find_ancilla_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with a count of each possible ancilla bit string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>dictionary</em>) – counts for each possible output bit string</p></li>
+<li><p><strong>anicilla_qubits</strong> (<em>int</em>) – number of ancilla qubits</p></li>
+<li><p><strong>ancilla_location</strong> (<em>int</em>) – designates which bit string is relevant</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ancilla_values</strong> – dictionary containing the count of each possible ancilla bit string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.find_individual_ancilla_values">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_individual_ancilla_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ancilla_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.find_individual_ancilla_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the count of individual ancilla bit strings as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ancilla_values</strong> (<em>dict</em>) – holds the counts for each combination of ancilla bit strings.</p></li>
+<li><p><strong>data_qubits</strong> (<em>int</em>) – number of data qubits used as an offset to calculate the ancilla number</p></li>
+<li><p><strong>ancilla_qubits</strong> (<em>int</em>) – number of ancilla qubits</p></li>
+<li><p><strong>label_string</strong> (<em>str</em>) – first part of label</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>individual_ancilla_values</strong> – dictionary containing the count of individual ancilla bit string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.find_parity">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_parity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.find_parity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the parity of the output bit string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>dictionary</em>) – Holds the observed output bit strings</p></li>
+<li><p><strong>data_qubits</strong> (<em>integer</em>) – number of data qubits</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parity_count</strong> – A dictionary holding the partiy count for each observed output bit string.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.flip_code_words">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">flip_code_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codewords_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.flip_code_words" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of codewords for the logical one from the list of codewords for the logical zero
+by flipped each bit of the input codewords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>codewords</strong> (<em>list</em>) – logical codewords in seven bit Steane code data qubit for the logical zero</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Codewords_out</strong> – bit flipped input codeword</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.string_ancilla_mask">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">string_ancilla_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.string_ancilla_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a bit string with a 1 in a certain bit and the 0 elsewhere.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>location</strong> (<em>int</em>) – bit which should be 1</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – length of string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>string</strong> – ancilla bit mask string in required format</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.string_reverse">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">string_reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.string_reverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverses a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_string</strong> (<em>str</em>) – Holds the string to be reversed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>reversed_string</strong> – The reversed string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.strings_AND_bitwise">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">strings_AND_bitwise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.strings_AND_bitwise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the bitwise AND of two equal length bit strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string1</strong> (<em>str</em>) – First string</p></li>
+<li><p><strong>string2</strong> (<em>str</em>) – Second string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>string_out</strong> – bitwise AND of the two input strings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="test_circuits.html" class="btn btn-neutral float-left" title="test_circuits module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Daniel Goldsmith.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

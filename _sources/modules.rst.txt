@@ -6,3 +6,4 @@ SteaneCode
 
    circuits
    test_circuits
+   helper_functions

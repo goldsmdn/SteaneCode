@@ -41,6 +41,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="helper_functions module" href="helper_functions.html" />
     <link rel="prev" title="circuits module" href="circuits.html" /> 
 </head>
 
@@ -90,10 +91,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks.html">Notebooks</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">SteaneCode</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="circuits.html">circuits module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">test_circuits module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helper_functions.html">helper_functions module</a></li>
 </ul>
 </li>
 </ul>
@@ -170,60 +171,61 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_correct_qubit">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_correct_qubit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_correct_qubit" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that the data qubit is properly corected</p>
+<dd><p>Checks that the data qubit correction helper function is working correctly</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_count_valid_output_strings">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_count_valid_output_strings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
-<dd><p>test counting the valid output strings using a preworked example</p>
+<dd><p>Checks that the helper function to count valid output strings agrees to a preworked example</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_def_string_ancilla_mask">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_def_string_ancilla_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_def_string_ancilla_mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that the ancilla mask is correctly calculated</p>
+<dd><p>Checks that the ancilla mask creation helper function is working correctly</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_error_correction">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_error_correction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_error_correction" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks that every X error gets corrected by error correction with and without MCT gates</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_flipped_codewords">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_flipped_codewords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_flipped_codewords" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that the flipped_codewords function module is giving the correct results</p>
+<dd><p>Checks that the helper function to bit flip codewords module is working correctly</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_logical_qubit_reference_in_range">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_logical_qubit_reference_in_range</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_logical_qubit_reference_in_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that an error is thrown if try and set up a logical zero with an index greater than 1</p>
+<dd><p>Checks that an error is thrown when setting up a logical zero with an index greater than 1</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_no_error_correction_with_two_logical_qubits">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_no_error_correction_with_two_logical_qubits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_no_error_correction_with_two_logical_qubits" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that an error is thrown if try error correction with two logical qubits</p>
+<dd><p>Checks that an error is thrown when a circuit is set up for extra ancilla for two logical qubits</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_physical_qubit_reference_in_range">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_physical_qubit_reference_in_range</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_physical_qubit_reference_in_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that an error is thrown if try and index a physical qubit outside the valid range</p>
+<dd><p>Checks that an error is thrown when indexing a physical qubit outside the valid range</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_string_reverse">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_string_reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_string_reverse" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that reverse string function is reversing correctly</p>
+<dd><p>Checks that the reverse string helper function is reversing correctly</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_strings_and_bitwise">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_strings_and_bitwise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_strings_and_bitwise" title="Permalink to this definition">¶</a></dt>
-<dd><p>check that bitwise function correctly calcules bitwise of two string</p>
+<dd><p>Checks that the bitwise function helper function correctly calcules the bitwise AND of two string</p>
 </dd></dl>
 
 </div>
@@ -234,6 +236,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="helper_functions.html" class="btn btn-neutral float-right" title="helper_functions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="circuits.html" class="btn btn-neutral float-left" title="circuits module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

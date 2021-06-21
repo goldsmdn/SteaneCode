@@ -91,10 +91,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation.html">Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks.html">Notebooks</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">SteaneCode</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">circuits module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_circuits.html">test_circuits module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helper_functions.html">helper_functions module</a></li>
 </ul>
 </li>
 </ul>
@@ -180,7 +180,7 @@
 <li><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised. Should be either 1 or 2 at present.</p></li>
 <li><p><strong>parity_check_matrix</strong> (<em>list</em>) – Holds the parity check matrix from which the gates will be constructed.</p></li>
 <li><p><strong>codewords</strong> (<em>list</em>) – Valid codewords for the Steane code</p></li>
-<li><p><strong>correct_errors</strong> (<em>bool</em>) – True if need to make a circuit to correct errors.</p></li>
+<li><p><strong>extend_ancilla</strong> (<em>bool</em>) – True if need to add extra ancilla for error correction without using MCT gates</p></li>
 </ul>
 </dd>
 </dl>
@@ -189,27 +189,35 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.correct_errors">
 <span class="sig-name descname"><span class="pre">correct_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.correct_errors" title="Permalink to this definition">¶</a></dt>
-<dd><p>produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out.
+<dd><p>produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
 Reads through Parity matrix to determine the corrections to be applied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits on which to correct error. Should be either 0 or 1 at present.</p></li>
-<li><p><strong>mct</strong> (<em>bin</em>) – Controls whether an MCT gate shall be used</p></li>
+<li><p><strong>mct</strong> (<em>bool</em>) – Controls whether an MCT gate shall be used</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The error correcting circuit is either set up with MCT gates, which is logically simpler but needs
+more gates, or without MCT gates, which is more difficult to program but needs less gates.
+In the latter case the complexity is to take into account corrections already applied when looking at
+two or three bit corrections.</p>
+<p>In both cases the error correcting gates are determined from the parity matrix.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.decode">
 <span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.decode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uncomputer setting up logical zero for data qubit.  This is the encoding circuit reversed.</p>
+<dd><p>Uncomputer setting up logical zero for data qubit.  This is a reversal of the encoding circuit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to set up logical zero for. Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The gates needed are determined from the parity matrix.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -227,12 +235,16 @@ Reads through Parity matrix to determine the corrections to be applied.</p>
 <dd class="field-odd"><p><strong>d</strong> (<em>int</em>) – Number of the logical “data” qubits to be initialised. Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The registers are stored in a list so that they can be indexed to simplify subsequent code.
+The registers required depends on the number of logical qubits and whether extra ancilla qubits
+are needed for error checking.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.dummy_decoding">
 <span class="sig-name descname"><span class="pre">dummy_decoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.dummy_decoding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instead of the full decoding circuit a dummy circuit is set up  for testing.</p>
+<dd><p>Instead of the full decoding circuit a dummy circuit is set up for testing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -241,6 +253,8 @@ Reads through Parity matrix to determine the corrections to be applied.</p>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function is not currently used by any workbook but is retained in case it is useful in future.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -251,7 +265,7 @@ Reads through Parity matrix to determine the corrections to be applied.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on. Should be either 0 or 1 at present.</p></li>
-<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force error on.</p></li>
+<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force X error on.</p></li>
 </ul>
 </dd>
 </dl>
@@ -265,7 +279,7 @@ Reads through Parity matrix to determine the corrections to be applied.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on. Should be either 0 or 1 at present.</p></li>
-<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force error on.</p></li>
+<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force Z error on.</p></li>
 </ul>
 </dd>
 </dl>
@@ -338,6 +352,8 @@ Reads through Parity matrix to determine the corrections to be applied.</p>
 <dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to set up ancilla gates for. Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The ancilla needed are determined from the parity matrix.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -354,7 +370,7 @@ Reads through Parity matrix to determine the corrections to be applied.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.validate_parity_matrix">
 <span class="sig-name descname"><span class="pre">validate_parity_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.validate_parity_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>validate the parity matrix against the allowed codewords</p>
+<dd><p>Validate the parity matrix against the allowed codewords</p>
 </dd></dl>
 
 </dd></dl>

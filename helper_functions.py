@@ -1,28 +1,39 @@
 #helper_functions.py
 
 def string_reverse(input_string):
-    """Reverses a string
+    """Reverses a string.
 
         Parameters
         ----------
-        input_string : string
-            Holds the string to be reversed"""
+        input_string : str
+            Holds the string to be reversed
+            
+        Returns
+        ----------
+        reversed_string : str
+            The reversed string  
+            
+    """
     
     reversed_string = input_string[::-1]
-
-    #print('input_string, reversed_string', input_string, reversed_string, type(input_string), type(reversed_string))
 
     return(reversed_string)
 
 def find_parity(counts, data_qubits):
-    """The parity of the observed population of each qubit is found.
+    """Finds the parity of the output bit string.
 
         Parameters
         ----------
         counts : dictionary
-            Holds the observed populations for each combination of qubit
+            Holds the observed output bit strings
         data_qubits : integer
-            number of data qubits"""
+            number of data qubits
+            
+        Returns
+        ----------
+        parity_count : dict
+            A dictionary holding the partiy count for each observed output bit string.     
+        """
 
     #initialise dictionary to hold counts
     parity_count = {str(i) : 0 for i in range(2)}
@@ -46,16 +57,26 @@ def find_parity(counts, data_qubits):
     return(parity_count)
 
 def count_valid_output_strings(counts, codewords, data_position):
-    """The number of output strings that are valid is found.
+    """Finds the number of valid and invalid output bit strings in a given position in a dictionary representing
+    the counts for each output bit string.
 
     Parameters
     ----------
     counts : dictionary
-        Holds the observed populations for each combination of qubit
+        holds the observed populations for each combination of qubit
     codewords : list
         holds allowed codewords 
     data_position : int 
-        position of the data string"""
+        position of the data string
+
+    Returns
+    ----------
+    Count_valid : int
+        Number of valid bit strings
+    Count_invalid : int
+        Number of invalid bit strings
+
+    """
     count_valid = 0
     count_invalid = 0
     for key, value in counts.items():
@@ -78,19 +99,25 @@ def count_valid_output_strings(counts, codewords, data_position):
 
 
 def find_individual_ancilla_values(ancilla_values, data_qubits, ancilla_qubits, label_string = ''):
-    """A dictionary holds a count of each combination of ancilla.  This function
-        is to find the count by individual ancilla, which is returned as a dictionary.
+    """Returns the count of individual ancilla bit strings as a dictionary.
 
         Parameters
         ----------
-        ancilla_values : dictionary
-            Holds the counts for each combination of ancilla.
-        data_qubits : integer
+        ancilla_values : dict
+            holds the counts for each combination of ancilla bit strings.
+        data_qubits : int
             number of data qubits used as an offset to calculate the ancilla number
-        ancilla_qubits : integer
+        ancilla_qubits : int
             number of ancilla qubits
-        label_string :
-            first part of label """
+        label_string : str
+            first part of label 
+
+        Returns
+        -------
+        individual_ancilla_values : dict
+            dictionary containing the count of individual ancilla bit string
+        
+    """
 
     #initialise dictionary to hold values
     individual_ancilla_values = {label_string + str(count): 0 for count in range(data_qubits + 1, data_qubits + 1 + ancilla_qubits) }
@@ -107,16 +134,24 @@ def find_individual_ancilla_values(ancilla_values, data_qubits, ancilla_qubits, 
     return(individual_ancilla_values)
 
 def find_ancilla_values(counts, ancilla_qubits, ancilla_location = 0):
-    """The possible combinations of ancilla are found and 
-        the population counts for each combination is calculated
-        and returned as a dictionary.
+    """Returns a dictionary with a count of each possible ancilla bit string.
 
         Parameters
         ----------
         counts : dictionary
-            Holds the counts for each combination of qubit
-        anicilla_qubits : integer
-            number of ancilla qubits"""
+            counts for each possible output bit string
+        anicilla_qubits : int
+            number of ancilla qubits
+        ancilla_location : int
+            designates which bit string is relevant
+
+
+        Returns
+        -------
+        ancilla_values : dict
+            dictionary containing the count of each possible ancilla bit string
+
+        """
 
     #build a list of all the possible ancilla in binary
     possible_ancilla_list = []
@@ -138,14 +173,21 @@ def find_ancilla_values(counts, ancilla_qubits, ancilla_location = 0):
     return(ancilla_values)
 
 def strings_AND_bitwise(string1, string2):
-    """returns the bitwise and of two equal length strings
+    """Returns the bitwise AND of two equal length bit strings.
 
         Parameters
         ----------
-        string 1 : string
+        string1 : str
             First string
-        string 2 : string
-            Second string"""
+        string2 : str
+            Second string
+            
+        Returns
+        -------
+        string_out : str
+            bitwise AND of the two input strings
+            
+    """
 
     string_out = ''
     if len(string1) != len(string2):
@@ -165,15 +207,22 @@ def strings_AND_bitwise(string1, string2):
     return(string_out)
 
 def string_ancilla_mask(location, length):
-    """returns a string with a one in one bit and the rest of the string as zeros
-       and zeros other wise
+    """Returns a bit string with a 1 in a certain bit and the 0 elsewhere.
 
         Parameters
         ----------
         location : int
             bit which should be 1 
         length : int
-            length of string"""
+            length of string
+            
+        Returns
+        -------
+
+        string : str    
+            ancilla bit mask string in required format    
+        
+        """
 
     if not isinstance(location, int):
         return Exception('Location of string must an integer when calculating ancilla mask')
@@ -203,20 +252,34 @@ def string_ancilla_mask(location, length):
     return(string)
 
 def correct_qubit(data_in, ancilla, data_qubits):
-        """returns a corrected data qubit based on an ancilla
+        """Returns the corrected data bit string calculated from the ancilla settings.
 
         Parameters
         ----------
-        data : string
-            seven bit Steane code data qubit
-        ancilla : string
-            three bit ancilla X code"""
+        data : str
+            input data bit string
+        ancilla : str
+            three bit ancilla X code
+        data_qubits : int
+            length of bit string
+            
+        Returns
+        -------
+
+        data_out : str
+            corrected data bit string
+
+        Notes
+        -----
+        The ancilla number calculation needs to take into account that the ancilla bit string is reversed
+        compared to numbering of the databits shown on the qiskit diagrams
+            
+        """
 
         if ancilla == '000':
             data_out = data_in
         else:
             bin_ancilla = string_reverse(ancilla)
-            # the ancilla number calculation needs to take into account that the ancilla is reversed
             dec_ancilla = int(bin_ancilla, 2)
             ancilla_mask = string_ancilla_mask(dec_ancilla, data_qubits)
             data_out = strings_AND_bitwise(data_in, ancilla_mask)  
@@ -224,11 +287,20 @@ def correct_qubit(data_in, ancilla, data_qubits):
         return(data_out)
 
 def flip_code_words(codewords_in):
-    """returns a list of codewords for logical one based on logical zero
+    """Returns a list of codewords for the logical one from the list of codewords for the logical zero
+        by flipped each bit of the input codewords.
 
         Parameters
         ----------
-        codewords : list of logical codewords in seven bit Steane code data qubit"""
+        codewords : list
+            logical codewords in seven bit Steane code data qubit for the logical zero
+        
+        Returns
+        -------
+        Codewords_out : list
+            bit flipped input codeword
+
+        """
 
     codewords_out = []
     for items in codewords_in:
@@ -243,8 +315,3 @@ def flip_code_words(codewords_in):
             new_list.append(flipped_bit)
         codewords_out.append(new_list)
     return(codewords_out)
-    
-
-
-
-

@@ -15,8 +15,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Holds the parity check matrix from which the gates will be constructed.
         codewords : list
             Valid codewords for the Steane code
-        correct_errors : bool 
-            True if need to make a circuit to correct errors. 
+        extend_ancilla : bool 
+            True if need to add extra ancilla for error correction without using MCT gates
     
         Notes
         -----
@@ -68,6 +68,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         d : int
             Number of the logical "data" qubits to be initialised. Should be either 0 or 1 at present.
 
+        Notes
+        -----
+        The registers are stored in a list so that they can be indexed to simplify subsequent code.
+        The registers required depends on the number of logical qubits and whether extra ancilla qubits
+        are needed for error checking.
+
         """
         list_of_all_registers = []
         
@@ -103,7 +109,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         return (list_of_all_registers)
     
     def validate_parity_matrix(self):
-        """validate the parity matrix against the allowed codewords"""
+        """Validate the parity matrix against the allowed codewords"""
         if self.__parity_check_matrix == []:
             raise ValueError('Parity check matrix must be specified')
         
@@ -165,7 +171,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             logical_qubit: int
                 Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
             physical_qubit : int
-                Number of qubit to force error on.
+                Number of qubit to force X error on.
 
         """
         self._validate_physical_qubit_number(physical_qubit)
@@ -180,7 +186,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             logical_qubit: int
                 Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
             physical_qubit : int
-                Number of qubit to force error on.
+                Number of qubit to force Z error on.
 
         """
         self._validate_physical_qubit_number(physical_qubit)
@@ -195,6 +201,10 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             logical_qubit: int
                 Number of the logical "data" qubits to set up ancilla gates for. Should be either 0 or 1 at present.
 
+            Notes
+            -----
+            The ancilla needed are determined from the parity matrix.
+        
         """
         self._validate_logical_qubit_number(logical_qubit)
         self.h(self.__mx[logical_qubit])
@@ -221,7 +231,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.h(self.__mz[logical_qubit][index])
         
 
-    def logical_measure(self,logical_qubit = 0):
+    def logical_measure(self, logical_qubit = 0):
         """Makes gates to measure a logical qubit
 
             Parameters
@@ -251,15 +261,24 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][index])
 
     def correct_errors(self, logical_qubit = 0, mct = False):
-        """ produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out.
+        """ produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
             Reads through Parity matrix to determine the corrections to be applied.
 
             Parameters
             ----------
             logical_qubit: int
                 Number of the logical "data" qubits on which to correct error. Should be either 0 or 1 at present.
-            mct: bin
+            mct: bool
                 Controls whether an MCT gate shall be used
+
+            Notes
+            -----
+            The error correcting circuit is either set up with MCT gates, which is logically simpler but needs
+            more gates, or without MCT gates, which is more difficult to program but needs less gates.
+            In the latter case the complexity is to take into account corrections already applied when looking at
+            two or three bit corrections.
+            
+            In both cases the error correcting gates are determined from the parity matrix.
 
         """
 
@@ -427,12 +446,16 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     extra_ancilla = extra_ancilla + 1
 
     def decode(self, logical_qubit = 0):
-        """Uncomputer setting up logical zero for data qubit.  This is the encoding circuit reversed.
+        """Uncomputer setting up logical zero for data qubit.  This is a reversal of the encoding circuit.
 
             Parameters
             ----------
             logical_qubit: int
                 Number of the logical "data" qubits to set up logical zero for. Should be either 0 or 1 at present.
+
+            Notes
+            -----
+            The gates needed are determined from the parity matrix.
 
         """
         self._validate_logical_qubit_number(logical_qubit)
@@ -517,7 +540,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     self.__data[logical_target_qubit][index])
     
     def dummy_decoding(self, input_string, logical_qubit = 0):
-        """Instead of the full decoding circuit a dummy circuit is set up  for testing.
+        """Instead of the full decoding circuit a dummy circuit is set up for testing.
         
         Parameters
         ----------
@@ -527,6 +550,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             logical_qubit: int
                 Number of the logical "data" qubits to apply logical Z gate on. Should be either 0 or 1 at present.
 
+        Notes
+        -----
+        This function is not currently used by any workbook but is retained in case it is useful in future.
         """
         if len(input_string) != (self.__num_data):
             raise Exception('When creating a dummy decoding circuit the string given must be length {self.__num_data}')

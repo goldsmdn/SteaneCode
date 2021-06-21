@@ -171,7 +171,7 @@
 <p>Class to handle logical qubits for the Steane code</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">SteaneCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity_check_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correct_errors</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">SteaneCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity_check_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.circuit.quantumcircuit.QuantumCircuit</span></code></p>
 <p>Generates the gates for one or two logical Qubits of the Steane code</p>
 <dl class="field-list simple">
@@ -179,6 +179,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised. Should be either 1 or 2 at present.</p></li>
 <li><p><strong>parity_check_matrix</strong> (<em>list</em>) – Holds the parity check matrix from which the gates will be constructed.</p></li>
+<li><p><strong>codewords</strong> (<em>list</em>) – Valid codewords for the Steane code</p></li>
 <li><p><strong>correct_errors</strong> (<em>bool</em>) – True if need to make a circuit to correct errors.</p></li>
 </ul>
 </dd>
@@ -187,18 +188,22 @@
 <p>Uses super to inherit methods from parent.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.correct_errors">
-<span class="sig-name descname"><span class="pre">correct_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.correct_errors" title="Permalink to this definition">¶</a></dt>
-<dd><p>produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out.</p>
+<span class="sig-name descname"><span class="pre">correct_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.correct_errors" title="Permalink to this definition">¶</a></dt>
+<dd><p>produces circuit to correct  errors.  Note, need to swap ancilla bits to match how printed out.
+Reads through Parity matrix to determine the corrections to be applied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits on which to correct error. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits on which to correct error. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>mct</strong> (<em>bin</em>) – Controls whether an MCT gate shall be used</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.decode">
-<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.decode" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.decode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uncomputer setting up logical zero for data qubit.  This is the encoding circuit reversed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -225,8 +230,22 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.dummy_decoding">
+<span class="sig-name descname"><span class="pre">dummy_decoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.dummy_decoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instead of the full decoding circuit a dummy circuit is set up  for testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_string</strong> (<em>str</em>) – String to control gates set up</p></li>
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply logical Z gate on. Should be either 0 or 1 at present.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.force_X_error">
-<span class="sig-name descname"><span class="pre">force_X_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.force_X_error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">force_X_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.force_X_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Force an X error on one physical qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -240,7 +259,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.force_Z_error">
-<span class="sig-name descname"><span class="pre">force_Z_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.force_Z_error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">force_Z_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.force_Z_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Force Z error on one physical qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -268,7 +287,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_gate_H">
-<span class="sig-name descname"><span class="pre">logical_gate_H</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_gate_H" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logical_gate_H</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_gate_H" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a logical H gate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -279,7 +298,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_gate_X">
-<span class="sig-name descname"><span class="pre">logical_gate_X</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_gate_X" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logical_gate_X</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_gate_X" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a logical X gate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -290,7 +309,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_gate_Z">
-<span class="sig-name descname"><span class="pre">logical_gate_Z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_gate_Z" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logical_gate_Z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_gate_Z" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a logical Z gate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -301,7 +320,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_measure">
-<span class="sig-name descname"><span class="pre">logical_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logical_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes gates to measure a logical qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -312,7 +331,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.set_up_ancilla">
-<span class="sig-name descname"><span class="pre">set_up_ancilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_ancilla" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_up_ancilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_ancilla" title="Permalink to this definition">¶</a></dt>
 <dd><p>set up gates for ancilla based on entries in the parity matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -323,11 +342,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.set_up_logical_zero">
-<span class="sig-name descname"><span class="pre">set_up_logical_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_logical_zero" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_up_logical_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_logical_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up logical zero for data qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to be initialised. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>logical_one</strong> (<em>Bool</em>) – If True set up a logical zero, else set up a logical one.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -1,8 +1,23 @@
 import pytest
 from pytest import raises
 from circuits import SteaneCodeLogicalQubit
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
+#from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
+from qiskit import execute, Aer
+from qiskit.compiler import transpile
 
+from helper_functions import (
+    flip_code_words,
+    string_reverse,
+    strings_AND_bitwise,
+    string_ancilla_mask,
+    correct_qubit,
+    flip_code_words,
+    count_valid_output_strings
+    )
+
+SINGLE_GATE_SET = ['id', 'ry', 'rx']
+TWO_GATE_SET = ['rxx']
+BASIS_GATE_SET = SINGLE_GATE_SET + TWO_GATE_SET
 TEST_X_QUBIT = 4
 SHOTS = 100     #Number of shots to run    
 SIMULATOR = Aer.get_backend('qasm_simulator')
@@ -10,40 +25,93 @@ parity_check_matrix =  [[0,0,0,1,1,1,1],
                         [0,1,1,0,0,1,1],
                         [1,0,1,0,1,0,1]]
 
-def test_parity_validation():
-    """test that a random errors gets fixed"""
-    for test_X_qubit in range(6):
-        qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, True)
-        qubit.set_up_logical_zero(0)
-        qubit.force_X_error(test_X_qubit,0)   #force X error for testing
-        qubit.set_up_ancilla(0)
-        qubit.decode(0)
-        result = execute(qubit, SIMULATOR, shots=SHOTS).result()
-        counts = result.get_counts(qubit)
-        for key in counts.keys():
-            assert(key[-7:]) == "0000000"
+codewords = [[0,0,0,0,0,0,0],   
+             [1,0,1,0,1,0,1],
+             [0,1,1,0,0,1,1],
+             [1,1,0,0,1,1,0],
+             [0,0,0,1,1,1,1],
+             [1,0,1,1,0,1,0],
+             [0,1,1,1,1,0,0],
+             [1,1,0,1,0,0,1]]
+
+def test_error_correction():
+    ###make sure that every X error gets corrected by error correction with and without MCT gates
+    for mct in [True, False]:
+        for index in range(7):
+            qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, codewords, extend_ancilla = True)
+            qubit.set_up_logical_zero()
+            qubit.force_X_error(index)   #force X error for testing
+            qubit.set_up_ancilla()
+            qubit.correct_errors(0, mct)
+            qubit.logical_measure()
+            qt = transpile(qubit, basis_gates = BASIS_GATE_SET)
+            result = execute(qt, SIMULATOR, shots = SHOTS).result()
+            counts = result.get_counts(qt)
+            count_valid, count_invalid = count_valid_output_strings(counts, codewords, 3)
+            error_rate = count_invalid / SHOTS
+            assert error_rate == 0.0
 
 def test_no_error_correction_with_two_logical_qubits():
     """check that an error is thrown if try error correction with two logical qubits"""
-    with raises(ValueError, match = "Can't correct errors with two logical qubits due to memory size restrictions"):
-        SteaneCodeLogicalQubit(2, parity_check_matrix, True)
+    with raises(ValueError, match = "Can't set up extra ancilla with two logical qubits due to memory size restrictions"):
+        SteaneCodeLogicalQubit(2, parity_check_matrix, codewords, True)
 
 def test_logical_qubit_reference_in_range():
     """check that an error is thrown if try and set up a logical zero with an index greater than 1"""
-    qubit = SteaneCodeLogicalQubit(2, parity_check_matrix, False)
-    with raises(ValueError, match = "The qubit to be processed must be indexed as 0 or 1 at present"):
+    qubit = SteaneCodeLogicalQubit(2, parity_check_matrix, codewords, False)
+    with raises(ValueError, match = 'The qubit to be processed must be indexed as 0 or 1 at present'):
         qubit.set_up_logical_zero(2)
 
 def test_physical_qubit_reference_in_range():
     """check that an error is thrown if try and index a physical qubit outside the valid range"""
-    qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, False)
+    qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, codewords, False)
     qubit.set_up_logical_zero(0)
-    with raises(ValueError, match = "Qubit index must be in range of data qubits"):
+    with raises(ValueError, match = 'Qubit index must be in range of data qubits'):
         qubit.force_X_error(7,0)
 
+def test_string_reverse():
+    """check that reverse string function is reversing correctly"""
+    reversed_string = string_reverse('0001010')
+    assert reversed_string == '0101000'
+
+def test_strings_and_bitwise():
+    """check that bitwise function correctly calcules bitwise of two string"""
+    bitwise_string = strings_AND_bitwise('0101010', '0001111')
+    assert bitwise_string == '0100101'
+
+def test_def_string_ancilla_mask():
+    """check that the ancilla mask is correctly calculated"""
+    result = string_ancilla_mask(2, 4)
+    assert result == '0010'
+
+def test_correct_qubit():
+    """check that the data qubit is properly corected"""
+    result = correct_qubit('0011100', '010', 7)
+    assert result == '0011110'
+
+def test_flipped_codewords():
+    """check that the flipped_codewords function module is giving the correct results"""
+    flip      = [[1,1,1,1,1,1,1],   
+                 [0,1,0,1,0,1,0],
+                 [1,0,0,1,1,0,0],
+                 [0,0,1,1,0,0,1],
+                 [1,1,1,0,0,0,0],
+                 [0,1,0,0,1,0,1],
+                 [1,0,0,0,0,1,1],
+                 [0,0,1,0,1,1,0]]
     
+    result = flip_code_words(codewords)
+    assert result == flip
 
+def test_count_valid_output_strings():
+    """test counting the valid output strings using a preworked example"""
+    counts = {
+        '111 000 1000000': 1, # invalid
+        '000 000 0101101': 1, # valid
+        '000 000 1001011': 2, # valid
+        '010 000 0100000': 1, # valid
+    }
 
-    
-
-       
+    count_valid, count_invalid = count_valid_output_strings(counts, codewords, 2)
+    assert count_valid == 3  #calcuLated from example above
+    assert count_invalid == 2

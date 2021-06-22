@@ -296,6 +296,29 @@ by flipped each bit of the input codewords.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.get_noise">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_qubit_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two_qubit_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_qubit_gate_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two__qubit_gate_set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.get_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a noise model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_meas</strong> (<em>float</em>) – probability of X error on measurement</p></li>
+<li><p><strong>single_qubit_error</strong> (<em>float</em>) – probability of a depolarizing error on a single qubit gate</p></li>
+<li><p><strong>two_qubit_error</strong> (<em>float</em>) – probability of a depolarizing error on a two qubit gate</p></li>
+<li><p><strong>single_qubit_gate_set</strong> (<em>list</em>) – list of all single qubit gates relevant for noise</p></li>
+<li><p><strong>two__qubit_gate_set</strong> (<em>list</em>) – list of all two qubit gates relevant for noise.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>noise_model</strong> – noise model to be used</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.string_ancilla_mask">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">string_ancilla_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.string_ancilla_mask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a bit string with a 1 in a certain bit and the 0 elsewhere.</p>

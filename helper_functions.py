@@ -1,5 +1,8 @@
 #helper_functions.py
 
+from qiskit.providers.aer.noise import NoiseModel
+from qiskit.providers.aer.noise.errors import pauli_error, depolarizing_error
+
 def string_reverse(input_string):
     """Reverses a string.
 
@@ -300,7 +303,7 @@ def flip_code_words(codewords_in):
         Codewords_out : list
             bit flipped input codeword
 
-        """
+    """
 
     codewords_out = []
     for items in codewords_in:
@@ -315,3 +318,38 @@ def flip_code_words(codewords_in):
             new_list.append(flipped_bit)
         codewords_out.append(new_list)
     return(codewords_out)
+
+def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set, two__qubit_gate_set):
+    """Returns a noise model
+
+        Parameters
+        ----------
+        p_meas : float
+            probability of X error on measurement
+        single_qubit_error : float    
+            probability of a depolarizing error on a single qubit gate
+        two_qubit_error : float    
+            probability of a depolarizing error on a two qubit gate
+        single_qubit_gate_set : list
+            list of all single qubit gates relevant for noise
+        two__qubit_gate_set: list
+            list of all two qubit gates relevant for noise.
+        
+        Returns
+        -------
+        noise_model : dictionary
+            noise model to be used
+
+    """
+    error_meas = pauli_error([('X', p_meas), ('I', 1 - p_meas)])
+    error_gate1 = depolarizing_error(single_qubit_error, 1)
+    error_gate2 = depolarizing_error(two_qubit_error, 1)
+    error_gate3 = error_gate2.tensor(error_gate2)
+
+    noise_model = NoiseModel()
+    noise_model.add_all_qubit_quantum_error(error_meas, 'measure') # measurement error is applied to measurements
+    noise_model.add_all_qubit_quantum_error(error_gate1, single_qubit_gate_set)  # single qubit gate errors
+    noise_model.add_all_qubit_quantum_error(error_gate3, two__qubit_gate_set) # two qubit gate error is applied to two qubit gates
+    
+    return noise_model   
+

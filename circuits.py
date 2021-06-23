@@ -147,9 +147,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         for parity_row in self.__parity_check_matrix:
             for index in range(self.__num_data):
                 parity_matrix_totals[index] = parity_matrix_totals[index] + parity_row[index]
-
         count = 0
+
         for index in range (self.__num_data):
+            self.reset(self.__data[logical_qubit][index])
+
+        for index in range (self.__num_data):
+            #specify that each bit is zero
             if parity_matrix_totals[index] == 1:
                 count = count + 1
                 self.h(self.__data[logical_qubit][index])

@@ -4,6 +4,7 @@ from circuits import SteaneCodeLogicalQubit
 #from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 from qiskit import execute, Aer
 from qiskit.compiler import transpile
+import numpy as np
 
 from helper_functions import (
     flip_code_words,
@@ -12,7 +13,8 @@ from helper_functions import (
     string_ancilla_mask,
     correct_qubit,
     flip_code_words,
-    count_valid_output_strings
+    count_valid_output_strings,
+    mean_of_list
     )
 
 SINGLE_GATE_SET = ['id', 'ry', 'rx']
@@ -115,3 +117,11 @@ def test_count_valid_output_strings():
     count_valid, count_invalid = count_valid_output_strings(counts, codewords, 2)
     assert count_valid == 3  #calcuLated from example above
     assert count_invalid == 2
+
+def test_mean():
+    """Checks that the mean of a list is correctly calculated"""
+    test_list = [1, 2, 3, 4, 5]
+    mean = mean_of_list(test_list)
+    assert mean == 3  
+    np.testing.assert_almost_equal(mean, 3, decimal = 7, verbose = True)
+

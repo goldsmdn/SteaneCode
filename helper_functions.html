@@ -313,7 +313,46 @@ by flipped each bit of the input codewords.</p>
 <dd class="field-even"><p><strong>noise_model</strong> – noise model to be used</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dictionary</p>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.look_up_data">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">look_up_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.look_up_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>looks up the input data to determine if the string is a logical one,
+logical zero, or outside the code base.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_in</strong> (<em>str</em>) – data for analysis</p></li>
+<li><p><strong>logical_zero</strong> (<em>str</em>) – string for the output after decoding representing a logical zero</p></li>
+<li><p><strong>logical_one</strong> (<em>str</em>) – string for the output after decoding representing a logical one</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>new_data</strong> – result of look-up</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.mean_of_list">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">mean_of_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.mean_of_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the mean of a list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_in</strong> (<em>list</em>) – data for analysis</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>mean</strong> – result of calculation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -371,6 +410,35 @@ by flipped each bit of the input codewords.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.summarise_logical_counts">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">summarise_logical_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.summarise_logical_counts" title="Permalink to this definition">¶</a></dt>
+<dd><p>summarises logical operation counts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>dict</em>) – results of computation</p></li>
+<li><p><strong>logical_zero</strong> (<em>str</em>) – string for the output after decoding representing a logical zero</p></li>
+<li><p><strong>logical_one</strong> (<em>str</em>) – string for the output after decoding representing a logical one</p></li>
+<li><p><strong>data1_location</strong> (<em>int</em>) – where in the counts bit string data1 is held</p></li>
+<li><p><strong>data2_location</strong> (<em>int</em>) – where in the counts bit string data2 is held</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>new_counts</strong> – simplified results</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A string ‘2’ is used to represent bits that are outside the code base</p>
 </dd>
 </dl>
 </dd></dl>

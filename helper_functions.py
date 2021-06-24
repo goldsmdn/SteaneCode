@@ -337,7 +337,7 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
         
         Returns
         -------
-        noise_model : dictionary
+        noise_model : dict
             noise model to be used
 
     """
@@ -352,4 +352,92 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
     noise_model.add_all_qubit_quantum_error(error_gate3, two__qubit_gate_set) # two qubit gate error is applied to two qubit gates
     
     return noise_model   
+
+def summarise_logical_counts(counts, logical_zero, logical_one, data1_location, data2_location):
+    """summarises logical operation counts 
+
+        Parameters
+        ----------
+        counts : dict
+            results of computation
+        logical_zero : str    
+            string for the output after decoding representing a logical zero
+        logical_one : str     
+            string for the output after decoding representing a logical one
+        data1_location : int
+            where in the counts bit string data1 is held
+        data2_location : int
+            where in the counts bit string data2 is held
+        
+        Returns
+        -------
+        new_counts : dict
+            simplified results
+            
+        Returns
+        -------
+        A string '2' is used to represent bits that are outside the code base  
+        """
+
+    #set up dictionary for answer
+    new_counts = {str(i) + str(j):0 for i in range(3) for j in range(3)}
+    for key, value in counts.items():
+        #split out the data parts of key
+        data1 = key.split()[data1_location]
+        data2 = key.split()[data2_location]
+        new_data1 = look_up_data(data1, logical_zero, logical_one)
+        new_data2 = look_up_data(data2, logical_zero, logical_one)
+        new_key = new_data1 + new_data2
+        new_counts[new_key] = new_counts[new_key] + value
+    return(new_counts)
+
+def look_up_data(data_in, logical_zero, logical_one):
+    """looks up the input data to determine if the string is a logical one,
+        logical zero, or outside the code base.
+
+        Parameters
+        ----------
+        data_in : str
+            data for analysis
+        logical_zero : str    
+            string for the output after decoding representing a logical zero
+        logical_one : str     
+            string for the output after decoding representing a logical one
+        
+        Returns
+        -------
+        new_data : str
+            result of look-up"""
+
+    if data_in == logical_zero:
+        new_data = '0'
+    elif data_in == logical_one:
+        new_data = '1'
+    else:
+    #outside code range
+        new_data = '2'
+    return(new_data)
+
+def mean_of_list(list_in):
+    """returns the mean of a list
+
+    Parameters
+    ----------
+    list_in : list
+        data for analysis
+    
+    Returns
+    -------
+    mean : float
+        result of calculation"""
+
+    mean = sum(list_in) / len(list_in)
+    return(mean)
+
+        
+
+
+            
+        
+
 

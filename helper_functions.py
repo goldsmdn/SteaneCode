@@ -2,19 +2,21 @@
 
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import pauli_error, depolarizing_error
+from statistics import stdev
+from math import sqrt
 
 def string_reverse(input_string):
     """Reverses a string.
 
-        Parameters
-        ----------
-        input_string : str
-            Holds the string to be reversed
-            
-        Returns
-        ----------
-        reversed_string : str
-            The reversed string  
+    Parameters
+    ----------
+    input_string : str
+        Holds the string to be reversed
+        
+    Returns
+    ----------
+    reversed_string : str
+        The reversed string  
             
     """
     
@@ -25,18 +27,18 @@ def string_reverse(input_string):
 def find_parity(counts, data_qubits):
     """Finds the parity of the output bit string.
 
-        Parameters
-        ----------
-        counts : dictionary
-            Holds the observed output bit strings
-        data_qubits : integer
-            number of data qubits
-            
-        Returns
-        ----------
-        parity_count : dict
-            A dictionary holding the partiy count for each observed output bit string.     
-        """
+    Parameters
+    ----------
+    counts : dictionary
+        Holds the observed output bit strings
+    data_qubits : integer
+        number of data qubits
+        
+    Returns
+    ----------
+    parity_count : dict
+        A dictionary holding the partiy count for each observed output bit string.     
+    """
 
     #initialise dictionary to hold counts
     parity_count = {str(i) : 0 for i in range(2)}
@@ -104,22 +106,21 @@ def count_valid_output_strings(counts, codewords, data_position):
 def find_individual_ancilla_values(ancilla_values, data_qubits, ancilla_qubits, label_string = ''):
     """Returns the count of individual ancilla bit strings as a dictionary.
 
-        Parameters
-        ----------
-        ancilla_values : dict
-            holds the counts for each combination of ancilla bit strings.
-        data_qubits : int
-            number of data qubits used as an offset to calculate the ancilla number
-        ancilla_qubits : int
-            number of ancilla qubits
-        label_string : str
-            first part of label 
+    Parameters
+    ----------
+    ancilla_values : dict
+        holds the counts for each combination of ancilla bit strings.
+    data_qubits : int
+        number of data qubits used as an offset to calculate the ancilla number
+    ancilla_qubits : int
+        number of ancilla qubits
+    label_string : str
+        first part of label 
 
-        Returns
-        -------
-        individual_ancilla_values : dict
-            dictionary containing the count of individual ancilla bit string
-        
+    Returns
+    -------
+    individual_ancilla_values : dict
+        dictionary containing the count of individual ancilla bit string
     """
 
     #initialise dictionary to hold values
@@ -139,20 +140,20 @@ def find_individual_ancilla_values(ancilla_values, data_qubits, ancilla_qubits, 
 def find_ancilla_values(counts, ancilla_qubits, ancilla_location = 0):
     """Returns a dictionary with a count of each possible ancilla bit string.
 
-        Parameters
-        ----------
-        counts : dictionary
-            counts for each possible output bit string
-        anicilla_qubits : int
-            number of ancilla qubits
-        ancilla_location : int
-            designates which bit string is relevant
+    Parameters
+    ----------
+    counts : dictionary
+        counts for each possible output bit string
+    anicilla_qubits : int
+        number of ancilla qubits
+    ancilla_location : int
+        designates which bit string is relevant
 
 
-        Returns
-        -------
-        ancilla_values : dict
-            dictionary containing the count of each possible ancilla bit string
+    Returns
+    -------
+    ancilla_values : dict
+        dictionary containing the count of each possible ancilla bit string
 
         """
 
@@ -178,17 +179,17 @@ def find_ancilla_values(counts, ancilla_qubits, ancilla_location = 0):
 def strings_AND_bitwise(string1, string2):
     """Returns the bitwise AND of two equal length bit strings.
 
-        Parameters
-        ----------
-        string1 : str
-            First string
-        string2 : str
-            Second string
-            
-        Returns
-        -------
-        string_out : str
-            bitwise AND of the two input strings
+    Parameters
+    ----------
+    string1 : str
+        First string
+    string2 : str
+        Second string
+        
+    Returns
+    -------
+    string_out : str
+        bitwise AND of the two input strings
             
     """
 
@@ -212,20 +213,20 @@ def strings_AND_bitwise(string1, string2):
 def string_ancilla_mask(location, length):
     """Returns a bit string with a 1 in a certain bit and the 0 elsewhere.
 
-        Parameters
-        ----------
-        location : int
-            bit which should be 1 
-        length : int
-            length of string
-            
-        Returns
-        -------
-
-        string : str    
-            ancilla bit mask string in required format    
+    Parameters
+    ----------
+    location : int
+        bit which should be 1 
+    length : int
+        length of string
         
-        """
+    Returns
+    -------
+
+    string : str    
+        ancilla bit mask string in required format    
+    
+    """
 
     if not isinstance(location, int):
         return Exception('Location of string must an integer when calculating ancilla mask')
@@ -255,53 +256,53 @@ def string_ancilla_mask(location, length):
     return(string)
 
 def correct_qubit(data_in, ancilla, data_qubits):
-        """Returns the corrected data bit string calculated from the ancilla settings.
+    """Returns the corrected data bit string calculated from the ancilla settings.
 
-        Parameters
-        ----------
-        data : str
-            input data bit string
-        ancilla : str
-            three bit ancilla X code
-        data_qubits : int
-            length of bit string
-            
-        Returns
-        -------
+    Parameters
+    ----------
+    data : str
+        input data bit string
+    ancilla : str
+        three bit ancilla X code
+    data_qubits : int
+        length of bit string
+        
+    Returns
+    -------
 
-        data_out : str
-            corrected data bit string
+    data_out : str
+        corrected data bit string
 
-        Notes
-        -----
-        The ancilla number calculation needs to take into account that the ancilla bit string is reversed
-        compared to numbering of the databits shown on the qiskit diagrams
-            
-        """
+    Notes
+    -----
+    The ancilla number calculation needs to take into account that the ancilla bit string is reversed
+    compared to numbering of the databits shown on the qiskit diagrams
+        
+    """
 
-        if ancilla == '000':
-            data_out = data_in
-        else:
-            bin_ancilla = string_reverse(ancilla)
-            dec_ancilla = int(bin_ancilla, 2)
-            ancilla_mask = string_ancilla_mask(dec_ancilla, data_qubits)
-            data_out = strings_AND_bitwise(data_in, ancilla_mask)  
+    if ancilla == '000':
+        data_out = data_in
+    else:
+        bin_ancilla = string_reverse(ancilla)
+        dec_ancilla = int(bin_ancilla, 2)
+        ancilla_mask = string_ancilla_mask(dec_ancilla, data_qubits)
+        data_out = strings_AND_bitwise(data_in, ancilla_mask)  
 
-        return(data_out)
+    return(data_out)
 
 def flip_code_words(codewords_in):
     """Returns a list of codewords for the logical one from the list of codewords for the logical zero
-        by flipped each bit of the input codewords.
+    by flipped each bit of the input codewords.
 
-        Parameters
-        ----------
-        codewords : list
-            logical codewords in seven bit Steane code data qubit for the logical zero
-        
-        Returns
-        -------
-        Codewords_out : list
-            bit flipped input codeword
+    Parameters
+    ----------
+    codewords : list
+        logical codewords in seven bit Steane code data qubit for the logical zero
+    
+    Returns
+    -------
+    Codewords_out : list
+        bit flipped input codeword
 
     """
 
@@ -322,23 +323,23 @@ def flip_code_words(codewords_in):
 def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set, two__qubit_gate_set):
     """Returns a noise model
 
-        Parameters
-        ----------
-        p_meas : float
-            probability of X error on measurement
-        single_qubit_error : float    
-            probability of a depolarizing error on a single qubit gate
-        two_qubit_error : float    
-            probability of a depolarizing error on a two qubit gate
-        single_qubit_gate_set : list
-            list of all single qubit gates relevant for noise
-        two__qubit_gate_set: list
-            list of all two qubit gates relevant for noise.
-        
-        Returns
-        -------
-        noise_model : dict
-            noise model to be used
+    Parameters
+    ----------
+    p_meas : float
+        probability of X error on measurement
+    single_qubit_error : float    
+        probability of a depolarizing error on a single qubit gate
+    two_qubit_error : float    
+        probability of a depolarizing error on a two qubit gate
+    single_qubit_gate_set : list
+        list of all single qubit gates relevant for noise
+    two__qubit_gate_set: list
+        list of all two qubit gates relevant for noise.
+    
+    Returns
+    -------
+    noise_model : dict
+        noise model to be used
 
     """
     error_meas = pauli_error([('X', p_meas), ('I', 1 - p_meas)])
@@ -354,30 +355,30 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
     return noise_model   
 
 def summarise_logical_counts(counts, logical_zero, logical_one, data1_location, data2_location):
-    """summarises logical operation counts 
+    """Summarises logical operation counts 
 
-        Parameters
-        ----------
-        counts : dict
-            results of computation
-        logical_zero : str    
-            string for the output after decoding representing a logical zero
-        logical_one : str     
-            string for the output after decoding representing a logical one
-        data1_location : int
-            where in the counts bit string data1 is held
-        data2_location : int
-            where in the counts bit string data2 is held
+    Parameters
+    ----------
+    counts : dict
+        results of computation
+    logical_zero : str    
+        string for the output after decoding representing a logical zero
+    logical_one : str     
+        string for the output after decoding representing a logical one
+    data1_location : int
+        where in the counts bit string data1 is held
+    data2_location : int
+        where in the counts bit string data2 is held
+    
+    Returns
+    -------
+    new_counts : dict
+        simplified results
         
-        Returns
-        -------
-        new_counts : dict
-            simplified results
-            
-        Returns
-        -------
-        A string '2' is used to represent bits that are outside the code base  
-        """
+    Returns
+    -------
+    A string '2' is used to represent bits that are outside the code base  
+    """
 
     #set up dictionary for answer
     new_counts = {str(i) + str(j):0 for i in range(3) for j in range(3)}
@@ -392,22 +393,22 @@ def summarise_logical_counts(counts, logical_zero, logical_one, data1_location, 
     return(new_counts)
 
 def look_up_data(data_in, logical_zero, logical_one):
-    """looks up the input data to determine if the string is a logical one,
-        logical zero, or outside the code base.
+    """Looks up the input data to determine if the string is a logical one,
+    logical zero, or outside the code base.
 
-        Parameters
-        ----------
-        data_in : str
-            data for analysis
-        logical_zero : str    
-            string for the output after decoding representing a logical zero
-        logical_one : str     
-            string for the output after decoding representing a logical one
-        
-        Returns
-        -------
-        new_data : str
-            result of look-up"""
+    Parameters
+    ----------
+    data_in : str
+        data for analysis
+    logical_zero : str    
+        string for the output after decoding representing a logical zero
+    logical_one : str     
+        string for the output after decoding representing a logical one
+    
+    Returns
+    -------
+    new_data : str
+        result of look-up"""
 
     if data_in == logical_zero:
         new_data = '0'
@@ -419,22 +420,49 @@ def look_up_data(data_in, logical_zero, logical_one):
     return(new_data)
 
 def mean_of_list(list_in):
-    """returns the mean of a list
+    """Returns the mean of a list
+
+    Parameters
+    ----------
+
+    list_in : list
+        data for analysis
+
+    Returns
+    -------
+    mean : float
+        result of calculation
+        """
+    mean = sum(list_in) / len(list_in)
+    return(mean)
+
+def calculate_standard_error(list_in):
+    """ Calculates the standard error of a list of numbers
 
     Parameters
     ----------
     list_in : list
         data for analysis
-    
+
     Returns
     -------
-    mean : float
-        result of calculation"""
-
-    mean = sum(list_in) / len(list_in)
-    return(mean)
-
-        
+    standard_deviation : float
+        standard deviation estimated from sample
+    standard_error : float
+        standard error estimated from sample
+        result of calculation
+    """
+    
+    if len(list_in) > 1:
+        standard_deviation = stdev(list_in)
+        standard_error = standard_deviation / sqrt(len(list_in))
+    elif len(list_in) == 1:
+        standard_deviation = 0
+        standard_error = 0
+        print('Unable to carry out standard error calcuation with one point')
+    else:
+        raise ValueError('f The number of iterations must be positive {iterations} used')
+    return(standard_deviation, standard_error)
 
 
             

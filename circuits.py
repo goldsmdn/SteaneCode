@@ -1,7 +1,8 @@
-"""Class to handle logical qubits for the Steane code"""
+"""Class to handle logical qubits for the Steane and Bacon Shor code"""
 
-import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
+#import numpy as np
+#from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
 
 class SteaneCodeLogicalQubit(QuantumCircuit):
@@ -17,7 +18,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Valid codewords for the Steane code
         extend_ancilla : bool 
             True if need to add extra ancilla for error correction without using MCT gates
-    
+
         Notes
         -----
         Uses super to inherit methods from parent.
@@ -25,9 +26,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def __init__(self, d, parity_check_matrix, codewords, extend_ancilla = False):
         """Initialise qubit"""
-        #self.__correct_errors = correct_errors
         self.__extend_ancilla = extend_ancilla
-        #print('self.__extra_ancilla, extra_ancilla', self.__extra_ancilla, extra_ancilla)
         if self.__extend_ancilla:
             if d > 1:
                 raise ValueError("Can't set up extra ancilla with two logical qubits due to memory size restrictions")
@@ -73,12 +72,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         The registers are stored in a list so that they can be indexed to simplify subsequent code.
         The registers required depends on the number of logical qubits and whether extra ancilla qubits
         are needed for error checking.
-
         """
         list_of_all_registers = []
-        
-        for index in range (d):
-            
+        for index in range (d):  
             self.__qubit_no = str(index)
             # Quantum registers
             self.__data.append(QuantumRegister(self.__num_data, "data " + self.__qubit_no))
@@ -87,9 +83,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             list_of_all_registers.append(self.__data[index])
             list_of_all_registers.append(self.__mx[index])
             list_of_all_registers.append(self.__mz[index])
-
-            #if self.__correct_errors:
-            #print('about to append extra ancilla self.__extra_ancilla ', self.__extra_ancilla, self.__num_extra_ancilla)
             if self.__extend_ancilla: 
                 self.__extra_ancilla.append(QuantumRegister(self.__num_extra_ancilla, name="extra_ancilla" + self.__qubit_no)) 
                 list_of_all_registers.append(self.__extra_ancilla[index])
@@ -105,7 +98,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 self.__extra_ancilla_classical.append(
                     ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no))
                 list_of_all_registers.append(self.__extra_ancilla_classical[index]) 
-            #print(list_of_all_registers)
         return (list_of_all_registers)
     
     def validate_parity_matrix(self):
@@ -137,8 +129,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
         Parameters
         ----------
-        logical_one: Bool
-            If True set up a logical zero, else set up a logical one.
+        logical_qubit: int
+            Number of the logical "data" qubit to initialise. Should be either 0 or 1 at present.
         """
         self._validate_logical_qubit_number(logical_qubit)
         
@@ -168,7 +160,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             raise ValueError('Unable to construct matrix as parity matrix does not match the ancilla needed')   
 
     def force_X_error(self, physical_qubit, logical_qubit = 0):
-        """ Force an X error on one physical qubit
+        """ Introduce an X error on one physical qubit
 
             Parameters
             ----------
@@ -176,14 +168,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
             physical_qubit : int
                 Number of qubit to force X error on.
-
         """
         self._validate_physical_qubit_number(physical_qubit)
         self._validate_logical_qubit_number(logical_qubit)
         self.x(self.__data[logical_qubit][physical_qubit])
 
     def force_Z_error(self, physical_qubit, logical_qubit = 0):
-        """ Force Z error on one physical qubit
+        """ Introduce Z error on one physical qubit
 
             Parameters
             ---------- 
@@ -191,14 +182,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
             physical_qubit : int
                 Number of qubit to force Z error on.
-
         """
         self._validate_physical_qubit_number(physical_qubit)
         self._validate_logical_qubit_number(logical_qubit)
         self.z(self.__data[logical_qubit][physical_qubit])
 
     def set_up_ancilla(self, logical_qubit = 0):
-        """set up gates for ancilla based on entries in the parity matrix
+        """Set up gates for ancilla based on entries in the parity matrix
 
             Parameters
             ----------
@@ -208,7 +198,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Notes
             -----
             The ancilla needed are determined from the parity matrix.
-        
         """
         self._validate_logical_qubit_number(logical_qubit)
         self.h(self.__mx[logical_qubit])
@@ -242,13 +231,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             ----------
             logical_qubit: int
                 Number of the logical "data" qubits to measure. Should be either 0 or 1 at present.
-
         """
         self._validate_logical_qubit_number(logical_qubit)
         for index in range(self.__num_ancilla):
-            #self.measure(self.__mx[logical_qubit][index], self.__mx_classical[logical_qubit][self.__num_ancilla - index-1])
-            #self.measure(self.__mz[logical_qubit][index], self.__mz_classical[logical_qubit][self.__num_ancilla - index-1])
-            #change 10-Jun-21
             self.measure(self.__mx[logical_qubit][index], self.__mx_classical[logical_qubit][index])
             self.measure(self.__mz[logical_qubit][index], self.__mz_classical[logical_qubit][index])
 
@@ -256,16 +241,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         if self.__extend_ancilla:
             for index in range(self.__num_extra_ancilla):
                 self.measure(self.__extra_ancilla[logical_qubit][index], 
-                            #self.__extra_ancilla_classical[logical_qubit][self.__num_extra_ancilla - index- 1])
-                            #change 10-Jun-21
                             self.__extra_ancilla_classical[logical_qubit][index])
 
         for index in range(self.__num_data):
-            #self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][self.__num_data - index-1])
             self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][index])
 
     def correct_errors(self, logical_qubit = 0, mct = False):
-        """ produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
+        """ Produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
             Reads through Parity matrix to determine the corrections to be applied.
 
             Parameters
@@ -460,12 +442,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Notes
             -----
             The gates needed are determined from the parity matrix.
-
         """
         self._validate_logical_qubit_number(logical_qubit)
-
         parity_matrix_totals = [ 0 for x in range(self.__num_data)] # define an empty list ready to work out parity_matrix_totals
-
         for parity_row in self.__parity_check_matrix:
             for index in range(self.__num_data):
                 parity_matrix_totals[index] = parity_matrix_totals[index] + parity_row[index]
@@ -490,7 +469,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             ----------
             logical_qubit: int
                 Number of the logical "data" qubits to apply logical X gate to. Should be either 0 or 1 at present.
-
         """
 
         self._validate_logical_qubit_number(logical_qubit = 0)
@@ -533,7 +511,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     Number of the logical "data" qubit which controls the CX gate
                 logical_target_qubit : int
                     Number of the logical "data" qubit which is the target for the CX gate
-
         """
         self._validate_logical_qubit_number(logical_control_qubit)
         self._validate_logical_qubit_number(logical_target_qubit)
@@ -571,7 +548,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     
     def _transpose_parity(self):
-        """transposes the parity check matrix"""
+        """Transposes the parity check matrix"""
         column = []
         parity_check_transpose = []
         for row_count in range(self.__num_data):
@@ -601,7 +578,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             ----------
             physical qubit : int
                 Number of the physical qubit to validate
-
         """        
 
         if physical_qubit > self.__num_data - 1 :
@@ -610,4 +586,240 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             raise ValueError("Qubit index must be in range of data qubits")
 
 
+class BaconShorCodeLogicalQubit(QuantumCircuit):
+    """Generates the gates for one logical Qubits of the Bacon Shor code
 
+        Parameters
+        ----------
+        d : int
+            Number of logical "data" qubits to be initialised. Should be either 1 or 2 at present.
+            Only the case with 1 qubit has been fully tested.
+        data_qubits : int
+            Number of data qubits.  Usually nine.
+        ancilla_qubits : int
+            Number of ancilla qubits.  Usually two.
+        ancilla : int
+            Number of ancilla.  Usually two for X and Z.
+        blocks : int
+            Number of blocks 
+        logical_z : bool
+            True if a logical z is set up.  Otherwise false
+        """
+
+    def __init__(self, d, data_qubits, ancilla_qubits, ancillas, blocks, logical_one, logical_z):
+        """Initialise qubit"""
+        if d > 2:
+            raise ValueError("Qiskit can only handle 32 quits.  So can't set up more than two logical qubits.")
+        self.__data_qubits = data_qubits
+        self.__ancilla_qubits = ancilla_qubits
+        self.__ancillas = ancillas
+        self.__blocks = blocks
+        self.__logical_one = logical_one
+        self.__logical_z = logical_z
+        self.define_data()
+        list_of_all_registers = self.define_registers(d)
+        # extend quantum circuits
+        super().__init__(*list_of_all_registers)
+
+
+    def define_data(self):
+        """Define standing data"""
+        self.__data = []
+        self.__ancilla = []
+        self.__data_classical = []
+        self.__ancilla_classical = []
+
+    def define_registers(self, d):
+        """Set up registers used based on number of logical qubits and whether error checking is needed.
+
+        Parameters
+        ----------
+        d : int
+            Number of the logical "data" qubits to be initialised. Should be either 0 or 1 at present.
+        
+        Notes
+        -----
+        The registers are stored in a list so that they can be indexed to simplify subsequent code.
+
+        """
+        list_of_all_registers = []
+        for index in range(d):
+            self.__qubit_no = str(index)
+            # Quantum registers
+            self.__data.append(QuantumRegister(self.__data_qubits, "data " + self.__qubit_no))
+            self.__ancilla.append(QuantumRegister(self.__ancilla_qubits, "ancilla "+ self.__qubit_no))
+            list_of_all_registers.append(self.__data[index])
+            list_of_all_registers.append(self.__ancilla[index])
+
+            # Classical registers
+            self.__data_classical.append(ClassicalRegister(self.__data_qubits, "measure_data " + self.__qubit_no))
+            self.__ancilla_classical.append(ClassicalRegister(self.__ancilla_qubits, "measure_ancilla "+ self.__qubit_no) )
+            list_of_all_registers.append(self.__data_classical[index])
+            list_of_all_registers.append(self.__ancilla_classical[index]) 
+        return (list_of_all_registers)
+
+    def encoding_nft(self, logical_qubit = 0,):
+        """ Adds an encoding non fault tolerant gate.  
+        
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to encode. Should be either 0 or 1 at present.
+        logical_one: Bool
+            If true set up the logical one.  Otherwise set up the logical zero.
+        """
+        self._validate_logical_qubit_number(logical_qubit)
+        for index in range(self.__data_qubits):
+                self.reset(self.__data[logical_qubit][index])
+        #Set to logical one if required
+        if self.__logical_one:
+            self.x(self.__data[logical_qubit][0])
+        self.cx(self.__data[logical_qubit][0],self.__data[logical_qubit][self.__blocks])
+        self.cx(self.__data[logical_qubit][0],self.__data[logical_qubit][self.__blocks * 2])
+        self.barrier()
+        return
+
+    def encoding_ft(self, logical_qubit = 0):
+        """ Adds an encoding non fault tolerant gate.  
+        
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to encode. Should be either 0 or 1 at present.
+        """
+        self._validate_logical_qubit_number(logical_qubit)
+        for count in range(self.__blocks):
+            first_qubit = count * self.__blocks
+            second_qubit = count * self.__blocks + 1
+            third_qubit = count * self.__blocks + 2
+            self.h(self.__data[logical_qubit][first_qubit])
+            self.cx(self.__data[logical_qubit][first_qubit],self.__data[logical_qubit][second_qubit])
+            self.cx(self.__data[logical_qubit][first_qubit],self.__data[logical_qubit][third_qubit])
+            if self.__logical_z:
+                #only need post encoding Hadamard for the z_logical gate
+                self.h(self.__data[logical_qubit][first_qubit])
+                self.h(self.__data[logical_qubit][second_qubit])
+                self.h(self.__data[logical_qubit][third_qubit])        
+        self.barrier()
+        return
+
+    def x_testing(self, logical_qubit = 0, test_x_qubit = 0):
+        """Introduces one X error
+
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to test. Should be either 0 or 1 at present.
+        
+        test_x_qubit : int
+            Qubit on which X error is introduced
+        """
+
+        self._validate_logical_qubit_number(logical_qubit)
+        self._validate_physical_qubit_number(test_x_qubit)
+        self.x(self.__data[logical_qubit][test_x_qubit])
+        self.barrier()
+        return
+
+    def z_testing(self, logical_qubit = 0, test_z_qubit = 0):
+        """Introduces one Z error
+
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to test. Should be either 0 or 1 at present.
+        test_z_qubit : int
+            Qubit on which Z error is introduced
+        """
+
+        self._validate_logical_qubit_number(logical_qubit)
+        self._validate_physical_qubit_number(test_z_qubit)
+        self.z(self.__data[logical_qubit][test_z_qubit])
+        self.barrier()
+        return
+
+    def x_stabilizers(self, logical_qubit = 0):
+        """Function to set up x stabilizers or ancilla
+
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to set up ancilla for. Should be either 0 or 1 at present.
+        """
+
+        self._validate_logical_qubit_number(logical_qubit)
+        for ancilla in range ( 0 , self.__ancillas):
+            # loop over ancillas
+            self.h(self.__ancilla[0][ancilla + self.__ancillas])
+            #ancilla count starts at ANCILLAS
+            for count in range(self.__blocks):
+                first_qubit = count * self.__blocks + ancilla
+                second_qubit = count * self.__blocks + ancilla + 1
+                self.cx(self.__ancilla[logical_qubit][ancilla + self.__ancillas], 
+                        self.__data[logical_qubit][first_qubit])
+                self.cx(self.__ancilla[logical_qubit][ancilla + self.__ancillas], 
+                        self.__data[logical_qubit][second_qubit])
+                #ancilla count starts at ANCILLAS
+            self.h(self.__ancilla[0][ancilla + self.__ancillas])
+        self.barrier()
+        return
+
+    def z_stabilizers(self, logical_qubit = 0):
+        """Function to set up z stabilizers or ancilla
+
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to set up ancilla for. Should be either 0 or 1 at present.
+        """
+
+        for ancilla in range (0 , self.__ancillas):
+            for count in range(self.__blocks):
+                first_qubit = count + self.__blocks * ancilla 
+                second_qubit = count + self.__blocks * (ancilla + 1)
+                self.cx(self.__data[logical_qubit][first_qubit], 
+                        self.__ancilla[logical_qubit][ancilla])
+                self.cx(self.__data[logical_qubit][second_qubit], 
+                        self.__ancilla[logical_qubit][ancilla])
+        self.barrier()
+        return
+
+    def logical_measure(self, logical_qubit = 0):
+        """Function to measure a logical qubit
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to measure. Should be either 0 or 1 at present.
+        """
+
+        self._validate_logical_qubit_number(logical_qubit)
+        for index in range(self.__data_qubits):
+            self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][index])
+        for index in range(self.__ancilla_qubits):
+            self.measure(self.__ancilla[logical_qubit][index], self.__ancilla_classical[logical_qubit][index])
+
+    def _validate_logical_qubit_number(self, logical_qubit):
+        """Validates the logical qubit number.  Code might be enhanced in the future.
+
+        Parameters:
+        -----------
+        logical_qubit : int
+            Number of the logical "data" qubit to check
+        """
+
+        if logical_qubit not in [0, 1]:
+            raise ValueError("The qubit to be processed must be indexed as 0 or 1 at present")
+
+    def _validate_physical_qubit_number(self, physical_qubit):
+        """ Validate the physical qubit number 
+
+            Parameters
+            ----------
+            physical qubit : int
+                Number of the physical qubit to validate
+        """        
+
+        if physical_qubit > self.__data_qubits - 1 :
+            raise ValueError("Qubit index must be in range of data qubits")
+        if physical_qubit < 0:
+            raise ValueError("Qubit index must be in range of data qubits")

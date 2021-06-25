@@ -14,7 +14,8 @@ from helper_functions import (
     correct_qubit,
     flip_code_words,
     count_valid_output_strings,
-    mean_of_list
+    mean_of_list,
+    calculate_standard_error
     )
 
 SINGLE_GATE_SET = ['id', 'ry', 'rx']
@@ -122,6 +123,11 @@ def test_mean():
     """Checks that the mean of a list is correctly calculated"""
     test_list = [1, 2, 3, 4, 5]
     mean = mean_of_list(test_list)
-    assert mean == 3  
     np.testing.assert_almost_equal(mean, 3, decimal = 7, verbose = True)
 
+def test_standard_error():
+    """Checks that the mean of a list is correctly calculated"""
+    test_list = [1, 2, 3, 4, 5]
+    standard_deviation, standard_error = calculate_standard_error(test_list)
+    np.testing.assert_almost_equal(standard_deviation, 1.58113883, decimal = 7, verbose = True)
+    np.testing.assert_almost_equal(standard_error, 0.70710678, decimal = 7, verbose = True)

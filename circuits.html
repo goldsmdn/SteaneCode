@@ -168,7 +168,129 @@
             
   <div class="section" id="module-circuits">
 <span id="circuits-module"></span><h1>circuits module<a class="headerlink" href="#module-circuits" title="Permalink to this headline">¶</a></h1>
-<p>Class to handle logical qubits for the Steane code</p>
+<p>Class to handle logical qubits for the Steane and Bacon Shor code</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">BaconShorCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancillas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.circuit.quantumcircuit.QuantumCircuit</span></code></p>
+<p>Generates the gates for one logical Qubits of the Bacon Shor code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised. Should be either 1 or 2 at present.
+Only the case with 1 qubit has been fully tested.</p></li>
+<li><p><strong>data_qubits</strong> (<em>int</em>) – Number of data qubits.  Usually nine.</p></li>
+<li><p><strong>ancilla_qubits</strong> (<em>int</em>) – Number of ancilla qubits.  Usually two.</p></li>
+<li><p><strong>ancilla</strong> (<em>int</em>) – Number of ancilla.  Usually two for X and Z.</p></li>
+<li><p><strong>blocks</strong> (<em>int</em>) – Number of blocks</p></li>
+<li><p><strong>logical_z</strong> (<em>bool</em>) – True if a logical z is set up.  Otherwise false</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.define_data">
+<span class="sig-name descname"><span class="pre">define_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.define_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define standing data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.define_registers">
+<span class="sig-name descname"><span class="pre">define_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.define_registers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up registers used based on number of logical qubits and whether error checking is needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>int</em>) – Number of the logical “data” qubits to be initialised. Should be either 0 or 1 at present.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The registers are stored in a list so that they can be indexed to simplify subsequent code.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.encoding_ft">
+<span class="sig-name descname"><span class="pre">encoding_ft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.encoding_ft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an encoding non fault tolerant gate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to encode. Should be either 0 or 1 at present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.encoding_nft">
+<span class="sig-name descname"><span class="pre">encoding_nft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.encoding_nft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an encoding non fault tolerant gate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to encode. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>logical_one</strong> (<em>Bool</em>) – If true set up the logical one.  Otherwise set up the logical zero.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.logical_measure">
+<span class="sig-name descname"><span class="pre">logical_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.logical_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to measure a logical qubit
+:param logical_qubit: Number of the logical “data” qubit to measure. Should be either 0 or 1 at present.
+:type logical_qubit: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.x_stabilizers">
+<span class="sig-name descname"><span class="pre">x_stabilizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.x_stabilizers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to set up x stabilizers or ancilla</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to set up ancilla for. Should be either 0 or 1 at present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.x_testing">
+<span class="sig-name descname"><span class="pre">x_testing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_x_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.x_testing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Introduces one X error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to test. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>test_x_qubit</strong> (<em>int</em>) – Qubit on which X error is introduced</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.z_stabilizers">
+<span class="sig-name descname"><span class="pre">z_stabilizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.z_stabilizers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to set up z stabilizers or ancilla</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to set up ancilla for. Should be either 0 or 1 at present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.z_testing">
+<span class="sig-name descname"><span class="pre">z_testing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_z_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.z_testing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Introduces one Z error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to test. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>test_z_qubit</strong> (<em>int</em>) – Qubit on which Z error is introduced</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">SteaneCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity_check_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
@@ -189,7 +311,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.correct_errors">
 <span class="sig-name descname"><span class="pre">correct_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.correct_errors" title="Permalink to this definition">¶</a></dt>
-<dd><p>produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
+<dd><p>Produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
 Reads through Parity matrix to determine the corrections to be applied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -260,7 +382,7 @@ are needed for error checking.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.force_X_error">
 <span class="sig-name descname"><span class="pre">force_X_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.force_X_error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Force an X error on one physical qubit</p>
+<dd><p>Introduce an X error on one physical qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -274,7 +396,7 @@ are needed for error checking.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.force_Z_error">
 <span class="sig-name descname"><span class="pre">force_Z_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">physical_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.force_Z_error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Force Z error on one physical qubit</p>
+<dd><p>Introduce Z error on one physical qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -346,7 +468,7 @@ are needed for error checking.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.set_up_ancilla">
 <span class="sig-name descname"><span class="pre">set_up_ancilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_ancilla" title="Permalink to this definition">¶</a></dt>
-<dd><p>set up gates for ancilla based on entries in the parity matrix</p>
+<dd><p>Set up gates for ancilla based on entries in the parity matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to set up ancilla gates for. Should be either 0 or 1 at present.</p>
@@ -362,7 +484,7 @@ are needed for error checking.</p>
 <dd><p>Set up logical zero for data qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_one</strong> (<em>Bool</em>) – If True set up a logical zero, else set up a logical one.</p>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to initialise. Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 </dd></dl>

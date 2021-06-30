@@ -78,7 +78,7 @@ def count_valid_output_strings(counts, codewords, data_position):
     ----------
     Count_valid : int
         Number of valid bit strings
-    Count_invalid : int
+    Count_invalid : in
         Number of invalid bit strings
 
     """
@@ -206,7 +206,6 @@ def strings_AND_bitwise(string1, string2):
         if i == '1':
             if j == '0':
                 k = '1'
-       # print(i, j, k)
         string_out = string_out + k
     return(string_out)
 
@@ -248,11 +247,8 @@ def string_ancilla_mask(location, length):
         string = '0' + string
 
     for count in range(location - 1):
-    #print(count)
         new_string = string[1:7] + '0'
         string = new_string
-    #print(new_string)
-
     return(string)
 
 def correct_qubit(data_in, ancilla, data_qubits):
@@ -279,7 +275,7 @@ def correct_qubit(data_in, ancilla, data_qubits):
     compared to numbering of the databits shown on the qiskit diagrams
         
     """
-
+    data_out = ''
     if ancilla == '000':
         data_out = data_in
     else:
@@ -287,7 +283,6 @@ def correct_qubit(data_in, ancilla, data_qubits):
         dec_ancilla = int(bin_ancilla, 2)
         ancilla_mask = string_ancilla_mask(dec_ancilla, data_qubits)
         data_out = strings_AND_bitwise(data_in, ancilla_mask)  
-
     return(data_out)
 
 def flip_code_words(codewords_in):
@@ -333,7 +328,7 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
         probability of a depolarizing error on a two qubit gate
     single_qubit_gate_set : list
         list of all single qubit gates relevant for noise
-    two__qubit_gate_set: list
+    two_qubit_gate_set: list
         list of all two qubit gates relevant for noise.
     
     Returns
@@ -353,71 +348,6 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
     noise_model.add_all_qubit_quantum_error(error_gate3, two__qubit_gate_set) # two qubit gate error is applied to two qubit gates
     
     return noise_model   
-
-def summarise_logical_counts(counts, logical_zero, logical_one, data1_location, data2_location):
-    """Summarises logical operation counts 
-
-    Parameters
-    ----------
-    counts : dict
-        results of computation
-    logical_zero : str    
-        string for the output after decoding representing a logical zero
-    logical_one : str     
-        string for the output after decoding representing a logical one
-    data1_location : int
-        where in the counts bit string data1 is held
-    data2_location : int
-        where in the counts bit string data2 is held
-    
-    Returns
-    -------
-    new_counts : dict
-        simplified results
-        
-    Returns
-    -------
-    A string '2' is used to represent bits that are outside the code base  
-    """
-
-    #set up dictionary for answer
-    new_counts = {str(i) + str(j):0 for i in range(3) for j in range(3)}
-    for key, value in counts.items():
-        #split out the data parts of key
-        data1 = key.split()[data1_location]
-        data2 = key.split()[data2_location]
-        new_data1 = look_up_data(data1, logical_zero, logical_one)
-        new_data2 = look_up_data(data2, logical_zero, logical_one)
-        new_key = new_data1 + new_data2
-        new_counts[new_key] = new_counts[new_key] + value
-    return(new_counts)
-
-def look_up_data(data_in, logical_zero, logical_one):
-    """Looks up the input data to determine if the string is a logical one,
-    logical zero, or outside the code base.
-
-    Parameters
-    ----------
-    data_in : str
-        data for analysis
-    logical_zero : str    
-        string for the output after decoding representing a logical zero
-    logical_one : str     
-        string for the output after decoding representing a logical one
-    
-    Returns
-    -------
-    new_data : str
-        result of look-up"""
-
-    if data_in == logical_zero:
-        new_data = '0'
-    elif data_in == logical_one:
-        new_data = '1'
-    else:
-    #outside code range
-        new_data = '2'
-    return(new_data)
 
 def mean_of_list(list_in):
     """Returns the mean of a list
@@ -459,10 +389,109 @@ def calculate_standard_error(list_in):
     elif len(list_in) == 1:
         standard_deviation = 0
         standard_error = 0
-        print('Unable to carry out standard error calcuation with one point')
+        print('Unable to carry out standard error calcuation with one point.  Standard error of 0 used.')
     else:
         raise ValueError('f The number of iterations must be positive {iterations} used')
     return(standard_deviation, standard_error)
+
+def convert_codewords(codewords):
+    """ Changes the codewords list of lists to a list of strings
+
+    Parameters
+    ----------
+    codewords : list
+        allowed codewords for logical zero
+
+    Returns
+    -------
+    list_of_strings : list
+        a list of strings
+    """
+
+    list_of_strings = []
+    for lists in codewords:
+        new_string = ''
+        for item in lists:
+            new_string = new_string + str(item)
+        list_of_strings.append(new_string)
+
+    return(list_of_strings)
+
+def summarise_logical_counts(counts, logical_zero, logical_one, data1_location, data2_location):
+    """Simplifies bit strings for logical operations to show each qubit as 0, 1, or 2
+       instead of the full bit string.
+        0.  means qubit is the logical zero
+        1.  means qubit is the logical one
+        2.  means qubit is outside code space
+
+    Parameters
+    ----------
+    counts : dict
+        results of computation
+    logical_zero : list    
+        list of list of items in logical zero
+    logical_one : list     
+        list of list of items in logical zero
+    data1_location : int
+        where in the counts bit string data1 is held
+    data2_location : int
+        where in the counts bit string data2 is held
+    
+    Returns
+    -------
+    new_counts : dict
+        simplified results
+    """
+    # convert list of list to list of strings
+    logical_zero_strings = convert_codewords(logical_zero)
+    logical_one_strings = convert_codewords(logical_one)
+
+    #set up dictionary to hold answer
+    new_counts = {str(i) + str(j):0 for i in range(3) for j in range(3)}
+    for key, value in counts.items():
+        #split out the data parts of key
+        data1 = key.split()[data1_location]
+        data2 = key.split()[data2_location]
+        #need to reverse the string from qiskit format
+        reverse1 = string_reverse(data1)
+        reverse2 = string_reverse(data2)
+        new_data1 = look_up_data(reverse1, logical_zero_strings, logical_one_strings)
+        new_data2 = look_up_data(reverse2, logical_zero_strings, logical_one_strings)
+        new_key = new_data1 + new_data2
+        new_counts[new_key] = new_counts[new_key] + value
+    return(new_counts)
+
+def look_up_data(input_string, logical_zero, logical_one):
+    """Looks up the input data to determine if the string is a logical one,
+    logical zero, or outside the code base.
+
+    Parameters
+    ----------
+    input_string : str
+        data for analysis
+    logical_zero : list    
+        list of strings representing a logical zero
+    logical_one : str     
+        list of strings representing a logical one
+    
+    Returns
+    -------
+    output_string : str
+        result of look-up"""
+
+    #outside code range unless found
+    output_string = '2'
+    for string in logical_zero:
+        if string == input_string:
+            output_string = '0'
+    for string in logical_one:
+        if string == input_string:
+            output_string = '1'
+    return(output_string)
+
+
+    
+
 
 
             

@@ -187,6 +187,23 @@ result of calculation</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.convert_codewords">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">convert_codewords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.convert_codewords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the codewords list of lists to a list of strings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>codewords</strong> (<em>list</em>) – allowed codewords for logical zero</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>list_of_strings</strong> – a list of strings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.correct_qubit">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">correct_qubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.correct_qubit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the corrected data bit string calculated from the ancilla settings.</p>
@@ -226,7 +243,7 @@ the counts for each output bit string.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>Count_valid</strong> (<em>int</em>) – Number of valid bit strings</p></li>
-<li><p><strong>Count_invalid</strong> (<em>int</em>) – Number of invalid bit strings</p></li>
+<li><p><strong>Count_invalid</strong> (<em>in</em>) – Number of invalid bit strings</p></li>
 </ul>
 </p>
 </dd>
@@ -325,7 +342,7 @@ by flipped each bit of the input codewords.</p>
 <li><p><strong>single_qubit_error</strong> (<em>float</em>) – probability of a depolarizing error on a single qubit gate</p></li>
 <li><p><strong>two_qubit_error</strong> (<em>float</em>) – probability of a depolarizing error on a two qubit gate</p></li>
 <li><p><strong>single_qubit_gate_set</strong> (<em>list</em>) – list of all single qubit gates relevant for noise</p></li>
-<li><p><strong>two__qubit_gate_set</strong> (<em>list</em>) – list of all two qubit gates relevant for noise.</p></li>
+<li><p><strong>two_qubit_gate_set</strong> (<em>list</em>) – list of all two qubit gates relevant for noise.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -339,19 +356,19 @@ by flipped each bit of the input codewords.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.look_up_data">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">look_up_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.look_up_data" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">look_up_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.look_up_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Looks up the input data to determine if the string is a logical one,
 logical zero, or outside the code base.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_in</strong> (<em>str</em>) – data for analysis</p></li>
-<li><p><strong>logical_zero</strong> (<em>str</em>) – string for the output after decoding representing a logical zero</p></li>
-<li><p><strong>logical_one</strong> (<em>str</em>) – string for the output after decoding representing a logical one</p></li>
+<li><p><strong>input_string</strong> (<em>str</em>) – data for analysis</p></li>
+<li><p><strong>logical_zero</strong> (<em>list</em>) – list of strings representing a logical zero</p></li>
+<li><p><strong>logical_one</strong> (<em>str</em>) – list of strings representing a logical one</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>new_data</strong> – result of look-up</p>
+<dd class="field-even"><p><strong>output_string</strong> – result of look-up</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>str</p>
@@ -436,13 +453,23 @@ logical zero, or outside the code base.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.summarise_logical_counts">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">summarise_logical_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.summarise_logical_counts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Summarises logical operation counts</p>
+<dd><dl class="simple">
+<dt>Simplifies bit strings for logical operations to show each qubit as 0, 1, or 2</dt><dd><dl class="simple">
+<dt>instead of the full bit string.</dt><dd><ol class="arabic simple" start="0">
+<li><p>means qubit is the logical zero</p></li>
+<li><p>means qubit is the logical one</p></li>
+<li><p>means qubit is outside code space</p></li>
+</ol>
+</dd>
+</dl>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>counts</strong> (<em>dict</em>) – results of computation</p></li>
-<li><p><strong>logical_zero</strong> (<em>str</em>) – string for the output after decoding representing a logical zero</p></li>
-<li><p><strong>logical_one</strong> (<em>str</em>) – string for the output after decoding representing a logical one</p></li>
+<li><p><strong>logical_zero</strong> (<em>list</em>) – list of list of items in logical zero</p></li>
+<li><p><strong>logical_one</strong> (<em>list</em>) – list of list of items in logical zero</p></li>
 <li><p><strong>data1_location</strong> (<em>int</em>) – where in the counts bit string data1 is held</p></li>
 <li><p><strong>data2_location</strong> (<em>int</em>) – where in the counts bit string data2 is held</p></li>
 </ul>
@@ -452,12 +479,6 @@ logical zero, or outside the code base.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>A string ‘2’ is used to represent bits that are outside the code base</p>
 </dd>
 </dl>
 </dd></dl>

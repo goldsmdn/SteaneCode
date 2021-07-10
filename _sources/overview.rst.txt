@@ -30,7 +30,7 @@ inherits its methods.
 The set up of the logical zero, the ancilla and the ancilla correction is 
 based on a parity_check_matrix which needs to be input.
 
-At present only 32 physical qubits are allowed on Qiskit because it needs too much computing power to handle more.   
-Because of this the circuit to correct errors can only be built for one logical qubit
-
 It is envisaged that the code will be called from Jupyter notebooks and examples are provided in this repository.
+
+Also, a class ``BaconShorCodeLogicalQubit`` can be used to generate the Bacon Shor code which was used 
+to test the noise model.

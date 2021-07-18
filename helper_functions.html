@@ -201,6 +201,8 @@ result of calculation</p></li>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>No longer needed at present as codeword is a list of strings but retained in case needed in future.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -211,7 +213,7 @@ result of calculation</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>str</em>) – input data bit string</p></li>
-<li><p><strong>ancilla</strong> (<em>str</em>) – three bit ancilla X code</p></li>
+<li><p><strong>ancilla</strong> (<em>str</em>) – three bit ancilla logical Z code</p></li>
 <li><p><strong>data_qubits</strong> (<em>int</em>) – length of bit string</p></li>
 </ul>
 </dd>
@@ -224,20 +226,21 @@ result of calculation</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>The ancilla number calculation needs to take into account that the ancilla bit string is reversed
-compared to numbering of the databits shown on the qiskit diagrams</p>
+compared to numbering of the databits shown on the Qiskit diagrams.
+This code corrects bit string errors only, not phase errors</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.count_valid_output_strings">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">count_valid_output_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the number of valid and invalid output bit strings in a given position in a dictionary representing
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">count_valid_output_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the number of valid and invalid output bit strings in a given location in a dictionary representing
 the counts for each output bit string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>counts</strong> (<em>dictionary</em>) – holds the observed populations for each combination of qubit</p></li>
 <li><p><strong>codewords</strong> (<em>list</em>) – holds allowed codewords</p></li>
-<li><p><strong>data_position</strong> (<em>int</em>) – position of the data string</p></li>
+<li><p><strong>data_location</strong> (<em>int</em>) – location of the data string</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -333,7 +336,7 @@ by flipped each bit of the input codewords.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.get_noise">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_qubit_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two_qubit_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_qubit_gate_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two__qubit_gate_set</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.get_noise" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_qubit_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two_qubit_error</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_qubit_gate_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two_qubit_gate_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy_qubit_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.get_noise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a noise model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -341,8 +344,10 @@ by flipped each bit of the input codewords.</p>
 <li><p><strong>p_meas</strong> (<em>float</em>) – probability of X error on measurement</p></li>
 <li><p><strong>single_qubit_error</strong> (<em>float</em>) – probability of a depolarizing error on a single qubit gate</p></li>
 <li><p><strong>two_qubit_error</strong> (<em>float</em>) – probability of a depolarizing error on a two qubit gate</p></li>
-<li><p><strong>single_qubit_gate_set</strong> (<em>list</em>) – list of all single qubit gates relevant for noise</p></li>
-<li><p><strong>two_qubit_gate_set</strong> (<em>list</em>) – list of all two qubit gates relevant for noise.</p></li>
+<li><p><strong>single_qubit_gate_set</strong> (<em>list</em>) – list of all single qubit gate types relevant for noise</p></li>
+<li><p><strong>two_qubit_gate_set</strong> (<em>list</em>) – list of all two qubit gate types relevant for noise</p></li>
+<li><p><strong>all</strong> (<em>bool</em>) – apply two gate noise to all qubits</p></li>
+<li><p><strong>noisy_qubit_list</strong> (<em>list of list</em>) – list of list of noisy qubits on which  errors are applied</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -352,6 +357,8 @@ by flipped each bit of the input codewords.</p>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Can apply noise selectively to qubits in noisy_qubit_list.  This is a list of lists.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -391,6 +398,12 @@ logical zero, or outside the code base.</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.print_time">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">print_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.print_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>function to print time    now = datetime.now()</p>
 </dd></dl>
 
 <dl class="py function">

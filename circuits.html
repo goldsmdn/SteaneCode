@@ -307,7 +307,9 @@ Only the case with 1 qubit has been fully tested.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Uses super to inherit methods from parent.</p>
+<p>Uses super to inherit methods from parent.  The code is derived from the parity matrix.
+The number of data qubits is the length of rows parity matrix.
+The number of ancilla is the number of columns in the parity matrix</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.correct_errors">
 <span class="sig-name descname"><span class="pre">correct_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.correct_errors" title="Permalink to this definition">¶</a></dt>
@@ -327,6 +329,8 @@ more gates, or without MCT gates, which is more difficult to program but needs l
 In the latter case the complexity is to take into account corrections already applied when looking at
 two or three bit corrections.</p>
 <p>In both cases the error correcting gates are determined from the parity matrix.</p>
+<p>The errors detected by the Z operators are bit flips, so are corrected by CX gates.
+The errors detected by the X operators are phase flips, so are corrected by CZ gates.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -346,6 +350,9 @@ two or three bit corrections.</p>
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.define_data">
 <span class="sig-name descname"><span class="pre">define_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.define_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>define standing data</p>
+<p class="rubric">Notes</p>
+<p>The ancilla qubits to for the X operator are self.__mx
+The ancilla qubits to for the Z operator are self.__mz</p>
 </dd></dl>
 
 <dl class="py method">
@@ -403,6 +410,20 @@ are needed for error checking.</p>
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on. Should be either 0 or 1 at present.</p></li>
 <li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force Z error on.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.list_data_qubits">
+<span class="sig-name descname"><span class="pre">list_data_qubits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.list_data_qubits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of data qubits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>output_list</strong> – list of data qubits</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -480,13 +501,17 @@ are needed for error checking.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.set_up_logical_zero">
-<span class="sig-name descname"><span class="pre">set_up_logical_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_logical_zero" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_up_logical_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_logical_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up logical zero for data qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to initialise. Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>We identify those columns of the parity matrix with only one entry.  These are prepared in the <a href="#id1"><span class="problematic" id="id2">|</span></a>+&gt; state.
+We then look at each row in the parity matrix and construct CNOT gates from the <a href="#id3"><span class="problematic" id="id4">|</span></a>+&gt; state to the entries
+in the row which are unity.</p>
 </dd></dl>
 
 <dl class="py method">

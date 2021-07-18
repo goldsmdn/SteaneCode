@@ -1,7 +1,5 @@
 """Class to handle logical qubits for the Steane and Bacon Shor code"""
 
-#import numpy as np
-#from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
 
@@ -21,7 +19,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
         Notes
         -----
-        Uses super to inherit methods from parent.
+        Uses super to inherit methods from parent.  The code is derived from the parity matrix.
+        The number of data qubits is the length of rows parity matrix.  
+        The number of ancilla is the number of columns in the parity matrix 
         """
 
     def __init__(self, d, parity_check_matrix, codewords, extend_ancilla = False):
@@ -30,8 +30,13 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         if self.__extend_ancilla:
             if d > 1:
                 raise ValueError("Can't set up extra ancilla with two logical qubits due to memory size restrictions")
+        #number of data qubits is length of rows parity matrix 
+        self.__num_data = len(parity_check_matrix[0])            
+        #number of ancilla is number of columns in the parity matrix 
+        self.__num_ancilla = len(parity_check_matrix)
         self.__parity_check_matrix = parity_check_matrix
         self.__codewords = codewords
+        self.__number_of_logical_qubits = d
         self.define_data()
         list_of_all_registers = self.define_registers(d)
         # extend quantum circuits
@@ -39,18 +44,22 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         self.validate_parity_matrix()
 
     def define_data(self):
-        """define standing data"""
+        """define standing data
+        
+        Notes
+        -----
+        The ancilla qubits to for the X operator are self.__mx
+        The ancilla qubits to for the Z operator are self.__mz
+        """
 
-        self.__num_data = 7             #seven data qubits for the Steane code
-        self.__num_ancilla = 3          #six ancilla qubits, three x and three z
         if self.__extend_ancilla:   
             self.__num_extra_ancilla = 4       #four extra ancilla for decoding
         else:
             self.__num_extra_ancilla = 0   
 
-        self.__data = []
-        self.__mx = []
-        self.__mz = []
+        self.__data = []                    #data qubits
+        self.__mx = []                      #ancilla qubits to detect X operator
+        self.__mz = []                      #ancilla qubits to detect Z operator
         if self.__extend_ancilla: 
             self.__extra_ancilla = []
         self.__data_classical = []
@@ -75,12 +84,14 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         """
         list_of_all_registers = []
         for index in range (d):  
+            #define label for logical qubits
             self.__qubit_no = str(index)
             # Quantum registers
             self.__data.append(QuantumRegister(self.__num_data, "data " + self.__qubit_no))
             self.__mx.append(QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no))
             self.__mz.append(QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no))
             list_of_all_registers.append(self.__data[index])
+            #do we need to reverse the order of mx and mz here?
             list_of_all_registers.append(self.__mx[index])
             list_of_all_registers.append(self.__mz[index])
             if self.__extend_ancilla: 
@@ -105,32 +116,41 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         if self.__parity_check_matrix == []:
             raise ValueError('Parity check matrix must be specified')
         
-        for parity_row in self.__parity_check_matrix:
-            if len(parity_row) != self.__num_data:
+        for parity_string in self.__parity_check_matrix:
+            if len(parity_string) != self.__num_data:
                 raise ValueError('Parity check matrix rows incorrect length')
 
-        for codeword_row in self.__codewords:
-            if len(codeword_row) != self.__num_data:
+        if len(self.__parity_check_matrix) != self.__num_ancilla:
+            raise ValueError('Parity check matrix has incorrect number of rows')
+
+        for codeword_string in self.__codewords:
+            if len(codeword_string) != self.__num_data:
                 raise ValueError("Code word rows incorrect length")
-            for parity_row in self.__parity_check_matrix:
+            for parity_string in self.__parity_check_matrix:
                 bit_store = False
-                for codeword_bit in codeword_row:
-                    if codeword_bit not in [0,1]:
+                for codeword_bit_string in codeword_string:
+                    if codeword_bit_string not in ['0','1']:
                         raise ValueError("Code word entries must be 0 or 1")
-                    for parity_bit in parity_row:
-                        if parity_bit not in [0,1]:
+                    for parity_bit_string in parity_string:
+                        if parity_bit_string not in ['0','1']:
                             raise ValueError("Parity matrix entries must be 0 or 1")
-                        bit_store = bit_store ^ (bool(codeword_bit) ^ bool(parity_bit))
+                        bit_store = bit_store ^ bool(int(codeword_bit_string)) ^ bool(int(parity_bit_string))
                 if bit_store:
                     raise ValueError("Code word rows must be orthogonal to the parity matrix")
 
-    def set_up_logical_zero(self, logical_qubit = 0):
+    def set_up_logical_zero(self, logical_qubit = 0, full = True):
         """Set up logical zero for data qubit
 
         Parameters
         ----------
         logical_qubit: int
             Number of the logical "data" qubit to initialise. Should be either 0 or 1 at present.
+
+        Notes
+        -----
+            We identify those columns of the parity matrix with only one entry.  These are prepared in the |+> state.
+            We then look at each row in the parity matrix and construct CNOT gates from the |+> state to the entries 
+            in the row which are unity.  
         """
         self._validate_logical_qubit_number(logical_qubit)
         
@@ -138,26 +158,55 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
         for parity_row in self.__parity_check_matrix:
             for index in range(self.__num_data):
-                parity_matrix_totals[index] = parity_matrix_totals[index] + parity_row[index]
+                parity_matrix_totals[index] = parity_matrix_totals[index] + int(parity_row[index])
         count = 0
 
         for index in range (self.__num_data):
             self.reset(self.__data[logical_qubit][index])
 
-        for index in range (self.__num_data):
-            #specify that each bit is zero
-            if parity_matrix_totals[index] == 1:
-                count = count + 1
-                self.h(self.__data[logical_qubit][index])
-                for parity_row in self.__parity_check_matrix:
-                    if parity_row[index] == 1:              #correct row to build ancilla from
-                        for column_number in range(self.__num_data):
-                            if column_number != index:
-                                if parity_row[column_number] == 1:
-                                    self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
-
+        if full:
+            #set up one CNOT for each relevant entry in the parity matrix.
+            for index in range (self.__num_data):
+                #specify that each bit is zero
+                if parity_matrix_totals[index] == 1:
+                    count = count + 1
+                    #set up |+> state if count is one
+                    self.h(self.__data[logical_qubit][index])
+                    for parity_row in self.__parity_check_matrix:
+                        # from the |+> state qubits build the rest of the ancilla.
+                        if parity_row[index] == '1':             
+                            for column_number in range(self.__num_data):
+                                if column_number != index:
+                                    if parity_row[column_number] == '1':
+                                        #cx from |+> state to qubit if there is a 1 in the parity matrix.
+                                        self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
         if count != self.__num_ancilla:
-            raise ValueError('Unable to construct matrix as parity matrix does not match the ancilla needed')   
+            raise ValueError('Unable to construct matrix as parity matrix does not match the ancilla needed')               
+        #else:
+        #    #set up one CNOT for each relevant entry in the parity matrix, but not if there is duplication
+        #    for index1 in range(self.__num_ancilla): 
+        #        for index2 in range((index1 + 1, self.__num_ancilla)):
+        #            parity_row1 = self.__parity_check_matrix[index1]
+        #            parity_row2 = self.__parity_check_matrix[index2]
+        #            for items in range(self.__num_data):
+
+
+
+
+        #    for index in range (self.__num_data):
+        #        #specify that each bit is zero
+        #        if parity_matrix_totals[index] == 1:
+        #            count = count + 1
+        #            #set up |+> state if count is one
+        #            self.h(self.__data[logical_qubit][index])
+        #            for parity_row in self.__parity_check_matrix:
+        #                # from the |+> state qubits build the rest of the ancilla.
+        #                if parity_row[index] == 1:             
+        #                    for column_number in range(self.__num_data):
+        #                        if column_number != index:
+        #                            if parity_row[column_number] == 1:
+        #                                #cx from |+> state to qubit if there is a 1 in the parity matrix.
+        #                                self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
 
     def force_X_error(self, physical_qubit, logical_qubit = 0):
         """ Introduce an X error on one physical qubit
@@ -207,7 +256,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         for index in range (self.__num_ancilla):
             parity_row = self.__parity_check_matrix[index]
             for column_number in range(self.__num_data):
-                if parity_row[column_number] ==1:             
+                if parity_row[column_number] == '1':             
                     self.cx(self.__mx[logical_qubit][index],self.__data[logical_qubit][column_number])  
         self.barrier()
         #apply CZ gates according to the parity matrix
@@ -215,7 +264,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         for index in range (self.__num_ancilla):
             parity_row = self.__parity_check_matrix[index]
             for column_number in range(self.__num_data):
-                if parity_row[column_number] ==1:             
+                if parity_row[column_number] == '1':             
                     self.cz(self.__mz[logical_qubit][index],self.__data[logical_qubit][column_number])  
         self.barrier()
         #apply final hadamards to all ancillas
@@ -266,6 +315,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             
             In both cases the error correcting gates are determined from the parity matrix.
 
+            The errors detected by the Z operators are bit flips, so are corrected by CX gates.
+            The errors detected by the X operators are phase flips, so are corrected by CZ gates.
+
         """
 
         if mct:
@@ -287,10 +339,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             count = 0
             bit_list = transpose_parity[qubit]
             for bits in bit_list:
-                if bits == 1:
+                if bits == '1':
                     count = count + 1
             qubit_data.update({qubit:{"count":count}})
-
 
         if mct:
             for qubit in range(self.__num_data):
@@ -298,7 +349,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 #x ancilla errors
                 #flip zero ancilla bit to one
                 for bit_index in range(self.__num_ancilla): 
-                    if bit_list[bit_index] == 0:
+                    if bit_list[bit_index] == '0':
                         self.x(self.__mz[logical_qubit][bit_index])
                 # use MCT gate to bit flip incorrect qubit
                 self.mct([self.__mz[logical_qubit][0], 
@@ -307,13 +358,15 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                               self.__data[logical_qubit][qubit])
                 #flip zero ancilla bits back
                 for bit_index in range(self.__num_ancilla): 
-                    if bit_list[bit_index] == 0:
+                    if bit_list[bit_index] == '0':
+                        #bit flip identified with Z logical operator corrected with bit flip
                         self.x(self.__mz[logical_qubit][bit_index])
 
                 #z ancilla errors
                 #flip zero ancilla bit to one
                 for bit_index in range(self.__num_ancilla): 
-                    if bit_list[bit_index] == 0:
+                    if bit_list[bit_index] == '0':
+                        #bit flip identified with Z logical operator corrected with bit flip
                         self.x(self.__mx[logical_qubit][bit_index])
                 # use MCT gate and Hadamard to bit flip incorrect qubit
                 self.h(self.__data[logical_qubit][qubit])
@@ -324,7 +377,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 self.h(self.__data[logical_qubit][qubit])
                 #flip zero ancilla bits back
                 for bit_index in range(self.__num_ancilla): 
-                    if bit_list[bit_index] == 0:
+                    if bit_list[bit_index] == '0':
                         self.x(self.__mx[logical_qubit][bit_index])
                 
         else:
@@ -334,7 +387,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 count = qubit_data_item.get("count")      
                 if count == 1:
                     for bit_index in range(self.__num_ancilla): 
-                        if bit_list[bit_index] == 1:
+                        if bit_list[bit_index] == '1':
                             self.cx(self.__mz[logical_qubit][bit_index], self.__data[logical_qubit][qubit])    
                             single_CX_updates_list.append([qubit, bit_index])
                             self.cz(self.__mx[logical_qubit][bit_index], self.__data[logical_qubit][qubit]) 
@@ -346,12 +399,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 count = qubit_data_item.get("count")           
                 if count == 2:      
                     for bit_index in range(self.__num_ancilla): 
-                        first_bit = 0
-                        second_bit = 0   
-                        if count ==2:   # need a CCNOT gate
+                        first_bit = '0'
+                        second_bit = '0'   
+                        if count == 2:   # need a CCNOT gate
                             for bit_index in range(self.__num_ancilla): 
-                                if bit_list[bit_index] == 1:
-                                    if first_bit == 0:
+                                if bit_list[bit_index] == '1':
+                                    if first_bit == '0':
                                         first_bit = bit_index
                                     else:
                                         second_bit = bit_index
@@ -416,12 +469,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 count = qubit_data_item.get("count")           
                 if count == 2:      
                     for bit_index in range(self.__num_ancilla): 
-                        first_bit = 0
-                        second_bit = 0   
-                        if count ==2:   # need a CCNOT gate
+                        first_bit = '0'
+                        second_bit = '0'   
+                        if count == 2:   # need a CCNOT gate
                             for bit_index in range(self.__num_ancilla): 
-                                if bit_list[bit_index] == 1:
-                                    if first_bit == 0:
+                                if bit_list[bit_index] == '1':
+                                    if first_bit == '0':
                                         first_bit = bit_index
                                     else:
                                         second_bit = bit_index
@@ -543,9 +596,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             if bit == '1':
                 self.x(self.__data[logical_qubit][index])
             index = index - 1
-    
         return
-
     
     def _transpose_parity(self):
         """Transposes the parity check matrix"""
@@ -585,6 +636,25 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         if physical_qubit < 0:
             raise ValueError("Qubit index must be in range of data qubits")
 
+    def list_data_qubits(self):
+        """ Returns a list of data qubits
+
+        Returns
+        -------
+        output_list : list
+            list of data qubits
+        """         
+
+        output_list = []
+        for logical_qubit in range(self.__number_of_logical_qubits):
+            list_for_one_logical_qubit = []
+            for physical_qubit in range(self.__num_data):
+                data_qubit = self.__data[logical_qubit][physical_qubit]
+                print(data_qubit)
+                list_for_one_logical_qubit.append(data_qubit)
+            output_list.append(list_for_one_logical_qubit)
+        return(output_list)
+        
 
 class BaconShorCodeLogicalQubit(QuantumCircuit):
     """Generates the gates for one logical Qubits of the Bacon Shor code

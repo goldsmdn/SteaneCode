@@ -24,18 +24,21 @@ BASIS_GATE_SET = SINGLE_GATE_SET + TWO_GATE_SET
 TEST_X_QUBIT = 4
 SHOTS = 100     #Number of shots to run    
 SIMULATOR = Aer.get_backend('qasm_simulator')
-parity_check_matrix =  [[0,0,0,1,1,1,1],
-                        [0,1,1,0,0,1,1],
-                        [1,0,1,0,1,0,1]]
 
-codewords = [[0,0,0,0,0,0,0],   
-             [1,0,1,0,1,0,1],
-             [0,1,1,0,0,1,1],
-             [1,1,0,0,1,1,0],
-             [0,0,0,1,1,1,1],
-             [1,0,1,1,0,1,0],
-             [0,1,1,1,1,0,0],
-             [1,1,0,1,0,0,1]]
+parity_check_matrix = ['0001111',
+                       '0110011',
+                       '1010101'
+                      ]
+
+codewords = ['0000000',
+             '1010101',
+             '0110011',
+             '1100110',
+             '0001111',
+             '1011010',
+             '0111100',
+             '1101001'
+            ]
 
 def test_error_correction():
     """Checks that every X error gets corrected by error correction with and without MCT gates"""
@@ -94,14 +97,16 @@ def test_correct_qubit():
 
 def test_flipped_codewords():
     """Checks that the helper function to bit flip codewords module is working correctly"""
-    flip      = [[1,1,1,1,1,1,1],   
-                 [0,1,0,1,0,1,0],
-                 [1,0,0,1,1,0,0],
-                 [0,0,1,1,0,0,1],
-                 [1,1,1,0,0,0,0],
-                 [0,1,0,0,1,0,1],
-                 [1,0,0,0,0,1,1],
-                 [0,0,1,0,1,1,0]]
+
+    flip = ['1111111',
+            '0101010',
+            '1001100',
+            '0011001',
+            '1110000',
+            '0100101',
+            '1000011',
+            '0010110'
+            ]
     
     result = flip_code_words(codewords)
     assert result == flip

@@ -4,6 +4,7 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import pauli_error, depolarizing_error
 from statistics import stdev
 from math import sqrt
+from datetime import datetime
 
 def string_reverse(input_string):
     """Reverses a string.
@@ -61,8 +62,8 @@ def find_parity(counts, data_qubits):
         parity_count[str(parity)] = new_count
     return(parity_count)
 
-def count_valid_output_strings(counts, codewords, data_position):
-    """Finds the number of valid and invalid output bit strings in a given position in a dictionary representing
+def count_valid_output_strings(counts, codewords, data_location):
+    """Finds the number of valid and invalid output bit strings in a given location in a dictionary representing
     the counts for each output bit string.
 
     Parameters
@@ -71,8 +72,8 @@ def count_valid_output_strings(counts, codewords, data_position):
         holds the observed populations for each combination of qubit
     codewords : list
         holds allowed codewords 
-    data_position : int 
-        position of the data string
+    data_location : int 
+        location of the data string
 
     Returns
     ----------
@@ -86,7 +87,7 @@ def count_valid_output_strings(counts, codewords, data_position):
     count_invalid = 0
     for key, value in counts.items():
         #split out data part of key
-        data = key.split()[data_position]
+        data = key.split()[data_location]
         #need to reverse the data string showing the relevant qubits as 
         #the codewords and the data have a different format 
         reversed_data_string = string_reverse(data)
@@ -259,7 +260,7 @@ def correct_qubit(data_in, ancilla, data_qubits):
     data : str
         input data bit string
     ancilla : str
-        three bit ancilla X code
+        three bit ancilla logical Z code
     data_qubits : int
         length of bit string
         
@@ -272,10 +273,12 @@ def correct_qubit(data_in, ancilla, data_qubits):
     Notes
     -----
     The ancilla number calculation needs to take into account that the ancilla bit string is reversed
-    compared to numbering of the databits shown on the qiskit diagrams
+    compared to numbering of the databits shown on the Qiskit diagrams.  
+    This code corrects bit string errors only, not phase errors
         
     """
     data_out = ''
+    
     if ancilla == '000':
         data_out = data_in
     else:
@@ -303,19 +306,20 @@ def flip_code_words(codewords_in):
 
     codewords_out = []
     for items in codewords_in:
-        new_list = []
+        new_string = ''
         for bit in items:
-            if bit == 1:
-                flipped_bit = 0
-            elif bit == 0:
-                flipped_bit = 1
+            if bit == '1':
+                flipped_bit = '0'
+            elif bit == '0':
+                flipped_bit = '1'
             else:
                 raise Exception('Not able to interpret bit in codewords')
-            new_list.append(flipped_bit)
-        codewords_out.append(new_list)
+            new_string = new_string + flipped_bit
+        codewords_out.append(new_string)
     return(codewords_out)
 
-def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set, two__qubit_gate_set):
+def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set, two_qubit_gate_set,
+              all = True, noisy_qubit_list = []):
     """Returns a noise model
 
     Parameters
@@ -327,26 +331,49 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
     two_qubit_error : float    
         probability of a depolarizing error on a two qubit gate
     single_qubit_gate_set : list
-        list of all single qubit gates relevant for noise
-    two_qubit_gate_set: list
-        list of all two qubit gates relevant for noise.
-    
+        list of all single qubit gate types relevant for noise
+    two_qubit_gate_set : list
+        list of all two qubit gate types relevant for noise
+    all : bool
+        apply two gate noise to all qubits
+    noisy_qubit_list : list of list
+        list of list of noisy qubits on which  errors are applied
+
     Returns
     -------
     noise_model : dict
         noise model to be used
 
+    Notes
+    -----
+    Can apply noise selectively to qubits in noisy_qubit_list.  This is a list of lists.
     """
+
     error_meas = pauli_error([('X', p_meas), ('I', 1 - p_meas)])
     error_gate1 = depolarizing_error(single_qubit_error, 1)
     error_gate2 = depolarizing_error(two_qubit_error, 1)
     error_gate3 = error_gate2.tensor(error_gate2)
-
     noise_model = NoiseModel()
-    noise_model.add_all_qubit_quantum_error(error_meas, 'measure') # measurement error is applied to measurements
-    noise_model.add_all_qubit_quantum_error(error_gate1, single_qubit_gate_set)  # single qubit gate errors
-    noise_model.add_all_qubit_quantum_error(error_gate3, two__qubit_gate_set) # two qubit gate error is applied to two qubit gates
-    
+
+    if all:
+        if noisy_qubit_list != []:
+            raise ValueError('Errors are applied to all qubits but a list of qubits with errors is given')    
+        noise_model.add_all_qubit_quantum_error(error_meas, 'measure') # measurement error is applied to measurements
+        noise_model.add_all_qubit_quantum_error(error_gate1, single_qubit_gate_set)  # single qubit gate errors
+        noise_model.add_all_qubit_quantum_error(error_gate3, two_qubit_gate_set) # two qubit gate error is applied to two qubit gates
+    else:
+        if noisy_qubit_list == []:
+            raise ValueError('A list of qubits must be supplied if errors are not to be applied to all qubits')
+        #read through list of list of error gates
+        for gate_list in noisy_qubit_list:
+            for gate_index1 in gate_list:
+                #print(f'single_qubit_noise applied to gate {gate_index1}')
+                noise_model.add_quantum_error(error_meas, 'measure', [gate_index1]) # measurement error is applied to measurements
+                noise_model.add_quantum_error(error_gate1, single_qubit_gate_set, [gate_index1])  # single qubit gate errors
+                for gate_index2 in gate_list:
+                    if gate_index1 != gate_index2:
+                        #print(f'two_gate_noise_applied to {[gate_index1]} and {[gate_index2]} ')
+                        noise_model.add_quantum_error(error_gate3, two_qubit_gate_set, [gate_index1, gate_index2])    
     return noise_model   
 
 def mean_of_list(list_in):
@@ -406,6 +433,11 @@ def convert_codewords(codewords):
     -------
     list_of_strings : list
         a list of strings
+
+
+    Notes
+    -----
+    No longer needed at present as codeword is a list of strings but retained in case needed in future.
     """
 
     list_of_strings = []
@@ -489,12 +521,9 @@ def look_up_data(input_string, logical_zero, logical_one):
             output_string = '1'
     return(output_string)
 
-
-    
-
-
-
-            
-        
-
-
+def print_time():
+    """function to print time    now = datetime.now()"""
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    print("Current Time =", current_time)
+    return

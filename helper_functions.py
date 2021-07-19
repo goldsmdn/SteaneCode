@@ -76,11 +76,16 @@ def count_valid_output_strings(counts, codewords, data_location):
         location of the data string
 
     Returns
-    ----------
+    -------
     Count_valid : int
         Number of valid bit strings
     Count_invalid : in
         Number of invalid bit strings
+
+    Notes
+    -----
+    This code was originally designed to handle the codewords in a list of lists, but will also work fine
+    with a list of strings.
 
     """
     count_valid = 0
@@ -93,7 +98,8 @@ def count_valid_output_strings(counts, codewords, data_location):
         reversed_data_string = string_reverse(data)
         flag = False
         for items in codewords:
-            #turn the codeword list into a string
+            #turn the codeword list into a string if presented as a list
+            #not really needed any more but kept
             codeword_string = ''.join(map(str, items))
             if reversed_data_string == codeword_string:
                 flag = True

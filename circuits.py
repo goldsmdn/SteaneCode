@@ -279,6 +279,10 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             The ancilla needed are determined from the parity matrix.
         """
         self._validate_logical_qubit_number(logical_qubit)
+        #specify that each bit is zero
+        for index in range (self.__num_ancilla):
+            self.reset(self.__mx[logical_qubit][index])  
+            self.reset(self.__mz[logical_qubit][index])  
         self.h(self.__mx[logical_qubit])
         self.h(self.__mz[logical_qubit])
         self.barrier()

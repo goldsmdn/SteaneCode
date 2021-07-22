@@ -306,7 +306,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.h(self.__mx[logical_qubit][index])
             self.h(self.__mz[logical_qubit][index])
         
-
     def logical_measure(self, logical_qubit = 0):
         """Makes gates to measure a logical qubit
 

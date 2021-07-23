@@ -14,6 +14,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Holds the parity check matrix from which the gates will be constructed.
         codewords : list
             Valid codewords for the Steane code
+        ancilla : bool 
+            True if need to set up ancilla.  For some circuits these are not needed.
         extend_ancilla : bool 
             True if need to add extra ancilla for error correction without using MCT gates
 
@@ -24,16 +26,26 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         The number of ancilla is the number of columns in the parity matrix 
         """
 
-    def __init__(self, d, parity_check_matrix, codewords, extend_ancilla = False):
+    def __init__(self, d, parity_check_matrix, codewords, ancilla = True, extend_ancilla = False):
         """Initialise qubit"""
         self.__extend_ancilla = extend_ancilla
+        self.__ancilla = ancilla
         if self.__extend_ancilla:
             if d > 1:
                 raise ValueError("Can't set up extra ancilla with two logical qubits due to memory size restrictions")
+
         #number of data qubits is length of rows parity matrix 
         self.__num_data = len(parity_check_matrix[0])            
-        #number of ancilla is number of columns in the parity matrix 
+        #if ancilla are needed number of ancilla is number of columns in the parity matrix 
+        #if self.__ancilla:
         self.__num_ancilla = len(parity_check_matrix)
+        #else:
+        #    self.__num_ancilla = 0
+        #if self.__extend_ancilla:   
+        self.__num_extra_ancilla = 4       #four extra ancilla for decoding
+        #else:
+        #    self.__num_extra_ancilla = 0   
+
         self.__parity_check_matrix = parity_check_matrix
         self.__codewords = codewords
         self.__number_of_logical_qubits = d
@@ -51,21 +63,20 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         The ancilla qubits to for the X operator are self.__mx
         The ancilla qubits to for the Z operator are self.__mz
         """
-
-        if self.__extend_ancilla:   
-            self.__num_extra_ancilla = 4       #four extra ancilla for decoding
-        else:
-            self.__num_extra_ancilla = 0   
+        #if self.__extend_ancilla:   
+        #    self.__num_extra_ancilla = 4       #four extra ancilla for decoding
+        #else:
+        #    self.__num_extra_ancilla = 0   
 
         self.__data = []                    #data qubits
-        self.__mx = []                      #ancilla qubits to detect X operator
-        self.__mz = []                      #ancilla qubits to detect Z operator
+        self.__data_classical = []
+        if self.__ancilla:
+            self.__mx = []                      #ancilla qubits to detect X operator
+            self.__mz = []                      #ancilla qubits to detect Z operator
+            self.__mx_classical = []
+        self.__mz_classical = []
         if self.__extend_ancilla: 
             self.__extra_ancilla = []
-        self.__data_classical = []
-        self.__mx_classical = []
-        self.__mz_classical = []
-        if self.__extend_ancilla:   
             self.__extra_ancilla_classical = []
 
     def define_registers(self, d):
@@ -88,23 +99,23 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.__qubit_no = str(index)
             # Quantum registers
             self.__data.append(QuantumRegister(self.__num_data, "data " + self.__qubit_no))
-            self.__mx.append(QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no))
-            self.__mz.append(QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no))
             list_of_all_registers.append(self.__data[index])
-            #do we need to reverse the order of mx and mz here?
-            list_of_all_registers.append(self.__mx[index])
-            list_of_all_registers.append(self.__mz[index])
+            if self.__ancilla:
+                self.__mx.append(QuantumRegister(self.__num_ancilla, "ancilla_X " + self.__qubit_no))
+                self.__mz.append(QuantumRegister(self.__num_ancilla, "ancilla_Z " + self.__qubit_no))
+                list_of_all_registers.append(self.__mx[index])
+                list_of_all_registers.append(self.__mz[index])
             if self.__extend_ancilla: 
                 self.__extra_ancilla.append(QuantumRegister(self.__num_extra_ancilla, name="extra_ancilla" + self.__qubit_no)) 
                 list_of_all_registers.append(self.__extra_ancilla[index])
             # Classical registers
             self.__data_classical.append(ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no))
-            self.__mx_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no))
-            self.__mz_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no))
             list_of_all_registers.append(self.__data_classical[index])
-            list_of_all_registers.append(self.__mx_classical[index]) 
-            list_of_all_registers.append(self.__mz_classical[index])
-            #if self.__correct_errors:
+            if self.__ancilla:
+                self.__mx_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no))
+                self.__mz_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no))
+                list_of_all_registers.append(self.__mx_classical[index]) 
+                list_of_all_registers.append(self.__mz_classical[index])
             if self.__extend_ancilla: 
                 self.__extra_ancilla_classical.append(
                     ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no))
@@ -119,10 +130,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         for parity_string in self.__parity_check_matrix:
             if len(parity_string) != self.__num_data:
                 raise ValueError('Parity check matrix rows incorrect length')
-
-        if len(self.__parity_check_matrix) != self.__num_ancilla:
-            raise ValueError('Parity check matrix has incorrect number of rows')
-
+        if self.__ancilla:
+            if len(self.__parity_check_matrix) != self.__num_ancilla:
+                raise ValueError('Parity check matrix has incorrect number of rows')
         for codeword_string in self.__codewords:
             if len(codeword_string) != self.__num_data:
                 raise ValueError("Code word rows incorrect length")
@@ -315,11 +325,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 Number of the logical "data" qubits to measure. Should be either 0 or 1 at present.
         """
         self._validate_logical_qubit_number(logical_qubit)
-        for index in range(self.__num_ancilla):
-            self.measure(self.__mx[logical_qubit][index], self.__mx_classical[logical_qubit][index])
-            self.measure(self.__mz[logical_qubit][index], self.__mz_classical[logical_qubit][index])
 
-        #if self.__correct_errors:
+        if self.__ancilla:
+            for index in range(self.__num_ancilla):
+                self.measure(self.__mx[logical_qubit][index], self.__mx_classical[logical_qubit][index])
+                self.measure(self.__mz[logical_qubit][index], self.__mz_classical[logical_qubit][index])
+
         if self.__extend_ancilla:
             for index in range(self.__num_extra_ancilla):
                 self.measure(self.__extra_ancilla[logical_qubit][index], 
@@ -533,7 +544,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         parity_matrix_totals = [ 0 for x in range(self.__num_data)] # define an empty list ready to work out parity_matrix_totals
         for parity_row in self.__parity_check_matrix:
             for index in range(self.__num_data):
-                parity_matrix_totals[index] = parity_matrix_totals[index] + parity_row[index]
+                parity_matrix_totals[index] = parity_matrix_totals[index] + int(parity_row[index])
 
         for index in range (self.__num_data):
             if parity_matrix_totals[index] == 1:
@@ -541,7 +552,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     if parity_row[index] == 1:              #correct row to build ancilla from
                         for column_number in range(self.__num_data):
                             if column_number != index:
-                                if parity_row[column_number] == 1:
+                                if parity_row[column_number] == '1':
                                         self.cx(self.__data[logical_qubit][index], self.__data[logical_qubit][column_number])
 
         for index in range (self.__num_data):

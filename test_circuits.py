@@ -62,11 +62,11 @@ def test_no_error_correction_with_two_logical_qubits():
     with raises(ValueError, match = "Can't set up extra ancilla with two logical qubits due to memory size restrictions"):
         SteaneCodeLogicalQubit(2, parity_check_matrix, codewords, extend_ancilla = True)
 
-def test_logical_qubit_reference_in_range():
-    """Checks that an error is thrown when setting up a logical zero with an index greater than 1"""
-    qubit = SteaneCodeLogicalQubit(2, parity_check_matrix, codewords, False)
-    with raises(ValueError, match = 'The qubit to be processed must be indexed as 0 or 1 at present'):
-        qubit.set_up_logical_zero(2)
+#def test_logical_qubit_reference_in_range():
+#    """Checks that an error is thrown when setting up a logical zero with an index greater than 1"""
+#   qubit = SteaneCodeLogicalQubit(2, parity_check_matrix, codewords)
+#    with raises(ValueError, match = 'The qubit to be processed must be indexed as 0 or 1 at present'):
+#        qubit.set_up_logical_zero(2)
 
 def test_physical_qubit_reference_in_range():
     """Checks that an error is thrown when indexing a physical qubit outside the valid range"""

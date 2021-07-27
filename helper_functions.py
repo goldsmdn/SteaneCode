@@ -533,3 +533,14 @@ def print_time():
     current_time = now.strftime("%H:%M:%S")
     print("Current Time =", current_time)
     return
+
+def validate_integer(number):
+    """Function to check if a number is an integer.
+
+    Parameters
+    ----------
+    number: int
+        number to be validated
+        """
+    if type(number) != int:
+        raise ValueError(f'The number {number} entered is not an integer')

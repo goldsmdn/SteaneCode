@@ -293,7 +293,7 @@ Only the case with 1 qubit has been fully tested.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">SteaneCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity_check_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">SteaneCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity_check_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.circuit.quantumcircuit.QuantumCircuit</span></code></p>
 <p>Generates the gates for one or two logical Qubits of the Steane code</p>
 <dl class="field-list simple">
@@ -304,9 +304,12 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <li><p><strong>codewords</strong> (<em>list</em>) – Valid codewords for the Steane code</p></li>
 <li><p><strong>ancilla</strong> (<em>bool</em>) – True if need to set up ancilla.  For some circuits these are not needed.</p></li>
 <li><p><strong>extend_ancilla</strong> (<em>bool</em>) – True if need to add extra ancilla for error correction without using MCT gates</p></li>
+<li><p><strong>fault_tolerant_b</strong> (<em>bool</em>) – True if need to set up scheme c for fault tolerant encoding with three rounds of measurement
+on the second logical qubit.</p></li>
 <li><p><strong>fault_tolerant_c</strong> (<em>bool</em>) – True if need to set up an extra qubit for fault tolerance</p></li>
 <li><p><strong>fault_tolerant_ancilla</strong> (<em>bool</em>) – True if need to set up fault tolerant ancilla</p></li>
 <li><p><strong>ancilla_rounds</strong> (<em>int</em>) – Number of rounds of ancilla measurement for fault tolerant ancilla</p></li>
+<li><p><strong>data_round</strong> (<em>int</em>) – Number of rounds of ancilla measurement for fault tolerant encoding</p></li>
 </ul>
 </dd>
 </dl>
@@ -365,8 +368,10 @@ The errors detected by the X operators are phase flips, so are corrected by CZ g
 <p class="rubric">Notes</p>
 <p>The ancilla qubits for the X operator are self.__mx
 The ancilla qubits for the Z operator are self.__mz</p>
-<p>There are more if there are fault tolerant ancilla.  In this case the classical measurement bits can support
+<p>There are more ancilla qubits if there are fault tolerant ancilla.  In this case the classical measurement bits can support
 multiple rounds of measurement.</p>
+<p>Also, multiple classical rounds of measurement are supported for Goto’s schemes b and c.  In scheme b
+the multiple classical rounds are only on the second qubit.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -375,7 +380,7 @@ multiple rounds of measurement.</p>
 <dd><p>Set up registers used based on number of logical qubits and whether error checking is needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>d</strong> (<em>int</em>) – Number of the logical “data” qubits to be initialised. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised. Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -507,14 +512,14 @@ Should be either 0 or 1 at present.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_measure">
-<span class="sig-name descname"><span class="pre">logical_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes gates to measure a logical qubit</p>
+<dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_measure_ancilla">
+<span class="sig-name descname"><span class="pre">logical_measure_ancilla</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure_ancilla" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes measurement of the ancilla qubits of a logical qubit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to measure. Should be either 0 or 1 at present.</p></li>
-<li><p><strong>ancilla_round</strong> (<em>int</em>) – Round of ancilla measurement</p></li>
+<li><p><strong>ancilla_round</strong> (<em>int</em>) – Round of ancilla measurement.  Can be more than one for fault tolerant ancilla.</p></li>
 </ul>
 </dd>
 </dl>
@@ -522,6 +527,23 @@ Should be either 0 or 1 at present.</p></li>
 <p>If there is more than one ancilla_round the classical measurements bit created above can be used.
 For example, if there are three rounds of measuremement three classical measurement bits are created,
 one for each round.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_measure_data">
+<span class="sig-name descname"><span class="pre">logical_measure_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes measurement of the data qubits of a logical qubit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to measure. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>measure_round</strong> (<em>int</em>) – Round of data measurement.  Can be more than one for scheme B or C.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>For Scheme B there are normally three rounds of measuremement for the second logical qubit and three classical measurement bits are created,
+one for each round.  For Scheme C there are also normally three rounds of measurement.</p>
 </dd></dl>
 
 <dl class="py method">

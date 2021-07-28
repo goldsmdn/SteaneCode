@@ -10,36 +10,47 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         Parameters
         ----------
         d : int
-            Number of logical "data" qubits to be initialised. Should be either 1 or 2 at present.
+            Number of logical "data" qubits to be initialised. 
+            Should be either 1 or 2 at present.
         parity_check_matrix : list
             Holds the parity check matrix from which the gates will be constructed.
         codewords : list
             Valid codewords for the Steane code
         ancilla : bool 
-            True if need to set up ancilla.  For some circuits these are not needed.
+            True if need to set up ancilla.  
+            For some circuits these are not needed.
         extend_ancilla : bool 
-            True if need to add extra ancilla for error correction without using MCT gates
+            True if need to add extra ancilla for error correction 
+            without using MCT gates
         fault_tolerant_b : bool
-            True if need to set up scheme c for fault tolerant encoding with three rounds of measurement
+            True if need to set up scheme c for fault tolerant encoding 
+            with three rounds of measurement
             on the second logical qubit.
         fault_tolerant_c : bool
             True if need to set up an extra qubit for fault tolerance
         fault_tolerant_ancilla : bool   
             True if need to set up fault tolerant ancilla
         ancilla_rounds : int
-            Number of rounds of ancilla measurement for fault tolerant ancilla
+            Number of rounds of ancilla measurement for 
+            fault tolerant ancilla
         data_round : int
-            Number of rounds of ancilla measurement for fault tolerant encoding
+            Number of rounds of ancilla measurement for 
+            fault tolerant encoding
         Notes
         -----
-        Uses super to inherit methods from parent.  The code is derived from the parity matrix.
-        The parity matrix is validated to ensure each row is orthogonal to each valid codeword.
-        The number of data qubits is calculated the length of rows parity matrix.  
-        The number of ancilla is calculated from the number of columns in the parity matrix.
+        Uses super to inherit methods from parent.  
+        The code is derived from the parity matrix.
+        The parity matrix is validated to ensure each row 
+        is orthogonal to each valid codeword.
+        The number of data qubits is calculated from the length 
+        of rows in the parity matrix.  
+        The number of ancilla is calculated from the number 
+        of columns in the parity matrix.
         Ancilla qubits are only set up if these are needed.
         For error correction without MCT gates these ancilla are extended.
         An extra qubit can be added for a fault tolerant logical zero.
-        Extra measurement ancilla are set up if there is more than one ancilla measurement round.
+        Extra measurement ancilla are set up if there is more than one 
+        ancilla measurement round.
         """
 
     def __init__(self, d, parity_check_matrix, codewords, ancilla = True, extend_ancilla = False, 

@@ -1,5 +1,6 @@
 """Class to handle logical qubits for the Steane and Bacon Shor code"""
 
+from typing import List
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from helper_functions import validate_integer
 
@@ -18,13 +19,17 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             True if need to set up ancilla.  For some circuits these are not needed.
         extend_ancilla : bool 
             True if need to add extra ancilla for error correction without using MCT gates
+        fault_tolerant_b : bool
+            True if need to set up scheme c for fault tolerant encoding with three rounds of measurement
+            on the second logical qubit.
         fault_tolerant_c : bool
             True if need to set up an extra qubit for fault tolerance
         fault_tolerant_ancilla : bool   
             True if need to set up fault tolerant ancilla
         ancilla_rounds : int
             Number of rounds of ancilla measurement for fault tolerant ancilla
-
+        data_round : int
+            Number of rounds of ancilla measurement for fault tolerant encoding
         Notes
         -----
         Uses super to inherit methods from parent.  The code is derived from the parity matrix.
@@ -37,8 +42,10 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         Extra measurement ancilla are set up if there is more than one ancilla measurement round.
         """
 
-    def __init__(self, d, parity_check_matrix, codewords, ancilla = True, extend_ancilla = False, fault_tolerant_c = False,
-                fault_tolerant_ancilla = False, ancilla_rounds = 1):
+    def __init__(self, d, parity_check_matrix, codewords, ancilla = True, extend_ancilla = False, 
+                fault_tolerant_b = False, fault_tolerant_c = False,
+                fault_tolerant_ancilla = False, ancilla_rounds = 1, data_rounds = 1):
+
         """Initialise qubit"""
         validate_integer(d)
         if d > 1:
@@ -54,19 +61,29 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         if not fault_tolerant_ancilla:
             if ancilla_rounds > 1:
                 raise ValueError("More than one round of measurement only needed with fault tolerant ancilla measurement")
+        if not fault_tolerant_b:
+            if not fault_tolerant_c:
+                if data_rounds > 1:
+                    raise ValueError("More than one round of measurement only needed with fault tolerant ancilla measurement")
+        if fault_tolerant_b:
+            if fault_tolerant_c:
+                raise ValueError("Fault tolerant preparation of the logical qubit must follow scheme B or C2")
         validate_integer(ancilla_rounds)
+        validate_integer(data_rounds)
         self.__d = d
         self.__ancilla = ancilla
         self.__extend_ancilla = extend_ancilla
+        self.__fault_tolerant_b = fault_tolerant_b
         self.__fault_tolerant_c = fault_tolerant_c
         self.__fault_tolerant_ancilla = fault_tolerant_ancilla
         self.__num_ancilla_rounds = ancilla_rounds
+        self.__num_data_rounds = data_rounds
         #number of data qubits is length of rows parity matrix 
         self.__num_data = len(parity_check_matrix[0])        
         #number of ancilla qubits is number of columns in the parity matrix.    
         self.__num_ancilla = len(parity_check_matrix)
         self.__num_extra_ancilla = 4        #four extra ancilla for decoding
-        self.__num_ft1 = 1                  #one ft ancilla for encoding
+        self.__num_ftc = 1                  #one ft ancilla for encoding in Scheme C
         self.__num_ft_anc = 4               # four fault tolerant ancilla
         self.__parity_check_matrix = parity_check_matrix
         self.__codewords = codewords
@@ -85,11 +102,22 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         The ancilla qubits for the X operator are self.__mx
         The ancilla qubits for the Z operator are self.__mz
 
-        There are more if there are fault tolerant ancilla.  In this case the classical measurement bits can support 
+        There are more ancilla qubits if there are fault tolerant ancilla.  In this case the classical measurement bits can support 
         multiple rounds of measurement.
+
+        Also, multiple classical rounds of measurement are supported for Goto's schemes b and c.  In scheme b
+        the multiple classical rounds are only on the second qubit.
         """
         self.__data = []                    #data qubits
-        self.__data_classical = []
+        if self.__fault_tolerant_b:
+            # split out the second list item 
+            # under scheme b repeated measurment is only needed of the second qubit
+            self.__data_classical = [ [], [[] for i in range(self.__num_data_rounds)]]
+        else:
+            self.__data_classical = []
+        if self.__fault_tolerant_c:
+            self.__ftc = []
+            self.__ftc_classical = [[] for i in range(self.__num_data_rounds)]
         if self.__ancilla:
             if self.__fault_tolerant_ancilla:
                 self.__mx = [[] for i in range(self.__d)]
@@ -104,9 +132,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         if self.__extend_ancilla: 
             self.__extra_ancilla = []
             self.__extra_ancilla_classical = []
-        if self.__fault_tolerant_c:
-            self.__ft1 = []
-            self.__ft1_classical = []
 
     def define_registers(self, d):
         """Set up registers used based on number of logical qubits and whether error checking is needed.
@@ -114,7 +139,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         Parameters
         ----------
         d : int
-            Number of the logical "data" qubits to be initialised. Should be either 0 or 1 at present.
+            Number of logical "data" qubits to be initialised. Should be either 0 or 1 at present.
 
         Notes
         -----
@@ -125,37 +150,55 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         list_of_all_registers = []
         for index1 in range(d):  
             #define label for logical qubits
-            self.__qubit_no = str(index1)
+            self.__qubit_no1 = str(index1)
             # Quantum registers
-            self.__data.append(QuantumRegister(self.__num_data, "data " + self.__qubit_no))
+            self.__data.append(QuantumRegister(self.__num_data, "data " + self.__qubit_no1))
             list_of_all_registers.append(self.__data[index1])
             if self.__ancilla:
                 if self.__fault_tolerant_ancilla:
                     for index2 in range(self.__num_ancilla):
                         self.__qubit_no2 = ' ' + str(index2)
-                        self.__mx[index1].append(QuantumRegister(self.__num_ft_anc, "ancilla X " + self.__qubit_no 
+                        self.__mx[index1].append(QuantumRegister(self.__num_ft_anc, "ancilla X " + self.__qubit_no1 
                                                                 + self.__qubit_no2))
                         list_of_all_registers.append(self.__mx[index1][index2])
                     for index2 in range(self.__num_ancilla):
                         self.__qubit_no2 = ' ' + str(index2)
-                        self.__mz[index1].append(QuantumRegister(self.__num_ft_anc, "ancilla Z " + self.__qubit_no 
+                        self.__mz[index1].append(QuantumRegister(self.__num_ft_anc, "ancilla Z " + self.__qubit_no1 
                                                                 + self.__qubit_no2))
                         list_of_all_registers.append(self.__mz[index1][index2])
                 else:
-                    self.__mx.append(QuantumRegister(self.__num_ancilla, "ancilla X " + self.__qubit_no))
-                    self.__mz.append(QuantumRegister(self.__num_ancilla, "ancilla Z " + self.__qubit_no))
+                    self.__mx.append(QuantumRegister(self.__num_ancilla, "ancilla X " + self.__qubit_no1))
+                    self.__mz.append(QuantumRegister(self.__num_ancilla, "ancilla Z " + self.__qubit_no1))
                     list_of_all_registers.append(self.__mx[index1])
                     list_of_all_registers.append(self.__mz[index1])
             if self.__extend_ancilla: 
-                self.__extra_ancilla.append(QuantumRegister(self.__num_extra_ancilla, name="extra ancilla" + self.__qubit_no)) 
+                self.__extra_ancilla.append(QuantumRegister(self.__num_extra_ancilla, name="extra ancilla" + self.__qubit_no1)) 
                 list_of_all_registers.append(self.__extra_ancilla[index1])
             if self.__fault_tolerant_c:
-               self.__ft1.append(QuantumRegister(self.__num_ft1, "fault tolerant " + self.__qubit_no))
-               list_of_all_registers.append(self.__ft1[index1])
+               self.__ftc.append(QuantumRegister(self.__num_ftc, "fault tolerant " + self.__qubit_no1))
+               list_of_all_registers.append(self.__ftc[index1])
 
             # Classical registers
-            self.__data_classical.append(ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no))
-            list_of_all_registers.append(self.__data_classical[index1])
+            if self.__fault_tolerant_b:
+                if index1 == 1:
+                    #add three classical registers to allow for three measurements of second register
+                    for index3 in range(self.__num_data_rounds):
+                        self.__qubit_no3 = str(index3)
+                        self.__data_classical[index1][index3] = (ClassicalRegister(self.__num_data, "measure_data " 
+                                                                        + self.__qubit_no1 + self.__qubit_no3))                                          
+                        list_of_all_registers.append(self.__data_classical[index1][index3])
+                else:
+                    self.__data_classical[index1] = (ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no1))
+                    list_of_all_registers.append(self.__data_classical[index1])
+            else:
+                self.__data_classical.append(ClassicalRegister(self.__num_data, "measure_data " + self.__qubit_no1))
+                list_of_all_registers.append(self.__data_classical[index1])
+            if self.__fault_tolerant_c:
+                for index3 in range(self.__num_data_rounds):
+                        self.__qubit_no3 = str(index3)
+                        self.__ftc_classical[index1].append(ClassicalRegister(self.__num_ftc, "measure_ft_data " 
+                                                                        + self.__qubit_no1 + self.__qubit_no3))                                         
+                        list_of_all_registers.append(self.__ftc_classical[index1][index3])
             if self.__ancilla:
                 if self.__fault_tolerant_ancilla:
                         for index2 in range(self.__num_ancilla):
@@ -163,27 +206,24 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                                 self.__qubit_no2 = str(index2)
                                 self.__qubit_no3 = str(index3)
                                 self.__mx_classical[index1][index2].append(ClassicalRegister(self.__num_ft_anc, "measure_ancilla_X "
-                                                                    + self.__qubit_no + self.__qubit_no2 + self.__qubit_no3))
+                                                                    + self.__qubit_no1 + self.__qubit_no2 + self.__qubit_no3))
                                 list_of_all_registers.append(self.__mx_classical[index1][index2][index3])
                         for index2 in range(self.__num_ancilla):
                             for index3 in range(self.__num_ancilla_rounds):
                                 self.__qubit_no2 = str(index2)
                                 self.__qubit_no3 = str(index3)
                                 self.__mz_classical[index1][index2].append(ClassicalRegister(self.__num_ft_anc, "measure_ancilla_Z " 
-                                                                    + self.__qubit_no + self.__qubit_no2 + self.__qubit_no3))
+                                                                    + self.__qubit_no1 + self.__qubit_no2 + self.__qubit_no3))
                                 list_of_all_registers.append(self.__mz_classical[index1][index2][index3])
                 else:
-                    self.__mx_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no))
-                    self.__mz_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no))
+                    self.__mx_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_X " + self.__qubit_no1))
+                    self.__mz_classical.append(ClassicalRegister(self.__num_ancilla, "measure_ancilla_Z " + self.__qubit_no1))
                     list_of_all_registers.append(self.__mx_classical[index1]) 
                     list_of_all_registers.append(self.__mz_classical[index1])
             if self.__extend_ancilla: 
                 self.__extra_ancilla_classical.append(
-                    ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no))
+                    ClassicalRegister(self.__num_extra_ancilla, "measure_extra_ancilla " + self.__qubit_no1))
                 list_of_all_registers.append(self.__extra_ancilla_classical[index1]) 
-            if self.__fault_tolerant_c:
-                self.__ft1_classical.append(ClassicalRegister(self.__num_ft1, "measure_error_correction " + self.__qubit_no))
-                list_of_all_registers.append(self.__ft1_classical[index1])
         return (list_of_all_registers)
     
     def validate_parity_matrix(self):
@@ -432,16 +472,56 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         else:
             self.h(self.__mx[logical_qubit])
             self.h(self.__mz[logical_qubit])
+
+    def logical_measure_data(self, logical_qubit = 0, measure_round = 1):
+        """Makes measurement of the data qubits of a logical qubit.
+
+        Parameters
+        ----------
+        logical_qubit : int
+            Number of the logical "data" qubits to measure. Should be either 0 or 1 at present.
+        measure_round : int
+            Round of data measurement.  Can be more than one for scheme B or C.
+
+        Notes
+        -----
+        For Scheme B there are normally three rounds of measuremement for the second logical qubit and three classical measurement bits are created,
+        one for each round.  For Scheme C there are also normally three rounds of measurement.
+        """
+        self._validate_logical_qubit_number(logical_qubit)
+        #need to measure the ancilla for each round
+        validate_integer(measure_round)
+
+        for index in range(self.__num_data):
+            if self.__fault_tolerant_b:
+                if logical_qubit == 1:
+                    round_index = measure_round - 1
+                    self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][round_index][index])  
+                else:
+                    self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][index])
+            elif self.__fault_tolerant_c:
+                if measure_round == self.__num_data_rounds:
+                    #final round only - measure all qubits
+                    self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][index])
+            else:
+                self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][index])
+        if self.__fault_tolerant_c:
+            if measure_round > self.__num_data_rounds:
+                raise ValueError (f'Data measurement qubits for only {self.__num_data_rounds} rounds are available')
+            measure_index = measure_round - 1
+            for index in range(self.__num_ftc):
+                self.measure(self.__ftc[logical_qubit][index],
+                        self.__ftc_classical[logical_qubit][measure_index][index]) 
         
-    def logical_measure(self, logical_qubit = 0, ancilla_round = 1):
-        """Makes gates to measure a logical qubit
+    def logical_measure_ancilla(self, logical_qubit = 0, ancilla_round = 1):
+        """Makes measurement of the ancilla qubits of a logical qubit.
 
             Parameters
             ----------
             logical_qubit : int
                 Number of the logical "data" qubits to measure. Should be either 0 or 1 at present.
             ancilla_round : int
-                Round of ancilla measurement
+                Round of ancilla measurement.  Can be more than one for fault tolerant ancilla.
 
             Notes
             -----
@@ -450,39 +530,32 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             one for each round.
         """
 
+        if not self.__ancilla:
+            raise ValueError('No qubits set up for ancilla measurements')
         self._validate_logical_qubit_number(logical_qubit)
+        #need to measure the ancilla for each round
         validate_integer(ancilla_round)
         if ancilla_round > self.__num_ancilla_rounds:
             raise ValueError (f'Ancilla measurement qubits for only {self.__num_ancilla_rounds} rounds are available')
         round_index = ancilla_round - 1
-        if self.__ancilla:
-            if self.__fault_tolerant_ancilla:
-                for index1 in range(self.__num_ancilla): 
-                    for index2 in range(self.__num_ft_anc):
-                        self.measure(self.__mx[logical_qubit][index1][index2], 
-                                self.__mx_classical[logical_qubit][index1][round_index][index2])
-                        self.measure(self.__mz[logical_qubit][index1][index2], 
-                                self.__mz_classical[logical_qubit][index1][round_index][index2])
-            else:
-                for index1 in range(self.__num_ancilla):
-                    self.measure(self.__mx[logical_qubit][index1], self.__mx_classical[logical_qubit][index1])
-                    self.measure(self.__mz[logical_qubit][index1], self.__mz_classical[logical_qubit][index1])
+        if self.__fault_tolerant_ancilla:
+            for index1 in range(self.__num_ancilla): 
+                for index2 in range(self.__num_ft_anc):
+                    self.measure(self.__mx[logical_qubit][index1][index2], 
+                            self.__mx_classical[logical_qubit][index1][round_index][index2])
+                    self.measure(self.__mz[logical_qubit][index1][index2], 
+                            self.__mz_classical[logical_qubit][index1][round_index][index2])
+        else:
+            for index1 in range(self.__num_ancilla):
+                self.measure(self.__mx[logical_qubit][index1], self.__mx_classical[logical_qubit][index1])
+                self.measure(self.__mz[logical_qubit][index1], self.__mz_classical[logical_qubit][index1])
         self.barrier()
-
         if ancilla_round == 1:
-            #only need to measure other qubits once
+            #only need to measure extended ancilla qubits once
             if self.__extend_ancilla:
                 for index in range(self.__num_extra_ancilla):
                     self.measure(self.__extra_ancilla[logical_qubit][index], 
                                 self.__extra_ancilla_classical[logical_qubit][index])
-
-            if self.__fault_tolerant_c:
-                for index in range(self.__num_ft1):
-                    self.measure(self.__ft1[logical_qubit][index],
-                                self.__ft1_classical[logical_qubit][index])
-
-            for index in range(self.__num_data):
-                self.measure(self.__data[logical_qubit][index], self.__data_classical[logical_qubit][index])
 
     def correct_errors(self, logical_qubit = 0, mct = False):
         """ Produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
@@ -928,9 +1001,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Uses Goto's method C
         """
         self._validate_logical_qubit_number(logical_qubit)
+        #reset
+        for index in range(self.__num_ftc):
+            self.reset(self.__ftc[logical_qubit][0])
         for qubit in control_qubits:
             self.cx(self.__data[logical_qubit][qubit], 
-                    self.__ft1[logical_qubit][0])
+                    self.__ftc[logical_qubit][0])
         
 class BaconShorCodeLogicalQubit(QuantumCircuit):
     """Generates the gates for one logical Qubits of the Bacon Shor code

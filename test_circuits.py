@@ -49,7 +49,8 @@ def test_error_correction():
             qubit.force_X_error(index)   #force X error for testing
             qubit.set_up_ancilla()
             qubit.correct_errors(0, mct)
-            qubit.logical_measure()
+            qubit.logical_measure_data()
+            qubit.logical_measure_ancilla()
             qt = transpile(qubit, basis_gates = BASIS_GATE_SET)
             result = execute(qt, SIMULATOR, shots = SHOTS).result()
             counts = result.get_counts(qt)

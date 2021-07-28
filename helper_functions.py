@@ -69,7 +69,8 @@ def count_valid_output_strings(counts, codewords, data_location = 0):
     Parameters
     ----------
     counts : dictionary
-        holds the observed populations for each combination of qubit
+        holds the observed populations for each 
+        combination of qubit
     codewords : list
         holds allowed codewords 
     data_location : int 
@@ -84,7 +85,8 @@ def count_valid_output_strings(counts, codewords, data_location = 0):
 
     Notes
     -----
-    This code was originally designed to handle the codewords in a list of lists, but will also work fine
+    This code was originally designed to handle the codewords 
+    in a list of lists, but will also work fine
     with a list of strings.
 
     """
@@ -113,7 +115,8 @@ def count_valid_output_strings(counts, codewords, data_location = 0):
     return(count_valid, count_invalid)
 
 
-def find_individual_ancilla_values(ancilla_values, data_qubits, ancilla_qubits, label_string = ''):
+def find_individual_ancilla_values(ancilla_values, data_qubits, 
+                                    ancilla_qubits, label_string = ''):
     """Returns the count of individual ancilla bit strings as a dictionary.
 
     Parameters
@@ -121,7 +124,8 @@ def find_individual_ancilla_values(ancilla_values, data_qubits, ancilla_qubits, 
     ancilla_values : dict
         holds the counts for each combination of ancilla bit strings.
     data_qubits : int
-        number of data qubits used as an offset to calculate the ancilla number
+        number of data qubits used as an offset to calculate 
+        the ancilla number
     ancilla_qubits : int
         number of ancilla qubits
     label_string : str
@@ -130,11 +134,15 @@ def find_individual_ancilla_values(ancilla_values, data_qubits, ancilla_qubits, 
     Returns
     -------
     individual_ancilla_values : dict
-        dictionary containing the count of individual ancilla bit string
+        dictionary containing the count of individual 
+        ancilla bit string
     """
 
     #initialise dictionary to hold values
-    individual_ancilla_values = {label_string + str(count): 0 for count in range(data_qubits + 1, data_qubits + 1 + ancilla_qubits) }
+    individual_ancilla_values = {label_string + str(count): 0 
+                                for count in range(data_qubits + 1, 
+                                                    data_qubits + 1 + 
+                                                    ancilla_qubits) }
 
     for ancilla, value in ancilla_values.items():
         for count in range(ancilla_qubits):
@@ -281,7 +289,8 @@ def correct_qubit(data_in, ancilla, data_qubits):
 
     Notes
     -----
-    The ancilla number calculation needs to take into account that the ancilla bit string is reversed
+    The ancilla number calculation needs to take into account 
+    that the ancilla bit string is reversed
     compared to numbering of the databits shown on the Qiskit diagrams.  
     This code corrects bit string errors only, not phase errors
         
@@ -298,13 +307,15 @@ def correct_qubit(data_in, ancilla, data_qubits):
     return(data_out)
 
 def flip_code_words(codewords_in):
-    """Returns a list of codewords for the logical one from the list of codewords for the logical zero
+    """Returns a list of codewords for the logical one from 
+    the list of codewords for the logical zero
     by flipped each bit of the input codewords.
 
     Parameters
     ----------
     codewords : list
-        logical codewords in seven bit Steane code data qubit for the logical zero
+        logical codewords in seven bit Steane code data qubit 
+        for the logical zero
     
     Returns
     -------
@@ -327,8 +338,11 @@ def flip_code_words(codewords_in):
         codewords_out.append(new_string)
     return(codewords_out)
 
-def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set, two_qubit_gate_set,
-              all = True, noisy_qubit_list = []):
+def get_noise(p_meas, single_qubit_error, 
+                two_qubit_error, single_qubit_gate_set, 
+                two_qubit_gate_set, all = True, 
+                noisy_qubit_list = []
+                ):
     """Returns a noise model
 
     Parameters
@@ -367,20 +381,36 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
     if all:
         if noisy_qubit_list != []:
             raise ValueError('Errors are applied to all qubits but a list of qubits with errors is given')    
-        noise_model.add_all_qubit_quantum_error(error_meas, 'measure') # measurement error is applied to measurements
-        noise_model.add_all_qubit_quantum_error(error_gate1, single_qubit_gate_set)  # single qubit gate errors
-        noise_model.add_all_qubit_quantum_error(error_gate3, two_qubit_gate_set) # two qubit gate error is applied to two qubit gates
+        noise_model.add_all_qubit_quantum_error(error_meas, 'measure') 
+        # measurement error is applied to measurements
+        noise_model.add_all_qubit_quantum_error(error_gate1, 
+                                                single_qubit_gate_set)  
+        # single qubit gate errors
+        noise_model.add_all_qubit_quantum_error(error_gate3,
+                                                 two_qubit_gate_set) 
+        # two qubit gate error is applied to two qubit gates
     else:
         if noisy_qubit_list == []:
             raise ValueError('A list of qubits must be supplied if errors are not to be applied to all qubits')
         #read through list of list of error gates
         for gate_list in noisy_qubit_list:
             for gate_index1 in gate_list:
-                noise_model.add_quantum_error(error_meas, 'measure', [gate_index1]) # measurement error is applied to measurements
-                noise_model.add_quantum_error(error_gate1, single_qubit_gate_set, [gate_index1])  # single qubit gate errors
+                noise_model.add_quantum_error(error_meas, 'measure', 
+                                                [gate_index1]
+                                                ) 
+                # measurement error is applied to measurements
+                noise_model.add_quantum_error(error_gate1, 
+                                                single_qubit_gate_set, 
+                                                [gate_index1]
+                                                )  
+                # single qubit gate errors
                 for gate_index2 in gate_list:
                     if gate_index1 != gate_index2:
-                        noise_model.add_quantum_error(error_gate3, two_qubit_gate_set, [gate_index1, gate_index2])    
+                        noise_model.add_quantum_error(error_gate3, 
+                                                    two_qubit_gate_set, 
+                                                    [gate_index1,
+                                                     gate_index2]
+                                                     )    
     return noise_model   
 
 def mean_of_list(list_in):
@@ -423,7 +453,8 @@ def calculate_standard_error(list_in):
     elif len(list_in) == 1:
         standard_deviation = 0
         standard_error = 0
-        print('Unable to carry out standard error calcuation with one point.  Standard error of 0 used.')
+        print('Unable to carry out standard error calcuation with one point. ')  
+        print('Standard error of 0 used.')
     else:
         raise ValueError('f The number of iterations must be positive {iterations} used')
     return(standard_deviation, standard_error)
@@ -444,7 +475,8 @@ def convert_codewords(codewords):
 
     Notes
     -----
-    No longer needed at present as codeword is a list of strings but retained in case needed in future.
+    No longer needed at present as codeword is a list of strings 
+    but retained in case needed in future.
     """
 
     list_of_strings = []
@@ -456,9 +488,10 @@ def convert_codewords(codewords):
 
     return(list_of_strings)
 
-def summarise_logical_counts(counts, logical_zero, logical_one, data1_location, data2_location):
-    """Simplifies bit strings for logical operations to show each qubit as 0, 1, or 2
-       instead of the full bit string.
+def summarise_logical_counts(counts, logical_zero, logical_one, 
+                            data1_location, data2_location):
+    """Simplifies bit strings for logical operations 
+    to show each qubit as 0, 1, or 2 instead of the full bit string.
         0.  means qubit is the logical zero
         1.  means qubit is the logical one
         2.  means qubit is outside code space

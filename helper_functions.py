@@ -62,7 +62,7 @@ def find_parity(counts, data_qubits):
         parity_count[str(parity)] = new_count
     return(parity_count)
 
-def count_valid_output_strings(counts, codewords, data_location):
+def count_valid_output_strings(counts, codewords, data_location = 0):
     """Finds the number of valid and invalid output bit strings in a given location in a dictionary representing
     the counts for each output bit string.
 
@@ -92,7 +92,10 @@ def count_valid_output_strings(counts, codewords, data_location):
     count_invalid = 0
     for key, value in counts.items():
         #split out data part of key
-        data = key.split()[data_location]
+        if data_location == 0:
+            data = key
+        else:
+            data = key.split()[data_location]
         #need to reverse the data string showing the relevant qubits as 
         #the codewords and the data have a different format 
         reversed_data_string = string_reverse(data)
@@ -373,12 +376,10 @@ def get_noise(p_meas, single_qubit_error, two_qubit_error, single_qubit_gate_set
         #read through list of list of error gates
         for gate_list in noisy_qubit_list:
             for gate_index1 in gate_list:
-                #print(f'single_qubit_noise applied to gate {gate_index1}')
                 noise_model.add_quantum_error(error_meas, 'measure', [gate_index1]) # measurement error is applied to measurements
                 noise_model.add_quantum_error(error_gate1, single_qubit_gate_set, [gate_index1])  # single qubit gate errors
                 for gate_index2 in gate_list:
                     if gate_index1 != gate_index2:
-                        #print(f'two_gate_noise_applied to {[gate_index1]} and {[gate_index2]} ')
                         noise_model.add_quantum_error(error_gate3, two_qubit_gate_set, [gate_index1, gate_index2])    
     return noise_model   
 
@@ -544,3 +545,82 @@ def validate_integer(number):
         """
     if type(number) != int:
         raise ValueError(f'The number {number} entered is not an integer')
+
+def process_FT_results(counts, codewords, scheme):
+    """Process results from fault tolerant processing.
+
+    Parameters
+    ----------
+    counts : dictionary
+        results for analysis
+    codewords : list
+        list of valid codewords
+    scheme : string    
+        fault tolerance scheme for Goto.
+        B = repeated data.   
+        C = one extra qubit
+        N = non fault tolerant  
+        S = single qubit
+    
+    Returns
+    -------
+    error_rate : float
+        error rate calculated
+    rejected : int
+        strings rejected
+    accepted : int
+        strings accepted for further processing
+    valid : int
+        accepted strings in the code space
+    invalid : int
+        rejected strings not in the code space
+    """
+    valid = 0
+    invalid = 0
+    rejected = 0
+    accepted = 0
+    for string, count in counts.items():
+        processed = False
+        #need to reverse strings because Qiskit reverses them
+        if scheme in ['B', 'C']: #Goto fault tolerance scheme B or C
+            string0 = string_reverse(string.split()[3])
+            string1 = string_reverse(string.split()[2])
+            string2 = string_reverse(string.split()[1])
+            string3 = string_reverse(string.split()[0])
+        elif scheme =='S': #single qubit
+            string0 = string
+        elif scheme == 'N': #non fault tolerant
+            string0 = string_reverse(string)
+        else:
+            raise ValueError(f'Only scheme B, C, N and S are supported.  Scheme {scheme} is not recognised')
+        if scheme == 'B': 
+            if string1 in codewords:
+                if string2 in codewords:  
+                    if string3 in codewords:
+                        processed = True  #processed in scheme B
+        elif scheme == 'C':
+            if string1 == string2:
+                if string2 == string3:  
+                    if string1 == '0':
+                        processed = True  #processed in scheme C  
+        elif scheme in ['S','N']:
+            processed = True  #no rejection processed in schemes S and N
+        else:
+            raise ValueError(f'Only scheme B, C, N and S are supported.  Scheme {scheme} is not recognised')
+        if processed:
+            accepted = accepted + count
+            if string0 in codewords:  #would be reported as valid
+                valid = valid + count
+            else:
+                invalid = invalid + count
+        else:
+            rejected = rejected + count
+    if accepted != 0:
+        error_rate = invalid / accepted
+    else:   
+        error_rate = 0
+        print('Error rate not defined as no strings accepted')
+    return(error_rate, rejected, accepted, valid, invalid)
+
+    
+

@@ -1,7 +1,6 @@
 import pytest
 from pytest import raises
 from circuits import SteaneCodeLogicalQubit
-#from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, Aer
 from qiskit import execute, Aer
 from qiskit.compiler import transpile
 import numpy as np
@@ -15,14 +14,17 @@ from helper_functions import (
     flip_code_words,
     count_valid_output_strings,
     mean_of_list,
-    calculate_standard_error
+    calculate_standard_error, 
+    correct_qubit 
     )
 
 SINGLE_GATE_SET = ['id', 'ry', 'rx']
 TWO_GATE_SET = ['rxx']
 BASIS_GATE_SET = SINGLE_GATE_SET + TWO_GATE_SET
 TEST_X_QUBIT = 4
+DATA_QUBITS = 7
 SHOTS = 100     #Number of shots to run    
+SPACE = ' '
 SIMULATOR = Aer.get_backend('qasm_simulator')
 
 parity_check_matrix = ['0001111',
@@ -44,9 +46,11 @@ def test_error_correction():
     """Checks that every X error gets corrected by error correction with and without MCT gates"""
     for mct in [True, False]:
         for index in range(7):
-            qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, codewords, extend_ancilla = True)
+            qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, 
+                                            codewords, extend_ancilla = True)
             qubit.set_up_logical_zero()
-            qubit.force_X_error(index)   #force X error for testing
+            qubit.force_X_error(index)   
+            #force X error for testing
             qubit.set_up_ancilla()
             qubit.correct_errors(0, mct)
             qubit.logical_measure_data()
@@ -58,16 +62,39 @@ def test_error_correction():
             error_rate = count_invalid / SHOTS
             assert error_rate == 0.0
 
+def test_software_error_correction():
+    """Checks that every X error gets corrected by software"""
+for index in range(7):
+    qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, codewords)
+    qubit.set_up_logical_zero()
+    qubit.force_X_error(index)   #force X error for testing
+    qubit.set_up_ancilla()
+    qubit.logical_measure_data()
+    qubit.logical_measure_ancilla()
+    result = execute(qubit, SIMULATOR, shots = SHOTS).result()
+    counts = result.get_counts(qubit)
+    corrected_counts = {}
+    for key, values in counts.items():
+        #split out key
+        data = key.split()[2]
+        x_ancilla = key.split()[0]
+        z_ancilla = key.split()[1]
+        data = key.split()[2]
+        corrected_data = correct_qubit(data, x_ancilla, DATA_QUBITS)
+        corrected_key = x_ancilla + SPACE + z_ancilla + SPACE + corrected_data
+        value_found = corrected_counts.get(corrected_key)
+        if value_found:
+            corrected_counts[corrected_key] = value_found + values
+        else:
+            corrected_counts.update({corrected_key: values})   
+    count_valid, count_invalid = count_valid_output_strings(corrected_counts, codewords, 2)
+    error_rate = count_invalid / SHOTS
+    assert error_rate == 0.0
+
 def test_no_error_correction_with_two_logical_qubits():
     """Checks that an error is thrown when a circuit is set up for extra ancilla for two logical qubits"""
     with raises(ValueError, match = "Can't set up extra ancilla with two logical qubits due to memory size restrictions"):
         SteaneCodeLogicalQubit(2, parity_check_matrix, codewords, extend_ancilla = True)
-
-#def test_logical_qubit_reference_in_range():
-#    """Checks that an error is thrown when setting up a logical zero with an index greater than 1"""
-#   qubit = SteaneCodeLogicalQubit(2, parity_check_matrix, codewords)
-#    with raises(ValueError, match = 'The qubit to be processed must be indexed as 0 or 1 at present'):
-#        qubit.set_up_logical_zero(2)
 
 def test_physical_qubit_reference_in_range():
     """Checks that an error is thrown when indexing a physical qubit outside the valid range"""

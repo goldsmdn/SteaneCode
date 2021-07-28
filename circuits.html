@@ -177,7 +177,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised. Should be either 1 or 2 at present.
+<li><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised.
+Should be either 1 or 2 at present.
 Only the case with 1 qubit has been fully tested.</p></li>
 <li><p><strong>data_qubits</strong> (<em>int</em>) – Number of data qubits.  Usually nine.</p></li>
 <li><p><strong>ancilla_qubits</strong> (<em>int</em>) – Number of ancilla qubits.  Usually two.</p></li>
@@ -196,14 +197,17 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.define_registers">
 <span class="sig-name descname"><span class="pre">define_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.define_registers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up registers used based on number of logical qubits and whether error checking is needed.</p>
+<dd><p>Set up registers used based on number of logical qubits
+and whether error checking is needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>d</strong> (<em>int</em>) – Number of the logical “data” qubits to be initialised. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>d</strong> (<em>int</em>) – Number of the logical “data” qubits to be initialised.
+Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The registers are stored in a list so that they can be indexed to simplify subsequent code.</p>
+<p>The registers are stored in a list so that they can be
+indexed to simplify subsequent code.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -212,7 +216,8 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dd><p>Adds an encoding non fault tolerant gate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to encode. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to encode.
+Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -224,7 +229,8 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to encode. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to encode.
+Should be either 0 or 1 at present.</p></li>
 <li><p><strong>logical_one</strong> (<em>Bool</em>) – If true set up the logical one.  Otherwise set up the logical zero.</p></li>
 </ul>
 </dd>
@@ -235,8 +241,12 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.logical_measure">
 <span class="sig-name descname"><span class="pre">logical_measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.logical_measure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to measure a logical qubit
-:param logical_qubit: Number of the logical “data” qubit to measure. Should be either 0 or 1 at present.
-:type logical_qubit: int</p>
+:param logical_qubit: Number of the logical “data” qubit to measure.</p>
+<blockquote>
+<div><p>Should be either 0 or 1 at present.</p>
+</div></blockquote>
+<dl class="field-list simple">
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -245,7 +255,8 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dd><p>Function to set up x stabilizers or ancilla</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to set up ancilla for. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to set up ancilla for.
+Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -257,7 +268,8 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to test. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to test.
+Should be either 0 or 1 at present.</p></li>
 <li><p><strong>test_x_qubit</strong> (<em>int</em>) – Qubit on which X error is introduced</p></li>
 </ul>
 </dd>
@@ -270,7 +282,8 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dd><p>Function to set up z stabilizers or ancilla</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to set up ancilla for. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to set up ancilla for.
+Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -282,7 +295,8 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to test. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to test.
+Should be either 0 or 1 at present.</p></li>
 <li><p><strong>test_z_qubit</strong> (<em>int</em>) – Qubit on which Z error is introduced</p></li>
 </ul>
 </dd>
@@ -299,29 +313,40 @@ Only the case with 1 qubit has been fully tested.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised. Should be either 1 or 2 at present.</p></li>
+<li><p><strong>d</strong> (<em>int</em>) – Number of logical “data” qubits to be initialised.
+Should be either 1 or 2 at present.</p></li>
 <li><p><strong>parity_check_matrix</strong> (<em>list</em>) – Holds the parity check matrix from which the gates will be constructed.</p></li>
 <li><p><strong>codewords</strong> (<em>list</em>) – Valid codewords for the Steane code</p></li>
-<li><p><strong>ancilla</strong> (<em>bool</em>) – True if need to set up ancilla.  For some circuits these are not needed.</p></li>
-<li><p><strong>extend_ancilla</strong> (<em>bool</em>) – True if need to add extra ancilla for error correction without using MCT gates</p></li>
-<li><p><strong>fault_tolerant_b</strong> (<em>bool</em>) – True if need to set up scheme c for fault tolerant encoding with three rounds of measurement
+<li><p><strong>ancilla</strong> (<em>bool</em>) – True if need to set up ancilla.
+For some circuits these are not needed.</p></li>
+<li><p><strong>extend_ancilla</strong> (<em>bool</em>) – True if need to add extra ancilla for error correction
+without using MCT gates</p></li>
+<li><p><strong>fault_tolerant_b</strong> (<em>bool</em>) – True if need to set up scheme c for fault tolerant encoding
+with three rounds of measurement
 on the second logical qubit.</p></li>
 <li><p><strong>fault_tolerant_c</strong> (<em>bool</em>) – True if need to set up an extra qubit for fault tolerance</p></li>
 <li><p><strong>fault_tolerant_ancilla</strong> (<em>bool</em>) – True if need to set up fault tolerant ancilla</p></li>
-<li><p><strong>ancilla_rounds</strong> (<em>int</em>) – Number of rounds of ancilla measurement for fault tolerant ancilla</p></li>
-<li><p><strong>data_round</strong> (<em>int</em>) – Number of rounds of ancilla measurement for fault tolerant encoding</p></li>
+<li><p><strong>ancilla_rounds</strong> (<em>int</em>) – Number of rounds of ancilla measurement for
+fault tolerant ancilla</p></li>
+<li><p><strong>data_round</strong> (<em>int</em>) – Number of rounds of ancilla measurement for
+fault tolerant encoding</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Uses super to inherit methods from parent.  The code is derived from the parity matrix.
-The parity matrix is validated to ensure each row is orthogonal to each valid codeword.
-The number of data qubits is calculated the length of rows parity matrix.
-The number of ancilla is calculated from the number of columns in the parity matrix.
+<p>Uses super to inherit methods from parent.
+The code is derived from the parity matrix.
+The parity matrix is validated to ensure each row
+is orthogonal to each valid codeword.
+The number of data qubits is calculated from the length
+of rows in the parity matrix.
+The number of ancilla is calculated from the number
+of columns in the parity matrix.
 Ancilla qubits are only set up if these are needed.
 For error correction without MCT gates these ancilla are extended.
 An extra qubit can be added for a fault tolerant logical zero.
-Extra measurement ancilla are set up if there is more than one ancilla measurement round.</p>
+Extra measurement ancilla are set up if there is more than one
+ancilla measurement round.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.correct_errors">
 <span class="sig-name descname"><span class="pre">correct_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.correct_errors" title="Permalink to this definition">¶</a></dt>
@@ -392,17 +417,20 @@ are needed for error checking and the round of measurements needed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.dummy_decoding">
 <span class="sig-name descname"><span class="pre">dummy_decoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.dummy_decoding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instead of the full decoding circuit a dummy circuit is set up for testing.</p>
+<dd><p>Instead of the full decoding circuit a dummy circuit
+is set up for testing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_string</strong> (<em>str</em>) – String to control gates set up</p></li>
-<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply logical Z gate on. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply logical Z gate on.
+Should be either 0 or 1 at present.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This function is not currently used by any workbook but is retained in case it is useful in future.</p>
+<p>This function is not currently used by any workbook but is
+retained in case it is useful in future.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -471,8 +499,10 @@ Should be either 0 or 1 at present.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logical_control_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit which controls the CX gate</p></li>
-<li><p><strong>logical_target_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit which is the target for the CX gate</p></li>
+<li><p><strong>logical_control_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit
+which controls the CX gate</p></li>
+<li><p><strong>logical_target_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit
+which is the target for the CX gate</p></li>
 </ul>
 </dd>
 </dl>
@@ -484,7 +514,8 @@ Should be either 0 or 1 at present.</p></li>
 <dd><p>Apply a logical H gate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply Hadamard on. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply Hadamard on.
+Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -495,7 +526,8 @@ Should be either 0 or 1 at present.</p></li>
 <dd><p>Apply a logical X gate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply logical X gate to. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply logical X gate to.
+Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -506,7 +538,8 @@ Should be either 0 or 1 at present.</p></li>
 <dd><p>Apply a logical Z gate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply logical Z gate on. Should be either 0 or 1 at present.</p>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to apply logical Z gate on.
+Should be either 0 or 1 at present.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -518,14 +551,18 @@ Should be either 0 or 1 at present.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to measure. Should be either 0 or 1 at present.</p></li>
-<li><p><strong>ancilla_round</strong> (<em>int</em>) – Round of ancilla measurement.  Can be more than one for fault tolerant ancilla.</p></li>
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to measure.
+Should be either 0 or 1 at present.</p></li>
+<li><p><strong>ancilla_round</strong> (<em>int</em>) – Round of ancilla measurement.
+Can be more than one for fault tolerant ancilla.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If there is more than one ancilla_round the classical measurements bit created above can be used.
-For example, if there are three rounds of measuremement three classical measurement bits are created,
+<p>If there is more than one ancilla_round the classical
+measurements bit created above can be used.
+For example, if there are three rounds of measuremement
+three classical measurement bits are created,
 one for each round.</p>
 </dd></dl>
 

@@ -202,7 +202,8 @@ result of calculation</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>No longer needed at present as codeword is a list of strings but retained in case needed in future.</p>
+<p>No longer needed at present as codeword is a list of strings
+but retained in case needed in future.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -225,7 +226,8 @@ result of calculation</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The ancilla number calculation needs to take into account that the ancilla bit string is reversed
+<p>The ancilla number calculation needs to take into account
+that the ancilla bit string is reversed
 compared to numbering of the databits shown on the Qiskit diagrams.
 This code corrects bit string errors only, not phase errors</p>
 </dd></dl>
@@ -238,7 +240,8 @@ the counts for each output bit string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>counts</strong> (<em>dictionary</em>) – holds the observed populations for each combination of qubit</p></li>
+<li><p><strong>counts</strong> (<em>dictionary</em>) – holds the observed populations for each
+combination of qubit</p></li>
 <li><p><strong>codewords</strong> (<em>list</em>) – holds allowed codewords</p></li>
 <li><p><strong>data_location</strong> (<em>int</em>) – location of the data string</p></li>
 </ul>
@@ -252,7 +255,8 @@ the counts for each output bit string.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This code was originally designed to handle the codewords in a list of lists, but will also work fine
+<p>This code was originally designed to handle the codewords
+in a list of lists, but will also work fine
 with a list of strings.</p>
 </dd></dl>
 
@@ -285,13 +289,15 @@ with a list of strings.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ancilla_values</strong> (<em>dict</em>) – holds the counts for each combination of ancilla bit strings.</p></li>
-<li><p><strong>data_qubits</strong> (<em>int</em>) – number of data qubits used as an offset to calculate the ancilla number</p></li>
+<li><p><strong>data_qubits</strong> (<em>int</em>) – number of data qubits used as an offset to calculate
+the ancilla number</p></li>
 <li><p><strong>ancilla_qubits</strong> (<em>int</em>) – number of ancilla qubits</p></li>
 <li><p><strong>label_string</strong> (<em>str</em>) – first part of label</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>individual_ancilla_values</strong> – dictionary containing the count of individual ancilla bit string</p>
+<dd class="field-even"><p><strong>individual_ancilla_values</strong> – dictionary containing the count of individual
+ancilla bit string</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
@@ -322,11 +328,13 @@ with a list of strings.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.flip_code_words">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">flip_code_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codewords_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.flip_code_words" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of codewords for the logical one from the list of codewords for the logical zero
+<dd><p>Returns a list of codewords for the logical one from
+the list of codewords for the logical zero
 by flipped each bit of the input codewords.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>codewords</strong> (<em>list</em>) – logical codewords in seven bit Steane code data qubit for the logical zero</p>
+<dd class="field-odd"><p><strong>codewords</strong> (<em>list</em>) – logical codewords in seven bit Steane code data qubit
+for the logical zero</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>Codewords_out</strong> – bit flipped input codeword</p>
@@ -498,17 +506,15 @@ S = single qubit</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.summarise_logical_counts">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">summarise_logical_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.summarise_logical_counts" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Simplifies bit strings for logical operations to show each qubit as 0, 1, or 2</dt><dd><dl class="simple">
-<dt>instead of the full bit string.</dt><dd><ol class="arabic simple" start="0">
+<dd><p>Simplifies bit strings for logical operations
+to show each qubit as 0, 1, or 2 instead of the full bit string.</p>
+<blockquote>
+<div><ol class="arabic simple" start="0">
 <li><p>means qubit is the logical zero</p></li>
 <li><p>means qubit is the logical one</p></li>
 <li><p>means qubit is outside code space</p></li>
 </ol>
-</dd>
-</dl>
-</dd>
-</dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

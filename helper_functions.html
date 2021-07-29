@@ -426,11 +426,12 @@ logical zero, or outside the code base.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>counts</strong> (<em>dictionary</em>) – results for analysis</p></li>
 <li><p><strong>codewords</strong> (<em>list</em>) – list of valid codewords</p></li>
-<li><p><strong>scheme</strong> (<em>string</em>) – fault tolerance scheme for Goto.
-B = repeated data.
-C = one extra qubit
-N = non fault tolerant
-S = single qubit</p></li>
+<li><p><strong>scheme</strong> (<em>string</em>) – Fault tolerance scheme from Goto:
+B = repeated logical zero data qubit,
+C = one extra qubit,
+B = repeated logical data qubit with all qubits reset to zero,
+N = non fault tolerant,
+S = single qubit.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

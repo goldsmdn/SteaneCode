@@ -493,6 +493,22 @@ Should be either 0 or 1 at present.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_data_reset">
+<span class="sig-name descname"><span class="pre">logical_data_reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_data_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the data for a logical qubnit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on. Should be either 0 or 1 at present.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function is needed for a fault tolerant encoding scheme.
+Usually the data qubits are rest as part of setting up the logical zero.
+In one scheme the logical zero is not set up, instead a reset only
+is needed.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_gate_CX">
 <span class="sig-name descname"><span class="pre">logical_gate_CX</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_control_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_target_qubit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_gate_CX" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a logical CX gate</p>

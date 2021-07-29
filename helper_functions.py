@@ -589,11 +589,12 @@ def process_FT_results(counts, codewords, scheme):
     codewords : list
         list of valid codewords
     scheme : string    
-        fault tolerance scheme for Goto.
-        B = repeated data.   
-        C = one extra qubit
-        N = non fault tolerant  
-        S = single qubit
+        Fault tolerance scheme from Goto:
+        B = repeated logical zero data qubit,    
+        C = one extra qubit, 
+        B = repeated logical data qubit with all qubits reset to zero, 
+        N = non fault tolerant,    
+        S = single qubit.
     
     Returns
     -------
@@ -615,7 +616,7 @@ def process_FT_results(counts, codewords, scheme):
     for string, count in counts.items():
         processed = False
         #need to reverse strings because Qiskit reverses them
-        if scheme in ['B', 'C']: #Goto fault tolerance scheme B or C
+        if scheme in ['B', 'C', 'D']: #Goto fault tolerance scheme B or C
             string0 = string_reverse(string.split()[3])
             string1 = string_reverse(string.split()[2])
             string2 = string_reverse(string.split()[1])
@@ -625,8 +626,9 @@ def process_FT_results(counts, codewords, scheme):
         elif scheme == 'N': #non fault tolerant
             string0 = string_reverse(string)
         else:
-            raise ValueError(f'Only scheme B, C, N and S are supported.  Scheme {scheme} is not recognised')
-        if scheme == 'B': 
+            raise ValueError(f'Only scheme B, C, D, N and S are supported.' + 
+                            '  Scheme {scheme} is not recognised')
+        if scheme in ['B', 'D']: 
             if string1 in codewords:
                 if string2 in codewords:  
                     if string3 in codewords:
@@ -639,7 +641,8 @@ def process_FT_results(counts, codewords, scheme):
         elif scheme in ['S','N']:
             processed = True  #no rejection processed in schemes S and N
         else:
-            raise ValueError(f'Only scheme B, C, N and S are supported.  Scheme {scheme} is not recognised')
+            raise ValueError(f'Only scheme B, C, D, N and S are supported.' + 
+                            '  Scheme {scheme} is not recognised')
         if processed:
             accepted = accepted + count
             if string0 in codewords:  #would be reported as valid

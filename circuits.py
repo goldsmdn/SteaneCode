@@ -362,6 +362,25 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 column_number = items[1]
                 self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
 
+    def logical_data_reset (self, logical_qubit = 0):
+        """ Resets the data for a logical qubnit
+
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
+
+            Notes
+            -----
+            This function is needed for a fault tolerant encoding scheme.  
+            Usually the data qubits are rest as part of setting up the logical zero.
+            In one scheme the logical zero is not set up, instead a reset only
+            is needed. 
+        """
+        for index in range (self.__num_data):
+            self.reset(self.__data[logical_qubit][index])  
+
+    
     def force_X_error(self, physical_qubit, logical_qubit = 0):
         """ Introduce an X error on one physical qubit
 

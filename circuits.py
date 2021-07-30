@@ -504,21 +504,54 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.h(self.__mz[logical_qubit])
         self.barrier()
 
-    def logical_measure_data(self, logical_qubit = 0, measure_round = 1):
+    #def logical_measure_data(self, logical_qubit = 0, measure_round = 1):
+    def logical_measure_data(self, logical_qubit = 0):
         """Makes measurement of the data qubits of a logical qubit.
 
         Parameters
         ----------
         logical_qubit : int
-            Number of the logical "data" qubits to measure. Should be either 0 or 1 at present.
+            Number of the logical "data" qubits to measure. 
+            Should be either 0 or 1 at present.
+        #measure_round : int
+        #    Round of data measurement.  
+        # Can be more than one for scheme B or C.
+
+        #Notes
+        #-----
+        #For Scheme B there are normally three rounds of measuremement for the second logical qubit and three classical measurement bits are created,
+        #one for each round.  For Scheme C there are also normally three rounds of measurement.
+        #"""
+        self._validate_logical_qubit_number(logical_qubit)
+        #need to measure the ancilla for each round
+        #validate_integer(measure_round)
+
+        for index in range(self.__num_data):
+            self.measure(self.__data[logical_qubit][index], 
+                        self.__data_classical[logical_qubit][index])
+
+    def logical_measure_data_FT(self, logical_qubit = 0, measure_round = 1):
+        """Makes measurement of the data qubits of a logical qubit needed for FT schemes
+
+        Parameters
+        ----------
+        logical_qubit : int
+            Number of the logical "data" qubits to measure. 
+            Should be either 0 or 1 at present.
         measure_round : int
             Round of data measurement.  Can be more than one for scheme B or C.
 
         Notes
         -----
-        For Scheme B there are normally three rounds of measuremement for the second logical qubit and three classical measurement bits are created,
-        one for each round.  For Scheme C there are also normally three rounds of measurement.
+        For Scheme B there are normally three rounds of measuremement for the second 
+        logical qubit and three classical measurement bits are created,
+        one for each round.  
+        For Scheme C there are also normally three rounds of measurement.
         """
+        if not self.__fault_tolerant_b:
+            if not self.__fault_tolerant_c:
+                raise ValueError('Please only use FT meaurement for when FT logical encoding is used')
+        
         self._validate_logical_qubit_number(logical_qubit)
         #need to measure the ancilla for each round
         validate_integer(measure_round)
@@ -528,26 +561,17 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 if logical_qubit == 1:
                     round_index = measure_round - 1
                     self.measure(self.__data[logical_qubit][index], 
-                                self.__data_classical[logical_qubit][round_index][index])  
+                            self.__data_classical[logical_qubit][round_index][index]) 
                 else:
-                    self.measure(self.__data[logical_qubit][index], 
-                                self.__data_classical[logical_qubit][index])
-            elif self.__fault_tolerant_c:
-                if measure_round == self.__num_data_rounds:
-                    #final round only - measure all qubits
-                    self.measure(self.__data[logical_qubit][index], 
-                                self.__data_classical[logical_qubit][index])
-            else:
-                self.measure(self.__data[logical_qubit][index], 
-                            self.__data_classical[logical_qubit][index])
+                    raise ValueError('for error scheme B only carry out measurement on qubit 1 ')
         if self.__fault_tolerant_c:
             if measure_round > self.__num_data_rounds:
                 raise ValueError (f'Data measurement qubits for only {self.__num_data_rounds} round(s) are available')
             measure_index = measure_round - 1
             for index in range(self.__num_ftc):
                 self.measure(self.__ftc[logical_qubit][index],
-                        self.__ftc_classical[logical_qubit][measure_index][index]) 
-        
+                        self.__ftc_classical[logical_qubit][measure_index][index])  
+
     def logical_measure_ancilla(self, logical_qubit = 0, ancilla_round = 1):
         """Makes measurement of the ancilla qubits of a logical qubit.
 

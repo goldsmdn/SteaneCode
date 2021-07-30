@@ -584,19 +584,45 @@ one for each round.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_measure_data">
-<span class="sig-name descname"><span class="pre">logical_measure_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure_data" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logical_measure_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes measurement of the data qubits of a logical qubit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to measure. Should be either 0 or 1 at present.</p></li>
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to measure.
+Should be either 0 or 1 at present.</p></li>
+<li><p><strong>#measure_round</strong> (<em>int</em>) – </p></li>
+<li><p><strong>measurement.</strong> (<em>#    Round of data</em>) – </p></li>
+<li><p><strong>C.</strong> (<em># Can be more than one for scheme B or</em>) – </p></li>
+<li><p><strong>#Notes</strong> – </p></li>
+<li><p><strong>#-----</strong> – </p></li>
+<li><p><strong>created</strong> (<em>#For Scheme B there are normally three rounds of measuremement for the second logical qubit and three classical measurement bits are</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>:param :
+:param #one for each round.  For Scheme C there are also normally three rounds of measurement.:
+:param #:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.logical_measure_data_FT">
+<span class="sig-name descname"><span class="pre">logical_measure_data_FT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.logical_measure_data_FT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes measurement of the data qubits of a logical qubit needed for FT schemes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to measure.
+Should be either 0 or 1 at present.</p></li>
 <li><p><strong>measure_round</strong> (<em>int</em>) – Round of data measurement.  Can be more than one for scheme B or C.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>For Scheme B there are normally three rounds of measuremement for the second logical qubit and three classical measurement bits are created,
-one for each round.  For Scheme C there are also normally three rounds of measurement.</p>
+<p>For Scheme B there are normally three rounds of measuremement for the second
+logical qubit and three classical measurement bits are created,
+one for each round.
+For Scheme C there are also normally three rounds of measurement.</p>
 </dd></dl>
 
 <dl class="py method">

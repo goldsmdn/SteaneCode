@@ -6,6 +6,8 @@ from statistics import stdev
 from math import sqrt
 from datetime import datetime
 
+SPACE = ' '
+
 def string_reverse(input_string):
     """Reverses a string.
 
@@ -488,7 +490,7 @@ def convert_codewords(codewords):
 
     return(list_of_strings)
 
-def summarise_logical_counts(counts, logical_zero, logical_one, 
+def summarise_logical_counts(counts, logical_zero_strings, logical_one_strings, 
                             data1_location, data2_location):
     """Simplifies bit strings for logical operations 
     to show each qubit as 0, 1, or 2 instead of the full bit string.
@@ -500,10 +502,10 @@ def summarise_logical_counts(counts, logical_zero, logical_one,
     ----------
     counts : dict
         results of computation
-    logical_zero : list    
-        list of list of items in logical zero
-    logical_one : list     
-        list of list of items in logical zero
+    logical_zero_strings : list    
+        list of strings in logical zero
+    logical_one_strings : list     
+        list of strings in logical zero
     data1_location : int
         where in the counts bit string data1 is held
     data2_location : int
@@ -515,8 +517,8 @@ def summarise_logical_counts(counts, logical_zero, logical_one,
         simplified results
     """
     # convert list of list to list of strings
-    logical_zero_strings = convert_codewords(logical_zero)
-    logical_one_strings = convert_codewords(logical_one)
+    #logical_zero_strings = convert_codewords(logical_zero)
+    #logical_one_strings = convert_codewords(logical_one)
 
     #set up dictionary to hold answer
     new_counts = {str(i) + str(j):0 for i in range(3) for j in range(3)}
@@ -552,7 +554,7 @@ def look_up_data(input_string, logical_zero, logical_one):
         result of look-up"""
 
     #outside code range unless found
-    output_string = '2'
+    output_string = 'E'
     for string in logical_zero:
         if string == input_string:
             output_string = '0'
@@ -579,7 +581,13 @@ def validate_integer(number):
     if type(number) != int:
         raise ValueError(f'The number {number} entered is not an integer')
 
-def process_FT_results(counts, codewords, scheme):
+def process_FT_results(counts, codewords, data_meas_strings = ['0'], 
+                        anc_zero = '0', anc_one = '1',
+                        verbose = False, data_qubits = 7,  
+                        ancilla_start = 0, data_meas_start = 0, data_start = 0,
+                        ancilla_types = 2, ancilla_qubits = 0, ancilla_meas_repeats = 1,
+                        data_meas_qubits = 0, data_meas_repeats = 0
+                        ):
     """Process results from fault tolerant processing.
 
     Parameters
@@ -587,76 +595,167 @@ def process_FT_results(counts, codewords, scheme):
     counts : dictionary
         results for analysis
     codewords : list
-        list of valid codewords
-    scheme : string    
-        Fault tolerance scheme from Goto:
-        B = repeated logical zero data qubit,    
-        C = one extra qubit, 
-        B = repeated logical data qubit with all qubits reset to zero, 
-        N = non fault tolerant,    
-        S = single qubit.
+        list of valid data codewords
+    data_meas_strings: string
+        allowed strings for the data measurement bits
+    anc_zero : string
+        allowed strings for the ancilla zero
+    anc_one : string
+        allowed strings for the ancilla one
+    verbose : bool
+        if true enables printing
+    data_qubits : int
+        Length of data bit string.  Usually seven
+    ancilla_start : int
+        starting place for ancilla (if any)
+    data_meas_start : int
+        starting place for data measurement qubits (if any)
+    data_start : int
+        starting place for data string
+    ancilla_types : int
+        number of different ancilla types.  Normally 2 (X and Z) or 0
+    ancilla_qubits : int
+        number of strings for each ancilla qubits.  Normally 0, 1 or 3
+    ancilla_meas_repeats : int
+        number of times ancilla measurements are repeated.  Normally 3 or 1
+    data_meas_qubits : int
+        number of distinct data measurement qubits.  Normally 7, 1 or 0
+    data_meas_repeats:
+        number of times data measurements are repeated.  Normally 3 or 1.
     
     Returns
     -------
     error_rate : float
         error rate calculated
     rejected : int
-        strings rejected
+        strings rejected for validation
     accepted : int
-        strings accepted for further processing
+        strings accepted for validation
     valid : int
-        accepted strings in the code space
+        strings validated and found to be in the code space
     invalid : int
-        rejected strings not in the code space
+        strings validated and found to not be in the code space
+
+    Notes
+    -----
+    This function takes the output string, splits it, and determines if it passes
+    data and ancilla checks.  If so the data keyword is validated.
     """
+
+    anc_meas_strings = [anc_zero, anc_one]
+    validate_integer(ancilla_start)
+    validate_integer(data_meas_start)
+    validate_integer(data_start)
+    validate_integer(ancilla_types)
+    validate_integer(ancilla_qubits)
+    validate_integer(ancilla_meas_repeats)
+    validate_integer(data_meas_qubits)
+    validate_integer(data_meas_repeats)  
+    total_keys = ancilla_types * ancilla_qubits * ancilla_meas_repeats
+    total_keys = total_keys + (data_meas_qubits * data_meas_repeats) + 1   
     valid = 0
     invalid = 0
+    ancilla_rejected = 0
+    ancilla_accepted = 0
+    data_rejected = 0
+    data_accepted = 0
     rejected = 0
     accepted = 0
     for string, count in counts.items():
-        processed = False
+        qubit_strings = []
+        data_syndrome_strings = []
+        data_OK = False
+        for i in range(total_keys):
+            qubit_strings.append(string.split()[i])
+        data_string = qubit_strings[data_start]
+        for i in range(data_meas_start, data_meas_start + data_meas_repeats):
         #need to reverse strings because Qiskit reverses them
-        if scheme in ['B', 'C', 'D']: #Goto fault tolerance scheme B or C
-            string0 = string_reverse(string.split()[3])
-            string1 = string_reverse(string.split()[2])
-            string2 = string_reverse(string.split()[1])
-            string3 = string_reverse(string.split()[0])
-        elif scheme =='S': #single qubit
-            string0 = string
-        elif scheme == 'N': #non fault tolerant
-            string0 = string_reverse(string)
+            data_syndrome_strings.append(string_reverse(qubit_strings[i]))  
+        if data_meas_repeats == 3:
+                if data_syndrome_strings[2] in data_meas_strings:
+                    if data_syndrome_strings[1] in data_meas_strings:
+                        if data_syndrome_strings[0] in data_meas_strings:
+                            data_OK = True
+        elif data_meas_repeats == 0:
+            data_OK = True
         else:
-            raise ValueError(f'Only scheme B, C, D, N and S are supported.' + 
-                            '  Scheme {scheme} is not recognised')
-        if scheme in ['B', 'D']: 
-            if string1 in codewords:
-                if string2 in codewords:  
-                    if string3 in codewords:
-                        processed = True  #processed in scheme B
-        elif scheme == 'C':
-            if string1 == string2:
-                if string2 == string3:  
-                    if string1 == '0':
-                        processed = True  #processed in scheme C  
-        elif scheme in ['S','N']:
-            processed = True  #no rejection processed in schemes S and N
-        else:
-            raise ValueError(f'Only scheme B, C, D, N and S are supported.' + 
-                            '  Scheme {scheme} is not recognised')
-        if processed:
-            accepted = accepted + count
-            if string0 in codewords:  #would be reported as valid
-                valid = valid + count
+            raise Exception('At present only 3 or zero data measurements are coded for')
+        if data_OK:
+            data_accepted = data_accepted + count
+            if ancilla_qubits == 0:
+                #no ancilla
+                ancilla_accepted = data_accepted
+                ancilla_rejected = 0
+                ancilla_OK = True
+                corrected_data_string = data_string
+            elif ancilla_qubits == 1:
+                #simple case without fault tolerance.  No check on ancilla possible
+                ancilla_OK = True
+                ancilla_accepted = data_accepted
+                ancilla_rejected = 0
+                if ancilla_meas_repeats != 1: 
+                    raise Exception('can not handle multiple measurements on one ancilla qubit')
+                ancilla = qubit_strings[ancilla_start]
+                corrected_data_string = correct_qubit(data_string, ancilla, data_qubits)    
+            elif ancilla_qubits == 3:
+                #complex case with fault tolerance
+                count_ancilla_OK = 0
+                X = ['' for i in range(ancilla_qubits)]
+                for i in range(ancilla_types):
+                    for j in range(ancilla_meas_repeats):
+                        first = i * (ancilla_qubits * ancilla_meas_repeats) + j * ancilla_meas_repeats
+                        second = first + 1
+                        third = second + 1
+                        if qubit_strings[third] == qubit_strings[second]:
+                            if qubit_strings[second] == qubit_strings[first]:
+                                if qubit_strings[first] in anc_meas_strings:
+                                    count_ancilla_OK = count_ancilla_OK + 1
+                                    if i == 0:
+                                        #only interested in X values
+                                        if qubit_strings[first] in anc_zero:
+                                            X[j] = '0'
+                                        elif qubit_strings[first] in anc_one:
+                                            X[j] = '1'
+                                        else:
+                                            raise Exception('Error in processing strings for i, j, k = {i}, {j}, {k}')
+                if count_ancilla_OK == ancilla_qubits * ancilla_types:
+                    ancilla_OK = True
+                    ancilla_accepted = ancilla_accepted + count
+                    #always first three ancilla with Steane code
+                    ancilla = X[0] + X[1] + X[2]
+                    corrected_data_string = correct_qubit(data_string, ancilla, data_qubits)
+                else:
+                    ancilla_OK = False
+                    ancilla_rejected = ancilla_rejected + count
             else:
-                invalid = invalid + count
+                raise Exception('Can only process ancilla strings of 0, 1 or 3 qubits')
+            if ancilla_OK:
+                #need to reverse string because of Qisit convention
+                if string_reverse(corrected_data_string) in codewords:
+                    valid = valid + count
+                else:
+                    invalid = invalid + count
         else:
-            rejected = rejected + count
-    if accepted != 0:
-        error_rate = invalid / accepted
+            data_rejected = data_rejected + count
+
+    if ancilla_accepted != 0:
+        # calculate on ancilla_accepted because this always holds the amounts to be validated
+        error_rate = invalid / ancilla_accepted
     else:   
         error_rate = 0
         print('Error rate not defined as no strings accepted')
+    rejected = data_rejected + ancilla_rejected
+    accepted = ancilla_accepted 
+    if verbose:
+        print(f'At the data validation stage')        
+        print(f'There are {data_rejected} strings rejected and {data_accepted} strings submitted for processing')
+        print(f'Making {data_rejected + data_accepted} in total submitted for data processing')
+        print()
+        print(f'At the ancilla validation stage')   
+        print(f'There are {ancilla_rejected} strings rejected and {ancilla_accepted} strings submitted for validation')
+        print(f'Making {ancilla_rejected + ancilla_accepted} in total submitted to check against ancilla') 
+        print()
+        print(f'Of these {ancilla_accepted} strings validated there are {valid} valid strings and {invalid} invalid_strings')
+        print(f'The error rate is {error_rate:.4f}')
     return(error_rate, rejected, accepted, valid, invalid)
-
-    
 

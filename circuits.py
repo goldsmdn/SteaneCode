@@ -1285,6 +1285,18 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
         self.barrier()
         return
 
+    def reset_stabilizers(self, logical_qubit = 0):
+        """Function to set up z stabilizers or ancilla
+
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to set up ancilla for. 
+            Should be either 0 or 1 at present.
+        """
+        for ancilla in range(self.__ancilla_qubits):
+            self.reset(self.__ancilla[logical_qubit][ancilla])
+    
     def z_stabilizers(self, logical_qubit = 0):
         """Function to set up z stabilizers or ancilla
 
@@ -1294,7 +1306,6 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
             Number of the logical "data" qubit to set up ancilla for. 
             Should be either 0 or 1 at present.
         """
-
         for ancilla in range (0 , self.__ancillas):
             for count in range(self.__blocks):
                 first_qubit = count + self.__blocks * ancilla 

@@ -58,7 +58,7 @@ def test_error_correction():
             qt = transpile(qubit, basis_gates = BASIS_GATE_SET)
             result = execute(qt, SIMULATOR, shots = SHOTS).result()
             counts = result.get_counts(qt)
-            count_valid, count_invalid = count_valid_output_strings(counts, codewords, 3)
+            count_valid, count_invalid, count_outside_codeword = count_valid_output_strings(counts, codewords, 3)
             error_rate = count_invalid / SHOTS
             assert error_rate == 0.0
 
@@ -87,7 +87,7 @@ for index in range(7):
             corrected_counts[corrected_key] = value_found + values
         else:
             corrected_counts.update({corrected_key: values})   
-    count_valid, count_invalid = count_valid_output_strings(corrected_counts, codewords, 2)
+    count_valid, count_invalid, count_outside_codeword = count_valid_output_strings(corrected_counts, codewords, 2)
     error_rate = count_invalid / SHOTS
     assert error_rate == 0.0
 
@@ -148,7 +148,7 @@ def test_count_valid_output_strings():
         '010 000 0100000': 1, # valid
     }
 
-    count_valid, count_invalid = count_valid_output_strings(counts, codewords, 2)
+    count_valid, count_invalid, count_outside_codeword = count_valid_output_strings(counts, codewords, 2)
     assert count_valid == 3  #calcuLated from example above
     assert count_invalid == 2
 

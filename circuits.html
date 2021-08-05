@@ -421,9 +421,10 @@ the multiple classical rounds are only on the second qubit.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The registers are stored in a list so that they can be indexed to simplify subsequent code.
-The registers required depends on the number of logical qubits, whether extra ancilla qubits
-are needed for error checking and the round of measurements needed.</p>
+<p>The quantum and classical registers are stored in a list so that they can be indexed by logical qubit
+to simplify subsequent code.
+The registers needed depend on the number of logical qubits, whether extra ancilla qubits
+are needed for fault tolerance and the number of round of measurements needed.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -647,8 +648,8 @@ For Scheme C there are also normally three rounds of measurement.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The ancilla needed are determined from the parity matrix.  Fault tolerant logic is included to use four
-ancilla qubits, set these up in a GHZ, and then apply a CZ gate to each one individually.</p>
+<p>The ancilla needed are determined from the parity matrix.  Fault tolerant logic sets up four
+ancilla qubits, set these up in a GHZ, and then apply a CZ gate to each one individually and then decomputes the GHZ gate.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -665,9 +666,9 @@ ancilla qubits, set these up in a GHZ, and then apply a CZ gate to each one indi
 </dl>
 <p class="rubric">Notes</p>
 <p>Columns of the parity matrix with only one entry are prepared in the <a href="#id1"><span class="problematic" id="id2">|</span></a>+&gt; state.
-CNOT gates from these <a href="#id3"><span class="problematic" id="id4">|</span></a>+&gt; state to the parity matrix entries in the same row which are unity.</p>
-<p>If reduced = True possible unnecessary duplicate CNOT gates are identified.  If possible two CNOT gates are removed and replaced by one
-new CNOT gates.</p>
+CX gates from these <a href="#id3"><span class="problematic" id="id4">|</span></a>+&gt; state to the parity matrix entries in the same row which are unity.</p>
+<p>If reduced = True possible unnecessary duplicate CX gates are identified.
+If possible two CX gates are removed and replaced by one new CX gates.</p>
 </dd></dl>
 
 <dl class="py method">

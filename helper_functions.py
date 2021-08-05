@@ -64,7 +64,7 @@ def find_parity(counts, data_qubits):
         parity_count[str(parity)] = new_count
     return(parity_count)
 
-def count_valid_output_strings(counts, codewords, data_location = 0):
+def count_valid_output_strings(counts, codewords, data_location = 0, post_selection = False):
     """Finds the number of valid and invalid output bit strings in a given location in a dictionary representing
     the counts for each output bit string.
 
@@ -77,23 +77,29 @@ def count_valid_output_strings(counts, codewords, data_location = 0):
         holds allowed codewords 
     data_location : int 
         location of the data string
+    post_selection : bool
+        if true then only strings in logical zero are invalid.
+        Strings outside the codespace are counted separately.
 
     Returns
     -------
-    Count_valid : int
+    count_valid : int
         Number of valid bit strings
-    Count_invalid : in
+    count_invalid : int
         Number of invalid bit strings
+    count_outside_codeword : int
+        Number of strings outside codespace.
 
     Notes
     -----
     This code was originally designed to handle the codewords 
     in a list of lists, but will also work fine
-    with a list of strings.
+    with a list of strings.  
 
     """
     count_valid = 0
     count_invalid = 0
+    count_outside_codeword = 0
     for key, value in counts.items():
         #split out data part of key
         if data_location == 0:
@@ -103,18 +109,21 @@ def count_valid_output_strings(counts, codewords, data_location = 0):
         #need to reverse the data string showing the relevant qubits as 
         #the codewords and the data have a different format 
         reversed_data_string = string_reverse(data)
-        flag = False
-        for items in codewords:
-            #turn the codeword list into a string if presented as a list
-            #not really needed any more but kept
-            codeword_string = ''.join(map(str, items))
-            if reversed_data_string == codeword_string:
-                flag = True
-        if flag == True:
-            count_valid = count_valid + value
+        if post_selection:
+            logical_zero = codewords
+            logical_one = flip_code_words(codewords)
+            if reversed_data_string in logical_zero:
+                count_valid = count_valid + value
+            elif reversed_data_string in logical_one:
+                count_invalid = count_invalid + value
+            else:
+                count_outside_codeword = count_outside_codeword + value
         else:
-            count_invalid = count_invalid + value
-    return(count_valid, count_invalid)
+            if reversed_data_string in codewords:
+                count_valid = count_valid + value
+            else:
+                count_invalid = count_invalid + value
+    return(count_valid, count_invalid, count_outside_codeword)
 
 
 def find_individual_ancilla_values(ancilla_values, data_qubits, 
@@ -586,7 +595,8 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
                         verbose = False, data_qubits = 7,  
                         ancilla_start = 0, data_meas_start = 0, data_start = 0,
                         ancilla_types = 2, ancilla_qubits = 0, ancilla_meas_repeats = 1,
-                        data_meas_qubits = 0, data_meas_repeats = 0
+                        data_meas_qubits = 0, data_meas_repeats = 0,
+                        post_selection = False
                         ):
     """Process results from fault tolerant processing.
 
@@ -620,9 +630,11 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
         number of times ancilla measurements are repeated.  Normally 3 or 1
     data_meas_qubits : int
         number of distinct data measurement qubits.  Normally 7, 1 or 0
-    data_meas_repeats:
+    data_meas_repeats: int
         number of times data measurements are repeated.  Normally 3 or 1.
-    
+    post_select: bool
+        if true then only strings in logical zero are invalid
+
     Returns
     -------
     error_rate : float
@@ -661,6 +673,7 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
     data_accepted = 0
     rejected = 0
     accepted = 0
+    outside_codewords = 0
     for string, count in counts.items():
         qubit_strings = []
         data_syndrome_strings = []
@@ -731,10 +744,20 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
                 raise Exception('Can only process ancilla strings of 0, 1 or 3 qubits')
             if ancilla_OK:
                 #need to reverse string because of Qisit convention
-                if string_reverse(corrected_data_string) in codewords:
-                    valid = valid + count
+                if post_selection:
+                    logical_zero = codewords
+                    logical_one = flip_code_words(codewords)  
+                    if string_reverse(corrected_data_string) in logical_zero:
+                        valid = valid + count
+                    elif string_reverse(corrected_data_string) in logical_one:
+                        invalid = invalid + count
+                    else:
+                        outside_codewords = outside_codewords + count
                 else:
-                    invalid = invalid + count
+                    if string_reverse(corrected_data_string) in codewords:
+                        valid = valid + count
+                    else:
+                        invalid = invalid + count
         else:
             data_rejected = data_rejected + count
 
@@ -756,6 +779,29 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
         print(f'Making {ancilla_rejected + ancilla_accepted} in total submitted to check against ancilla') 
         print()
         print(f'Of these {ancilla_accepted} strings validated there are {valid} valid strings and {invalid} invalid_strings')
+        if post_selection:
+            print(f'There were {outside_codewords} strings that were neither logical one or logical zero')
         print(f'The error rate is {error_rate:.4f}')
     return(error_rate, rejected, accepted, valid, invalid)
+
+def get_parity_check_matrix():
+    """the parity matrix is stored in one place"""
+    parity_check_matrix =   ['0001111',
+                            '0110011',
+                            '1010101'
+                            ]
+    return(parity_check_matrix)
+
+def get_codewords():
+    """the codewords are stored in one place"""
+    codewords =['0000000',
+                '1010101',
+                '0110011',
+                '1100110',
+                '0001111',
+                '1011010',
+                '0111100',
+                '1101001'
+                ]
+    return(codewords)
 

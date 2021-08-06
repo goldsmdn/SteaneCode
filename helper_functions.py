@@ -244,9 +244,9 @@ def string_ancilla_mask(location, length):
     Parameters
     ----------
     location : int
-        bit which should be 1 
+        location of the bit which should be set to '1' in the mask
     length : int
-        length of string
+        length of string in the mask
         
     Returns
     -------
@@ -285,7 +285,7 @@ def correct_qubit(data_in, ancilla, data_qubits):
 
     Parameters
     ----------
-    data : str
+    data_in : str
         input data bit string
     ancilla : str
         three bit ancilla logical Z code
@@ -312,8 +312,8 @@ def correct_qubit(data_in, ancilla, data_qubits):
         data_out = data_in
     else:
         bin_ancilla = string_reverse(ancilla)
-        dec_ancilla = int(bin_ancilla, 2)
-        ancilla_mask = string_ancilla_mask(dec_ancilla, data_qubits)
+        int_ancilla = int(bin_ancilla, 2)
+        ancilla_mask = string_ancilla_mask(int_ancilla, data_qubits)
         data_out = strings_AND_bitwise(data_in, ancilla_mask)  
     return(data_out)
 
@@ -541,7 +541,10 @@ def summarise_logical_counts(counts, logical_zero_strings, logical_one_strings,
         new_data1 = look_up_data(reverse1, logical_zero_strings, logical_one_strings)
         new_data2 = look_up_data(reverse2, logical_zero_strings, logical_one_strings)
         new_key = new_data1 + new_data2
-        new_counts[new_key] = new_counts[new_key] + value
+        if new_counts.get(new_key) == None: 
+             new_counts.update({new_key: value})
+        else:
+            new_counts[new_key] = new_counts[new_key] + value
     return(new_counts)
 
 def look_up_data(input_string, logical_zero, logical_one):
@@ -563,13 +566,19 @@ def look_up_data(input_string, logical_zero, logical_one):
         result of look-up"""
 
     #outside code range unless found
-    output_string = 'E'
-    for string in logical_zero:
-        if string == input_string:
-            output_string = '0'
-    for string in logical_one:
-        if string == input_string:
-            output_string = '1'
+    #output_string = 'E'
+    #for string in logical_zero:
+    #    if string == input_string:
+    #        output_string = '0'
+    #for string in logical_one:
+    #    if string == input_string:
+    #        output_string = '1'
+    if input_string in logical_zero:
+        output_string = '0'
+    elif input_string in logical_one:
+        output_string = '1'
+    else:
+        output_string = 'E'
     return(output_string)
 
 def print_time():
@@ -681,6 +690,7 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
         for i in range(total_keys):
             qubit_strings.append(string.split()[i])
         data_string = qubit_strings[data_start]
+        #print('data_string',data_string)
         for i in range(data_meas_start, data_meas_start + data_meas_repeats):
         #need to reverse strings because Qiskit reverses them
             data_syndrome_strings.append(string_reverse(qubit_strings[i]))  
@@ -743,16 +753,20 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
             else:
                 raise Exception('Can only process ancilla strings of 0, 1 or 3 qubits')
             if ancilla_OK:
+                #print('string_reverse(corrected_data_string)',string_reverse(corrected_data_string))
                 #need to reverse string because of Qisit convention
                 if post_selection:
                     logical_zero = codewords
                     logical_one = flip_code_words(codewords)  
                     if string_reverse(corrected_data_string) in logical_zero:
                         valid = valid + count
+                        #print('valid',string_reverse(corrected_data_string))
                     elif string_reverse(corrected_data_string) in logical_one:
                         invalid = invalid + count
+                        #print('invalid',string_reverse(corrected_data_string))
                     else:
                         outside_codewords = outside_codewords + count
+                        #print('outside_codewords',string_reverse(corrected_data_string))
                 else:
                     if string_reverse(corrected_data_string) in codewords:
                         valid = valid + count

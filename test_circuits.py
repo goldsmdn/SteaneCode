@@ -15,7 +15,7 @@ from helper_functions import (
     count_valid_output_strings,
     mean_of_list,
     calculate_standard_error, 
-    correct_qubit 
+    correct_qubit,
     )
 
 SINGLE_GATE_SET = ['id', 'ry', 'rx']

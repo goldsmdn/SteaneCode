@@ -524,7 +524,6 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.h(self.__mz[logical_qubit])
         self.barrier()
 
-    #def logical_measure_data(self, logical_qubit = 0, measure_round = 1):
     def logical_measure_data(self, logical_qubit = 0):
         """Makes measurement of the data qubits of a logical qubit.
 
@@ -672,9 +671,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 raise ValueError("errors can only be corrected for one or two logical qubit at present")
         else:
             if logical_qubit !=0:
-                raise ValueError("errors can only be corrected for one logical qubit at present if mct as not used ")
+                raise ValueError("errors can only be corrected for one logical qubit at present if MCT as not used ")
             if not self.__extend_ancilla: 
-                raise ValueError("extra ancilla are needed to correct errors without mct")    
+                raise ValueError("extra ancilla are needed to correct errors without MCT")    
     
         transpose_parity = self._transpose_parity()
 
@@ -745,18 +744,25 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             for qubit in range(self.__num_data):
                 bit_list = transpose_parity[qubit]
                 qubit_data_item = qubit_data.get(qubit)
-                count = qubit_data_item.get("count")           
+                count = qubit_data_item.get("count")     
+                print(bit_list, 'bit_list')      
                 if count == 2:      
-                    for bit_index in range(self.__num_ancilla): 
-                        first_bit = '0'
-                        second_bit = '0'   
-                        if count == 2:   # need a CCNOT gate
-                            for bit_index in range(self.__num_ancilla): 
-                                if bit_list[bit_index] == '1':
-                                    if first_bit == '0':
-                                        first_bit = bit_index
-                                    else:
-                                        second_bit = bit_index
+                    #first bit and second bit are set to values of index where both 
+                    #parity matrix have a one.
+                    #initialise variables
+                    first_bit = 0
+                    second_bit = 0
+                    for bit_index1 in range(self.__num_ancilla): 
+                        if bit_list[bit_index1] == '1':
+                        # need a CCNOT gate
+                            for bit_index2 in range(self.__num_ancilla): 
+                                if bit_index1 != bit_index2:
+                                    if bit_list[bit_index2] == '1':
+                                        print('bit_index1, bit_list[bit_index1]', bit_index1, bit_list[bit_index1] )
+                                        print('bit_index2, bit_list[bit_index2]', bit_index2, bit_list[bit_index2] )
+                                        first_bit = bit_index1
+                                        second_bit = bit_index2
+                                        print('first_bit, second_bit', first_bit, second_bit)
                     self.ccx(self.__mz[logical_qubit][first_bit], 
                             self.__mz[logical_qubit][second_bit], 
                             self.__extra_ancilla[logical_qubit][extra_ancilla])

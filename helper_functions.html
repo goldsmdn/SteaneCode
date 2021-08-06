@@ -213,7 +213,7 @@ but retained in case needed in future.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str</em>) – input data bit string</p></li>
+<li><p><strong>data_in</strong> (<em>str</em>) – input data bit string</p></li>
 <li><p><strong>ancilla</strong> (<em>str</em>) – three bit ancilla logical Z code</p></li>
 <li><p><strong>data_qubits</strong> (<em>int</em>) – length of bit string</p></li>
 </ul>
@@ -480,8 +480,8 @@ data and ancilla checks.  If so the data keyword is validated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>location</strong> (<em>int</em>) – bit which should be 1</p></li>
-<li><p><strong>length</strong> (<em>int</em>) – length of string</p></li>
+<li><p><strong>location</strong> (<em>int</em>) – location of the bit which should be set to ‘1’ in the mask</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – length of string in the mask</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

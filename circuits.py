@@ -281,26 +281,28 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
     def set_up_logical_zero(self, logical_qubit = 0, reduced = True):
         """Set up logical zero for data qubit
 
-        Parameters
-        ----------
-        logical_qubit: int
-            Number of the logical "data" qubit to initialise. 
-            Should be either 0 or 1 at present.
-        reduced : bool
-            Checks to see if any gates are duplicated
+            Parameters
+            ----------
+            logical_qubit: int
+                Number of the logical "data" qubit to initialise. 
+                Should be either 0 or 1 at present.
+            reduced : bool
+                Checks to see if any gates are duplicated
 
-        Notes
-        -----
+            Notes
+            -----
             Columns of the parity matrix with only one entry are 
-            prepared in the |+> state.
-            CX gates from these |+> state to the parity matrix entries 
+            prepared in the + state.
+            CX gates from these + state to the parity matrix entries 
             in the same row which are unity.  
 
             If reduced = True possible unnecessary 
             duplicate CX gates are identified.  
             If possible two CX gates are removed and 
             replaced by one new CX gates.
+
         """
+
         self._validate_logical_qubit_number(logical_qubit)
         
         parity_matrix_totals = [ 0 for x in range(self.__num_data)] # define an empty list 

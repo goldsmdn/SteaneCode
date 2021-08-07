@@ -109,7 +109,7 @@ def test_string_reverse():
     assert reversed_string == '0101000'
 
 def test_strings_and_bitwise():
-    """Checks that the bitwise function helper function correctly calcules the bitwise AND of two string"""
+    """Checks that the bitwise function helper function correctly calculates the bitwise AND of two string"""
     bitwise_string = strings_AND_bitwise('0101010', '0001111')
     assert bitwise_string == '0100101'
 

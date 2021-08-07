@@ -113,10 +113,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         The ancilla qubits for the X operator are self.__mx
         The ancilla qubits for the Z operator are self.__mz
 
-        There are more ancilla qubits if there are fault tolerant ancilla.  In this case the classical measurement bits can support 
+        There are more ancilla qubits if there are fault tolerant ancilla.  
+        In this case the classical measurement bits can support 
         multiple rounds of measurement.
 
-        Also, multiple classical rounds of measurement are supported for Goto's schemes b and c.  In scheme b
+        Also, multiple classical rounds of measurement are supported 
+        for Goto's schemes b and c.  In scheme b
         the multiple classical rounds are only on the second qubit.
         """
         self.__data = []                    #data qubits
@@ -145,19 +147,24 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.__extra_ancilla_classical = []
 
     def define_registers(self, d):
-        """Set up registers used based on number of logical qubits and whether error checking is needed.
+        """Set up registers used based on number of logical qubits 
+        and whether error checking is needed.
 
         Parameters
         ----------
         d : int
-            Number of logical "data" qubits to be initialised. Should be either 0 or 1 at present.
+            Number of logical "data" qubits to be initialised. 
+            Should be either 0 or 1 at present.
 
         Notes
         -----
-        The quantum and classical registers are stored in a list so that they can be indexed by logical qubit 
+        The quantum and classical registers are stored in a list so 
+        that they can be indexed by logical qubit 
         to simplify subsequent code.
-        The registers needed depend on the number of logical qubits, whether extra ancilla qubits
-        are needed for fault tolerance and the number of round of measurements needed.
+        The registers needed depend on the number of logical qubits, 
+        whether extra ancilla qubits
+        are needed for fault tolerance and the number of round of 
+        measurements needed.
         """
         list_of_all_registers = []
         for index1 in range(d):  
@@ -277,17 +284,22 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         Parameters
         ----------
         logical_qubit: int
-            Number of the logical "data" qubit to initialise. Should be either 0 or 1 at present.
+            Number of the logical "data" qubit to initialise. 
+            Should be either 0 or 1 at present.
         reduced : bool
             Checks to see if any gates are duplicated
 
         Notes
         -----
-            Columns of the parity matrix with only one entry are prepared in the |+> state.
-            CX gates from these |+> state to the parity matrix entries in the same row which are unity.  
+            Columns of the parity matrix with only one entry are 
+            prepared in the |+> state.
+            CX gates from these |+> state to the parity matrix entries 
+            in the same row which are unity.  
 
-            If reduced = True possible unnecessary duplicate CX gates are identified.  
-            If possible two CX gates are removed and replaced by one new CX gates.
+            If reduced = True possible unnecessary 
+            duplicate CX gates are identified.  
+            If possible two CX gates are removed and 
+            replaced by one new CX gates.
         """
         self._validate_logical_qubit_number(logical_qubit)
         
@@ -378,19 +390,20 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
 
     def logical_data_reset (self, logical_qubit = 0):
-        """ Resets the data for a logical qubnit
+        """ Resets the data for a logical qubit
 
             Parameters
             ----------
             logical_qubit: int
-                Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
+                Number of the logical "data" qubits to reset. 
+                Should be either 0 or 1 at present.
 
             Notes
             -----
             This function is needed for a fault tolerant encoding scheme.  
-            Usually the data qubits are rest as part of setting up the logical zero.
-            In one scheme the logical zero is not set up, instead a reset only
-            is needed. 
+            Usually the data qubits are reset as part of setting up the logical zero.
+            In one scheme the logical zero is not set up, but a reset
+            is still needed. 
         """
         for index in range (self.__num_data):
             self.reset(self.__data[logical_qubit][index])  
@@ -402,7 +415,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Parameters
             ----------
             logical_qubit: int
-                Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
+                Number of the logical "data" qubits to force error on. 
+                Should be either 0 or 1 at present.
             physical_qubit : int
                 Number of qubit to force X error on.
         """
@@ -416,7 +430,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Parameters
             ---------- 
             logical_qubit: int
-                Number of the logical "data" qubits to force error on. Should be either 0 or 1 at present.
+                Number of the logical "data" qubits to force error on. 
+                Should be either 0 or 1 at present.
             physical_qubit : int
                 Number of qubit to force Z error on.
         """
@@ -430,12 +445,16 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Parameters
             ----------
             logical_qubit: int
-                Number of the logical "data" qubits to set up ancilla gates for. Should be either 0 or 1 at present.
+                Number of the logical "data" qubits to set up ancilla gates for. 
+                Should be either 0 or 1 at present.
 
             Notes
             -----
-            The ancilla needed are determined from the parity matrix.  Fault tolerant logic sets up four 
-            ancilla qubits, set these up in a GHZ, and then apply a CZ gate to each one individually and then decomputes the GHZ gate.
+            The ancilla needed are determined from the parity matrix.  
+            Fault tolerant logic sets up four 
+            ancilla qubits, set these up in a GHZ, and then 
+            apply a CZ gate to each one individually and then 
+            decomputes the GHZ gate.
         """
         self._validate_logical_qubit_number(logical_qubit)
         #specify that each bit is zero
@@ -532,15 +551,17 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         logical_qubit : int
             Number of the logical "data" qubits to measure. 
             Should be either 0 or 1 at present.
-        #measure_round : int
-        #    Round of data measurement.  
-        # Can be more than one for scheme B or C.
+        measure_round : int
+            Round of data measurement.  
+            Can be more than one for scheme B or C.
 
-        #Notes
-        #-----
-        #For Scheme B there are normally three rounds of measuremement for the second logical qubit and three classical measurement bits are created,
-        #one for each round.  For Scheme C there are also normally three rounds of measurement.
-        #"""
+        Notes
+        -----
+        For Scheme B there are normally three rounds of measuremement for the 
+        second logical qubit and three classical measurement bits are created,
+        one for each round.  For Scheme C there are also normally three rounds  
+        of measurement.
+        """
         self._validate_logical_qubit_number(logical_qubit)
         #need to measure the ancilla for each round
         #validate_integer(measure_round)
@@ -605,7 +626,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
             Notes
             -----
-            If there is more than one ancilla_round the classical 
+            If there is more than one ancilla round of measurement the classical 
             measurements bit created above can be used.
             For example, if there are three rounds of measuremement 
             three classical measurement bits are created,
@@ -642,27 +663,35 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                                 self.__extra_ancilla_classical[logical_qubit][index])
 
     def correct_errors(self, logical_qubit = 0, mct = False):
-        """ Produces circuit to correct errors.  Note, need to swap ancilla bits to match how printed out.
-            Reads through Parity matrix to determine the corrections to be applied.
+        """ Produces circuit to correct errors.  
 
             Parameters
             ----------
             logical_qubit: int
-                Number of the logical "data" qubits on which to correct error. Should be either 0 or 1 at present.
+                Number of the logical "data" qubits on which to correct error. 
+                Should be either 0 or 1 at present.
             mct: bool
                 Controls whether an MCT gate shall be used
 
             Notes
             -----
-            The error correcting circuit is either set up with MCT gates, which is logically simpler but needs
-            more gates, or without MCT gates, which is more difficult to program but needs less gates.
-            In the latter case the complexity is to take into account corrections already applied when looking at
+            Need to swap ancilla bits to match how printed out.
+            Reads through Parity matrix to determine the corrections to be applied.
+            
+            The error correcting circuit is either set up with MCT gates, 
+            which is logically simpler but needs
+            more gates, or without MCT gates, which is more difficult to 
+            program but needs less gates.
+            In the latter case the complexity is to take into account corrections 
+            already applied when looking at
             two or three bit corrections.
             
             In both cases the error correcting gates are determined from the parity matrix.
 
-            The errors detected by the Z operators are bit flips, so are corrected by CX gates.
-            The errors detected by the X operators are phase flips, so are corrected by CZ gates.
+            The errors detected by the Z operators are bit flips, 
+            so are corrected by CX gates.
+            The errors detected by the X operators are phase flips, so 
+            are corrected by CZ gates.
 
         """
 
@@ -839,17 +868,19 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     extra_ancilla = extra_ancilla + 1
 
     def decode(self, logical_qubit = 0, reduced = True):
-        """Uncomputer setting up logical zero for data qubit.  This is a reversal of the encoding circuit.
+        """Un-computes setting up logical zero for data qubit.  
 
             Parameters
             ----------
             logical_qubit: int
-                Number of the logical "data" qubits to set up logical zero for. Should be either 0 or 1 at present.
+                Number of the logical "data" qubits to set up logical zero for. 
+                Should be either 0 or 1 at present.
             reduced : bool
                 Checks to see if any gates are duplicated    
 
             Notes
             -----
+            This is a reversal of the encoding circuit.
             The gates needed are determined from the parity matrix.
         """
         self._validate_logical_qubit_number(logical_qubit)
@@ -1091,7 +1122,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         return(output_list)
 
     def encode_fault_tolerant_method_C(self, control_qubits, logical_qubit = 0):
-        """use a new qubit to encode fault tolerantly
+        """Use a new qubit to encode fault tolerantly
 
             Parameters
             ----------
@@ -1153,7 +1184,7 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
 
 
     def define_data(self):
-        """Define standing data"""
+        """Defines empty lists """
         self.__data = []
         self.__ancilla = []
         self.__data_classical = []
@@ -1309,7 +1340,7 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
         return
 
     def reset_stabilizers(self, logical_qubit = 0):
-        """Function to set up z stabilizers or ancilla
+        """Function to reset all ancilla
 
         Parameters
         ----------
@@ -1317,6 +1348,7 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
             Number of the logical "data" qubit to set up ancilla for. 
             Should be either 0 or 1 at present.
         """
+
         for ancilla in range(self.__ancilla_qubits):
             self.reset(self.__ancilla[logical_qubit][ancilla])
     
@@ -1342,6 +1374,7 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
 
     def logical_measure(self, logical_qubit = 0):
         """Function to measure a logical qubit
+
         Parameters
         ----------
         logical_qubit: int

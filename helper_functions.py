@@ -565,14 +565,6 @@ def look_up_data(input_string, logical_zero, logical_one):
     output_string : str
         result of look-up"""
 
-    #outside code range unless found
-    #output_string = 'E'
-    #for string in logical_zero:
-    #    if string == input_string:
-    #        output_string = '0'
-    #for string in logical_one:
-    #    if string == input_string:
-    #        output_string = '1'
     if input_string in logical_zero:
         output_string = '0'
     elif input_string in logical_one:
@@ -582,14 +574,14 @@ def look_up_data(input_string, logical_zero, logical_one):
     return(output_string)
 
 def print_time():
-    """function to print time    now = datetime.now()"""
+    """Prints current time"""
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
     print("Current Time =", current_time)
     return
 
 def validate_integer(number):
-    """Function to check if a number is an integer.
+    """Checks if a number is an integer.
 
     Parameters
     ----------
@@ -799,7 +791,7 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
     return(error_rate, rejected, accepted, valid, invalid)
 
 def get_parity_check_matrix():
-    """the parity matrix is stored in one place"""
+    """Stores the parity matrix in one place"""
     parity_check_matrix =   ['0001111',
                             '0110011',
                             '1010101'
@@ -807,7 +799,7 @@ def get_parity_check_matrix():
     return(parity_check_matrix)
 
 def get_codewords():
-    """the codewords are stored in one place"""
+    """Stores the codewords in one place"""
     codewords =['0000000',
                 '1010101',
                 '0110011',

@@ -55,7 +55,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
     def __init__(self, d, parity_check_matrix, codewords, ancilla = True, extend_ancilla = False, 
                 fault_tolerant_b = False, fault_tolerant_c = False,
-                fault_tolerant_ancilla = False, ancilla_rounds = 1, data_rounds = 1):
+                fault_tolerant_ancilla = False, ancilla_rounds = 1, data_rounds = 1, 
+                set_barrier = True
+                ):
 
         """Initialise qubit"""
         validate_integer(d)
@@ -99,6 +101,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         self.__parity_check_matrix = parity_check_matrix
         self.__codewords = codewords
         self.__number_of_logical_qubits = d
+        self.__set_barrier = set_barrier
         self.define_data()
         list_of_all_registers = self.define_registers(d)
         # extend quantum circuits
@@ -467,8 +470,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     self.reset(self.__mz[logical_qubit][index][index2])
             else:   
                 self.reset(self.__mx[logical_qubit][index])  
-                self.reset(self.__mz[logical_qubit][index])  
-        self.barrier()
+                self.reset(self.__mz[logical_qubit][index])
+        if self.__set_barrier:           
+            self.barrier()
         #set up Hadamard gates for each qubit
         if self.__fault_tolerant_ancilla:
             for index in range (self.__num_ancilla):
@@ -477,7 +481,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         else:
             self.h(self.__mx[logical_qubit])
             self.h(self.__mz[logical_qubit])
-        self.barrier()
+        if self.__set_barrier:  
+            self.barrier()
         if self.__fault_tolerant_ancilla:
             #if fault tolerant ancilla are needed:
             #set up GHZ state
@@ -487,7 +492,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                             self.__mx[logical_qubit][index][index2 + 1])
                     self.cx(self.__mz[logical_qubit][index][index2], 
                             self.__mz[logical_qubit][index][index2 + 1])
-            self.barrier()
+            if self.__set_barrier:               
+                self.barrier()
 
         #apply CX gates according to the parity matrix
         if self.__fault_tolerant_ancilla:
@@ -510,7 +516,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                     else:
                         self.cx(self.__mx[logical_qubit][index],self.__data[logical_qubit][column_number])
                         #create CX gate from data qubit to the ancilla qubit for the column  
-        self.barrier()
+        if self.__set_barrier:                
+            self.barrier()
         #apply CZ gates according to the parity matrix
         #done separately so Qiskit diagram is easier to review
         for index in range (self.__num_ancilla):
@@ -524,7 +531,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                         next_z_ancilla[index] = next_z_ancilla[index] + 1  
                     else:
                         self.cz(self.__mz[logical_qubit][index],self.__data[logical_qubit][column_number])  
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
  
         if self.__fault_tolerant_ancilla:
         #un-encode set up GHZ state
@@ -534,7 +542,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                             self.__mx[logical_qubit][index][index2])
                     self.cx(self.__mz[logical_qubit][index][index2 - 1], 
                             self.__mz[logical_qubit][index][index2])
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
         #set up hadamards
         if self.__fault_tolerant_ancilla:
             for index in range (self.__num_ancilla):
@@ -543,7 +552,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         else:
             self.h(self.__mx[logical_qubit])
             self.h(self.__mz[logical_qubit])
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
 
     def logical_measure_data(self, logical_qubit = 0):
         """Makes measurement of the data qubits of a logical qubit.
@@ -656,7 +666,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                             self.__mx_classical[logical_qubit][index1])
                 self.measure(self.__mz[logical_qubit][index1], 
                             self.__mz_classical[logical_qubit][index1])
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
         if ancilla_round == 1:
             #only need to measure extended ancilla qubits once
             if self.__extend_ancilla:
@@ -1169,7 +1180,7 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
         """
 
     def __init__(self, d, data_qubits, ancilla_qubits, ancillas, 
-                blocks, logical_one, logical_z):
+                blocks, logical_one, logical_z, set_barrier = True):
         """Initialise qubit"""
         if d > 2:
             raise ValueError("Qiskit can only handle 32 quits.  So can't set up more than two logical qubits.")
@@ -1179,6 +1190,7 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
         self.__blocks = blocks
         self.__logical_one = logical_one
         self.__logical_z = logical_z
+        self.__set_barrier = set_barrier
         self.define_data()
         list_of_all_registers = self.define_registers(d)
         # extend quantum circuits
@@ -1247,7 +1259,8 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
             self.x(self.__data[logical_qubit][0])
         self.cx(self.__data[logical_qubit][0],self.__data[logical_qubit][self.__blocks])
         self.cx(self.__data[logical_qubit][0],self.__data[logical_qubit][self.__blocks * 2])
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
         return
 
     def encoding_ft(self, logical_qubit = 0):
@@ -1274,7 +1287,8 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
                 self.h(self.__data[logical_qubit][first_qubit])
                 self.h(self.__data[logical_qubit][second_qubit])
                 self.h(self.__data[logical_qubit][third_qubit])        
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
         return
 
     def x_testing(self, logical_qubit = 0, test_x_qubit = 0):
@@ -1293,7 +1307,8 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
         self._validate_logical_qubit_number(logical_qubit)
         self._validate_physical_qubit_number(test_x_qubit)
         self.x(self.__data[logical_qubit][test_x_qubit])
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
         return
 
     def z_testing(self, logical_qubit = 0, test_z_qubit = 0):
@@ -1311,7 +1326,8 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
         self._validate_logical_qubit_number(logical_qubit)
         self._validate_physical_qubit_number(test_z_qubit)
         self.z(self.__data[logical_qubit][test_z_qubit])
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
         return
 
     def x_stabilizers(self, logical_qubit = 0):
@@ -1338,7 +1354,8 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
                         self.__data[logical_qubit][second_qubit])
                 #ancilla count starts at ANCILLAS
             self.h(self.__ancilla[0][ancilla + self.__ancillas])
-        self.barrier()
+        if self.__set_barrier:
+            self.barrier()
         return
 
     def reset_stabilizers(self, logical_qubit = 0):

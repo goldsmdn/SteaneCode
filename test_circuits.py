@@ -185,3 +185,37 @@ def test_standard_error():
     standard_deviation, standard_error = calculate_standard_error(test_list)
     np.testing.assert_almost_equal(standard_deviation, 1.58113883, decimal = 7, verbose = True)
     np.testing.assert_almost_equal(standard_error, 0.70710678, decimal = 7, verbose = True)
+
+def test_count_valid_output_strings_simple_zero():
+    """Check that each logical zero codeword is identified as valid"""
+    counts =    {'0000000': 12, 
+                 '0011110': 12, 
+                 '0101101': 9, 
+                 '0110011': 12, 
+                 '1001011': 8, 
+                 '1010101': 17, 
+                 '1100110': 16, 
+                 '1111000': 14
+                 }
+    count_valid , count_invalid, _ = count_valid_output_strings(counts, '0', 
+                                                    simple = True
+                                                    )
+    assert count_valid == 100  #calculated from example given
+    assert count_invalid == 0  #calculated from example given
+
+def test_count_valid_output_strings_simple_one():
+    """Check that each logical zero codeword is identified as valid"""
+    counts =    {'0011001': 17, 
+                 '0101010': 17, 
+                 '0110100': 9, 
+                 '1001100': 12, 
+                 '1010010': 9, 
+                 '1100001': 13, 
+                 '0000111': 11, 
+                 '1111111': 12
+                 }
+    count_valid , count_invalid, _ = count_valid_output_strings(counts, '1', 
+                                                    simple = True
+                                                    )
+    assert count_valid == 100  #calculated from example given
+    assert count_invalid == 0  #calculated from example given

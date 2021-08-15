@@ -1,4 +1,4 @@
-import pytest
+#import pytest
 from pytest import raises
 from circuits import SteaneCodeLogicalQubit
 from qiskit import execute, Aer
@@ -58,7 +58,28 @@ def test_error_correction():
             qt = transpile(qubit, basis_gates = BASIS_GATE_SET)
             result = execute(qt, SIMULATOR, shots = SHOTS).result()
             counts = result.get_counts(qt)
-            count_valid, count_invalid, count_outside_codeword = count_valid_output_strings(counts, codewords, 3)
+            _ , count_invalid, _  = count_valid_output_strings(counts, codewords, 3)
+            error_rate = count_invalid / SHOTS
+            assert error_rate == 0.0
+
+def test_error_correction_logical_one():
+    """Checks that every X error gets corrected by error correction with and without MCT gates with logical one"""
+    for mct in [True, False]:
+        for index in range(7):
+            qubit = SteaneCodeLogicalQubit(1, parity_check_matrix, 
+                                            codewords, extend_ancilla = True)
+            qubit.set_up_logical_zero(logical_one = True)
+            qubit.force_X_error(index)   
+            #force X error for testing
+            qubit.set_up_ancilla()
+            qubit.correct_errors(0, mct)
+            qubit.logical_gate_X()
+            qubit.logical_measure_data()
+            qubit.logical_measure_ancilla()
+            qt = transpile(qubit, basis_gates = BASIS_GATE_SET)
+            result = execute(qt, SIMULATOR, shots = SHOTS).result()
+            counts = result.get_counts(qt)
+            _ , count_invalid, _  = count_valid_output_strings(counts, codewords, 3)
             error_rate = count_invalid / SHOTS
             assert error_rate == 0.0
 
@@ -87,7 +108,7 @@ for index in range(7):
             corrected_counts[corrected_key] = value_found + values
         else:
             corrected_counts.update({corrected_key: values})   
-    count_valid, count_invalid, count_outside_codeword = count_valid_output_strings(corrected_counts, codewords, 2)
+    _ , count_invalid, _  = count_valid_output_strings(corrected_counts, codewords, 2)
     error_rate = count_invalid / SHOTS
     assert error_rate == 0.0
 

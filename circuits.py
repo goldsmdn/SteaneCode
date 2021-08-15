@@ -36,6 +36,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         data_round : int
             Number of rounds of ancilla measurement for 
             fault tolerant encoding
+        self_barrier : bool
+            If true then barriers will be set.  
+        
         Notes
         -----
         Uses super to inherit methods from parent.  
@@ -281,7 +284,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 if bit_store:
                     raise ValueError("Code word rows must be orthogonal to the parity matrix")
 
-    def set_up_logical_zero(self, logical_qubit = 0, reduced = True):
+    def set_up_logical_zero(self, logical_qubit = 0, reduced = True, logical_one = False):
         """Set up logical zero for data qubit
 
             Parameters
@@ -291,6 +294,8 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 Should be either 0 or 1 at present.
             reduced : bool
                 Checks to see if any gates are duplicated
+            logical_one : bool
+                Add extra gates to set up a logical one
 
             Notes
             -----
@@ -359,6 +364,29 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                                 if parity_row[column_number] == '1':
                                 #if the entry for row and column is non-zero:
                                     cx_gates.append([index,column_number])
+        
+        if logical_one:
+            logical_one_list = []
+            for index in range(self.__num_data):
+                #parity matrix colums with two rows are involved in logical zero calculation
+                    if parity_matrix_totals[index] == 2:
+                        logical_one_list.append(index)
+            for index in range(self.__num_data):
+                #if reduced append matrix columns with three rows
+                if reduced:
+                    if parity_matrix_totals[index] == 3:
+                        logical_one_list.append(index)
+            if reduced:
+                if len(logical_one_list) != 4:
+                    raise ValueError('not able to compute logical zero')
+            else:
+                if len(logical_one_list) != 3:
+                    raise ValueError('not able to compute logical zero')
+            self.x(self.__data[logical_qubit][logical_one_list[0]])
+            for j in range(len(logical_one_list) - 1):
+                self.cx(self.__data[logical_qubit][logical_one_list[0]],
+                        self.__data[logical_qubit][logical_one_list[j + 1]])
+        
         if count != self.__num_ancilla:
             raise ValueError(f'Unable to construct matrix as parity matrix does not match the ancilla needed.  Count = {count}')   
         removed_gates = []
@@ -387,12 +415,14 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             if items not in removed_gates:
                 index = items[0]
                 column_number = items[1]
-                self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
+                self.cx(self.__data[logical_qubit][index],
+                        self.__data[logical_qubit][column_number])
         if reduced:
             for items in cx_gates_added:
                 index = items[0]
                 column_number = items[1]
-                self.cx(self.__data[logical_qubit][index],self.__data[logical_qubit][column_number])
+                self.cx(self.__data[logical_qubit][index],
+                        self.__data[logical_qubit][column_number])
 
     def logical_data_reset (self, logical_qubit = 0):
         """ Resets the data for a logical qubit
@@ -1435,3 +1465,16 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
             raise ValueError("Qubit index must be in range of data qubits")
         if physical_qubit < 0:
             raise ValueError("Qubit index must be in range of data qubits")
+
+    def ancilla_dummy_gates(self, logical_qubit = 0):
+        """sets up a set of dummy 'id' gates against which noise is applied for each ancilla
+
+        Parameters
+        ----------
+        logical_qubit: int
+            Number of the logical "data" qubit to measure. 
+            Should be either 0 or 1 at present."""
+        for ancilla in range(self.__ancilla_qubits):
+            self.id(self.__ancilla[logical_qubit][ancilla])
+
+

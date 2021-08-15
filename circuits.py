@@ -2,7 +2,10 @@
 
 from typing import List
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from helper_functions import validate_integer
+from helper_functions import (
+    validate_integer,
+    calculate_parity_matrix_totals
+    )
 
 class SteaneCodeLogicalQubit(QuantumCircuit):
     """Generates the gates for one or two logical Qubits of the Steane code
@@ -312,15 +315,15 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         """
 
         self._validate_logical_qubit_number(logical_qubit)
-        
-        parity_matrix_totals = [ 0 for x in range(self.__num_data)] # define an empty list 
-        #ready to work out parity_matrix_totals
+        parity_matrix_totals = calculate_parity_matrix_totals()
+        #parity_matrix_totals = [ 0 for x in range(self.__num_data)] # define an empty list 
+        ##ready to work out parity_matrix_totals
         #calculate the number of non-zero entries in each row of the parity matrix and store
-        for parity_string in self.__parity_check_matrix:
-            for index in range(self.__num_data):
-                parity_matrix_totals[index] = parity_matrix_totals[index] + int(parity_string[index])
+        #for parity_string in self.__parity_check_matrix:
+        #    for index in range(self.__num_data):
+        #        parity_matrix_totals[index] = parity_matrix_totals[index] + int(parity_string[index])
+        
         count = 0
-
         if reduced:
             #find entries in the parity matrix where the CX gates needed are duplicated and store
             duplicate_entries = []
@@ -910,7 +913,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                             self.__extra_ancilla[logical_qubit][extra_ancilla])
                     extra_ancilla = extra_ancilla + 1
 
-    def decode(self, logical_qubit = 0, reduced = True):
+    def decode(self, logical_qubit = 0, reduced = True, simple = False):
         """Un-computes setting up logical zero for data qubit.  
 
             Parameters
@@ -920,97 +923,108 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                 Should be either 0 or 1 at present.
             reduced : bool
                 Checks to see if any gates are duplicated    
+            simple : bool
+                Simple decoding scheme when full logical zero is not required.
 
             Notes
             -----
-            This is a reversal of the encoding circuit.
+            Generally this is a reversal of the encoding circuit.
             The gates needed are determined from the parity matrix.
         """
         self._validate_logical_qubit_number(logical_qubit)
-        parity_matrix_totals = [ 0 for x in range(self.__num_data)] 
-        # define an empty list ready to work out parity_matrix_totals
+        parity_matrix_totals = calculate_parity_matrix_totals()
 
-        for parity_string in self.__parity_check_matrix:
-            for index in range(self.__num_data):
-                parity_matrix_totals[index] = parity_matrix_totals[index] + int(parity_string[index])
         count = 0
+        if simple:
+            qubit_list = []
+            for index in range(self.__num_data):
+                #parity matrix colums with two rows are involved in logical zero calculation
+                if parity_matrix_totals[index] == 2:
+                    qubit_list.append(index)
+            if len(qubit_list) == 3:
+                self.cx(self.__data[logical_qubit][qubit_list[1]],
+                        self.__data[logical_qubit][qubit_list[0]])
+                self.cx(self.__data[logical_qubit][qubit_list[2]],
+                        self.__data[logical_qubit][qubit_list[0]])
+            else:
+                raise ValueError('Error reading parity matrix for simple decoding')
+        else:
+            if reduced:
+                #find duplicated entries
+                duplicate_entries = []
+                for column_index1 in range(self.__num_ancilla):
+                    parity_row1 = self.__parity_check_matrix[column_index1]
+                    for bit_index in range(self.__num_data):                
+                        if parity_matrix_totals[bit_index] == 1 and parity_row1[bit_index] == '1':
+                            h_qubit1 = bit_index
+                    for column_index2 in range(column_index1 + 1, self.__num_ancilla, 1):
+                        parity_row2 = self.__parity_check_matrix[column_index2]
+                        for bit_index in range(self.__num_data):
+                            if parity_matrix_totals[bit_index] == 1 and parity_row2[bit_index] == '1':
+                                h_qubit2 = bit_index
+                        h_qubit_start = max(h_qubit1, h_qubit2)
+                        for bit_index in range(h_qubit_start + 1, self.__num_data):
+                            bit1 = parity_row1[bit_index]
+                            bit2 = parity_row2[bit_index]
+                            if bit1 == '1' and bit2 == '1':
+                                duplicate_entries.append([[h_qubit1, bit_index], [h_qubit2, bit_index]])
 
-        if reduced:
-            #find duplicated entries
-            duplicate_entries = []
-            for column_index1 in range(self.__num_ancilla):
-                parity_row1 = self.__parity_check_matrix[column_index1]
-                for bit_index in range(self.__num_data):                
-                    if parity_matrix_totals[bit_index] == 1 and parity_row1[bit_index] == '1':
-                        h_qubit1 = bit_index
-                for column_index2 in range(column_index1 + 1, self.__num_ancilla, 1):
-                    parity_row2 = self.__parity_check_matrix[column_index2]
-                    for bit_index in range(self.__num_data):
-                        if parity_matrix_totals[bit_index] == 1 and parity_row2[bit_index] == '1':
-                            h_qubit2 = bit_index
-                    h_qubit_start = max(h_qubit1, h_qubit2)
-                    for bit_index in range(h_qubit_start + 1, self.__num_data):
-                        bit1 = parity_row1[bit_index]
-                        bit2 = parity_row2[bit_index]
-                        if bit1 == '1' and bit2 == '1':
-                            duplicate_entries.append([[h_qubit1, bit_index], [h_qubit2, bit_index]])
-
-        #specify that each bit is zero
-        #put entries into cx_gates for each CNOT based on 
-        #relevant entry in the parity matrix
-        cx_gates = []
-        for index in range (self.__num_data):
             #specify that each bit is zero
-            if parity_matrix_totals[index] == 1:
-                count = count + 1
-                #set up |+> state if count is one
-                for parity_row in self.__parity_check_matrix:
-                    # from the |+> state qubits build the rest of the ancilla.
-                    if parity_row[index] == '1':             
-                        for column_number in range(self.__num_data):
-                            if column_number != index:
-                                if parity_row[column_number] == '1':
-                                    #cx from |+> state to qubit 
-                                    #if there is a 1 in the parity matrix.
-                                    cx_gates.append([index,column_number])
-        if count != self.__num_ancilla:
-            raise ValueError(f'Unable to construct matrix as parity matrix does not match the ancilla needed.  Count = {count}')   
-        removed_gates = []
-        if reduced:
-            #if duplicate entries remove two gates and add one new gate pair
-            cx_gates_added = []
-            #cx_gates holds the list of cx_gates to replace those deleted
-            number_of_duplicates = len(duplicate_entries)
-            if (number_of_duplicates % 2) != 0:
-                raise ValueError(f'Expect an even number of entries in the duplicates. {number_of_duplicates} entries found')
-            for index in range(int(number_of_duplicates / 2)):
-                support = duplicate_entries[2 * index]
-                duplicates = duplicate_entries[2 * index + 1]
-                if duplicates[0] in cx_gates and duplicates[1] in cx_gates:
-                    #check if any of the cx_gates can be removed
-                    if duplicates[0] not in removed_gates and duplicates[1] not in removed_gates:
-                        for i in range(2):
-                            removed_gates.append(duplicates[i])
-                            if duplicates[0][1] != duplicates[1][1]:
-                                raise ValueError('Error removing duplicates from parity matrix')
-                            if support[0][1] != support[1][1]:
-                                raise ValueError('Error removing duplicates from parity matrix')
-                        cx_gates_added.append([support[0][1], duplicates[0][1]])
-        if reduced:
-            for items in cx_gates_added:
-                index = items[0]
-                column_number = items[1]
-                self.cx(self.__data[logical_qubit][index],
-                        self.__data[logical_qubit][column_number])
-        for items in cx_gates:
-            if items not in removed_gates:
-                index = items[0]
-                column_number = items[1]
-                self.cx(self.__data[logical_qubit][index],
-                        self.__data[logical_qubit][column_number])
-        for index in range (self.__num_data):
-            if parity_matrix_totals[index] == 1:
-                self.h(self.__data[logical_qubit][index])
+            #put entries into cx_gates for each CNOT based on 
+            #relevant entry in the parity matrix
+            cx_gates = []
+            for index in range (self.__num_data):
+                #specify that each bit is zero
+                if parity_matrix_totals[index] == 1:
+                    count = count + 1
+                    #set up |+> state if count is one
+                    for parity_row in self.__parity_check_matrix:
+                        # from the |+> state qubits build the rest of the ancilla.
+                        if parity_row[index] == '1':             
+                            for column_number in range(self.__num_data):
+                                if column_number != index:
+                                    if parity_row[column_number] == '1':
+                                        #cx from |+> state to qubit 
+                                        #if there is a 1 in the parity matrix.
+                                        cx_gates.append([index,column_number])
+            if count != self.__num_ancilla:
+                raise ValueError(f'Unable to construct matrix as parity matrix does not match the ancilla needed.  Count = {count}')   
+            removed_gates = []
+            if reduced:
+                #if duplicate entries remove two gates and add one new gate pair
+                cx_gates_added = []
+                #cx_gates holds the list of cx_gates to replace those deleted
+                number_of_duplicates = len(duplicate_entries)
+                if (number_of_duplicates % 2) != 0:
+                    raise ValueError(f'Expect an even number of entries in the duplicates. {number_of_duplicates} entries found')
+                for index in range(int(number_of_duplicates / 2)):
+                    support = duplicate_entries[2 * index]
+                    duplicates = duplicate_entries[2 * index + 1]
+                    if duplicates[0] in cx_gates and duplicates[1] in cx_gates:
+                        #check if any of the cx_gates can be removed
+                        if duplicates[0] not in removed_gates and duplicates[1] not in removed_gates:
+                            for i in range(2):
+                                removed_gates.append(duplicates[i])
+                                if duplicates[0][1] != duplicates[1][1]:
+                                    raise ValueError('Error removing duplicates from parity matrix')
+                                if support[0][1] != support[1][1]:
+                                    raise ValueError('Error removing duplicates from parity matrix')
+                            cx_gates_added.append([support[0][1], duplicates[0][1]])
+            if reduced:
+                for items in cx_gates_added:
+                    index = items[0]
+                    column_number = items[1]
+                    self.cx(self.__data[logical_qubit][index],
+                            self.__data[logical_qubit][column_number])
+            for items in cx_gates:
+                if items not in removed_gates:
+                    index = items[0]
+                    column_number = items[1]
+                    self.cx(self.__data[logical_qubit][index],
+                            self.__data[logical_qubit][column_number])
+            for index in range (self.__num_data):
+                if parity_matrix_totals[index] == 1:
+                    self.h(self.__data[logical_qubit][index])
 
     def logical_gate_X(self, logical_qubit = 0):
         """Apply a logical X gate
@@ -1114,7 +1128,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             parity_check_transpose.append(column)
             column = []
         return(parity_check_transpose)
-
+    
     def _validate_logical_qubit_number(self, logical_qubit):
         """Validates the logical qubit number.  
         Code might be enhanced in the future.

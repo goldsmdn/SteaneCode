@@ -171,7 +171,7 @@
 <p>Class to handle logical qubits for the Steane and Bacon Shor code</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">BaconShorCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancillas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">BaconShorCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancillas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_barrier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.circuit.quantumcircuit.QuantumCircuit</span></code></p>
 <p>Generates the gates for one logical Qubits of the Bacon Shor code</p>
 <dl class="field-list simple">
@@ -188,6 +188,18 @@ Only the case with 1 qubit has been fully tested.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.ancilla_dummy_gates">
+<span class="sig-name descname"><span class="pre">ancilla_dummy_gates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.ancilla_dummy_gates" title="Permalink to this definition">¶</a></dt>
+<dd><p>sets up a set of dummy ‘id’ gates against which noise is applied for each ancilla</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to measure.
+Should be either 0 or 1 at present.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.define_data">
 <span class="sig-name descname"><span class="pre">define_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.define_data" title="Permalink to this definition">¶</a></dt>
@@ -319,7 +331,7 @@ Should be either 0 or 1 at present.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">SteaneCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity_check_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">circuits.</span></span><span class="sig-name descname"><span class="pre">SteaneCodeLogicalQubit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parity_check_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_tolerant_ancilla</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_barrier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">qiskit.circuit.quantumcircuit.QuantumCircuit</span></code></p>
 <p>Generates the gates for one or two logical Qubits of the Steane code</p>
 <dl class="field-list simple">
@@ -342,6 +354,7 @@ on the second logical qubit.</p></li>
 fault tolerant ancilla</p></li>
 <li><p><strong>data_round</strong> (<em>int</em>) – Number of rounds of ancilla measurement for
 fault tolerant encoding</p></li>
+<li><p><strong>self_barrier</strong> (<em>bool</em>) – If true then barriers will be set.</p></li>
 </ul>
 </dd>
 </dl>
@@ -675,7 +688,7 @@ decomputes the GHZ gate.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.set_up_logical_zero">
-<span class="sig-name descname"><span class="pre">set_up_logical_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_logical_zero" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_up_logical_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.set_up_logical_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up logical zero for data qubit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -683,6 +696,7 @@ decomputes the GHZ gate.</p>
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubit to initialise.
 Should be either 0 or 1 at present.</p></li>
 <li><p><strong>reduced</strong> (<em>bool</em>) – Checks to see if any gates are duplicated</p></li>
+<li><p><strong>logical_one</strong> (<em>bool</em>) – Add extra gates to set up a logical one</p></li>
 </ul>
 </dd>
 </dl>

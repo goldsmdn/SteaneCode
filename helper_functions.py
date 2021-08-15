@@ -1,7 +1,11 @@
 #helper_functions.py
 
 from qiskit.providers.aer.noise import NoiseModel
-from qiskit.providers.aer.noise.errors import pauli_error, depolarizing_error
+from qiskit.providers.aer.noise.errors import (
+    pauli_error, 
+    depolarizing_error,
+    thermal_relaxation_error
+    )
 from statistics import stdev
 from math import sqrt
 from datetime import datetime
@@ -352,7 +356,10 @@ def flip_code_words(codewords_in):
 def get_noise(p_meas, single_qubit_error, 
                 two_qubit_error, single_qubit_gate_set, 
                 two_qubit_gate_set, all = True, 
-                noisy_qubit_list = []
+                noisy_qubit_list = [],
+                decohere = False,
+                dummy_gate_set = [],
+                dummy_gate_error = 0
                 ):
     """Returns a noise model
 
@@ -372,6 +379,12 @@ def get_noise(p_meas, single_qubit_error,
         apply two gate noise to all qubits
     noisy_qubit_list : list of list
         list of list of noisy qubits on which  errors are applied
+    decohere : bool
+        Add extra noise to represent de-coherence
+    dummy_gate_set : list
+        Set of dummy gates on which the de-coherence error is applied.  Normally ['id'].
+    dummy_gate_error : flot
+        error to apply to dummy gate which is set up to model de-coherence at certain stages in the circuit. 
 
     Returns
     -------
@@ -382,17 +395,19 @@ def get_noise(p_meas, single_qubit_error,
     -----
     Can apply noise selectively to qubits in noisy_qubit_list.  This is a list of lists.
     """
-
     error_meas = pauli_error([('X', p_meas), ('I', 1 - p_meas)])
     error_gate1 = depolarizing_error(single_qubit_error, 1)
     error_gate2 = depolarizing_error(two_qubit_error, 1)
     error_gate3 = error_gate2.tensor(error_gate2)
+    if decohere:
+        if 'id' in single_qubit_gate_set:
+            raise ValueError('Do not include gate id in the single_qubit_gate_set as used for decoherent errors')
+        error_decohere = depolarizing_error(dummy_gate_error, 1)
     noise_model = NoiseModel()
-
     if all:
         if noisy_qubit_list != []:
             raise ValueError('Errors are applied to all qubits but a list of qubits with errors is given')    
-        noise_model.add_all_qubit_quantum_error(error_meas, 'measure') 
+        noise_model.add_all_qubit_quantum_error(error_meas, 'measure')      
         # measurement error is applied to measurements
         noise_model.add_all_qubit_quantum_error(error_gate1, 
                                                 single_qubit_gate_set)  
@@ -400,6 +415,10 @@ def get_noise(p_meas, single_qubit_error,
         noise_model.add_all_qubit_quantum_error(error_gate3,
                                                  two_qubit_gate_set) 
         # two qubit gate error is applied to two qubit gates
+        if decohere:
+            noise_model.add_all_qubit_quantum_error(error_decohere,
+                                                    dummy_gate_set) 
+        # decoherence error is applied to dummy gates
     else:
         if noisy_qubit_list == []:
             raise ValueError('A list of qubits must be supplied if errors are not to be applied to all qubits')
@@ -414,6 +433,12 @@ def get_noise(p_meas, single_qubit_error,
                                                 single_qubit_gate_set, 
                                                 [gate_index1]
                                                 )  
+                if decohere:
+                    noise_model.add_quantum_error(error_decohere ,
+                                                    dummy_gate_set, 
+                                                    [gate_index1]
+                                                    ) 
+        # decoherence error is applied to dummy gates
                 # single qubit gate errors
                 for gate_index2 in gate_list:
                     if gate_index1 != gate_index2:

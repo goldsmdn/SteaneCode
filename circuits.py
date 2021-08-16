@@ -315,14 +315,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         """
 
         self._validate_logical_qubit_number(logical_qubit)
-        parity_matrix_totals = calculate_parity_matrix_totals()
-        #parity_matrix_totals = [ 0 for x in range(self.__num_data)] # define an empty list 
-        ##ready to work out parity_matrix_totals
-        #calculate the number of non-zero entries in each row of the parity matrix and store
-        #for parity_string in self.__parity_check_matrix:
-        #    for index in range(self.__num_data):
-        #        parity_matrix_totals[index] = parity_matrix_totals[index] + int(parity_string[index])
-        
+        parity_matrix_totals = calculate_parity_matrix_totals()       
         count = 0
         if reduced:
             #find entries in the parity matrix where the CX gates needed are duplicated and store
@@ -1490,5 +1483,3 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
             Should be either 0 or 1 at present."""
         for ancilla in range(self.__ancilla_qubits):
             self.id(self.__ancilla[logical_qubit][ancilla])
-
-

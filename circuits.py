@@ -570,7 +570,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
                             self.__mz[logical_qubit][index][index2])
         if self.__set_barrier:
             self.barrier()
-        #set up hadamards
+        #set up Hadamard gates
         if self.__fault_tolerant_ancilla:
             for index in range (self.__num_ancilla):
                 self.h(self.__mx[logical_qubit][index][0])

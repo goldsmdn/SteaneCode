@@ -170,7 +170,7 @@ def test_count_valid_output_strings():
     }
 
     count_valid, count_invalid, count_outside_codeword = count_valid_output_strings(counts, codewords, 2)
-    assert count_valid == 3  #calcuLated from example above
+    assert count_valid == 3  #calculated from example above
     assert count_invalid == 2
 
 def test_mean():

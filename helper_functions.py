@@ -108,6 +108,7 @@ def count_valid_output_strings(counts, codewords, data_location = 0, post_select
             raise ValueError('Validity calculation not designed for both post_selection and simple')
         if len(codewords) != 1:
             raise ValueError('Only send a one bit codeword with simple selection')
+        parity_matrix = get_parity_check_matrix
         parity_matrix_totals = calculate_parity_matrix_totals()
         #print('parity_matrix_totals', parity_matrix_totals)
         count = 0

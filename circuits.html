@@ -404,7 +404,7 @@ are corrected by CZ gates.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.decode">
-<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.decode" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.decode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Un-computes setting up logical zero for data qubit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -412,11 +412,12 @@ are corrected by CZ gates.</p>
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to set up logical zero for.
 Should be either 0 or 1 at present.</p></li>
 <li><p><strong>reduced</strong> (<em>bool</em>) – Checks to see if any gates are duplicated</p></li>
+<li><p><strong>simple</strong> (<em>bool</em>) – Simple decoding scheme when full logical zero is not required.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This is a reversal of the encoding circuit.
+<p>Generally this is a reversal of the encoding circuit.
 The gates needed are determined from the parity matrix.</p>
 </dd></dl>
 

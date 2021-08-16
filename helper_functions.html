@@ -168,6 +168,12 @@
   <div class="section" id="module-helper_functions">
 <span id="helper-functions-module"></span><h1>helper_functions module<a class="headerlink" href="#module-helper_functions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.calculate_parity_matrix_totals">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_parity_matrix_totals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_parity_matrix_totals" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculates the number of items in each row of the parity matrix</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.calculate_standard_error">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_standard_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_standard_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the standard error of a list of numbers</p>
@@ -234,7 +240,7 @@ This code corrects bit string errors only, not phase errors</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.count_valid_output_strings">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">count_valid_output_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">count_valid_output_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the number of valid and invalid output bit strings in a given location in a dictionary representing
 the counts for each output bit string.</p>
 <dl class="field-list simple">
@@ -246,6 +252,7 @@ combination of qubit</p></li>
 <li><p><strong>data_location</strong> (<em>int</em>) – location of the data string</p></li>
 <li><p><strong>post_selection</strong> (<em>bool</em>) – if true then only strings in logical zero are invalid.
 Strings outside the codespace are counted separately.</p></li>
+<li><p><strong>simple</strong> (<em>bool</em>) – looks only at the parity of bits with exactly two non-zero columns in the parity matrix</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

@@ -16,6 +16,7 @@ from helper_functions import (
     mean_of_list,
     calculate_standard_error, 
     correct_qubit,
+    calculate_simple_parity_bits
     )
 
 SINGLE_GATE_SET = ['id', 'ry', 'rx']
@@ -219,3 +220,8 @@ def test_count_valid_output_strings_simple_one():
                                                     )
     assert count_valid == 100  #calculated from example given
     assert count_invalid == 0  #calculated from example given
+
+def test_calculate_simple_parity_bits():
+    """test the simple parity bits for the standard parity matrix used"""
+    simple_parity_bits = calculate_simple_parity_bits()
+    assert simple_parity_bits == [2, 4, 5]

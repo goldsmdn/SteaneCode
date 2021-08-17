@@ -4,7 +4,8 @@ from typing import List
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from helper_functions import (
     validate_integer,
-    calculate_parity_matrix_totals
+    calculate_parity_matrix_totals,
+    calculate_simple_parity_bits
     )
 
 class SteaneCodeLogicalQubit(QuantumCircuit):
@@ -929,11 +930,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
         count = 0
         if simple:
-            qubit_list = []
-            for index in range(self.__num_data):
-                #parity matrix colums with two rows are involved in logical zero calculation
-                if parity_matrix_totals[index] == 2:
-                    qubit_list.append(index)
+            qubit_list = calculate_simple_parity_bits()
+            #qubit_list = []
+            #for index in range(self.__num_data):
+            #    #parity matrix colums with two rows are involved in logical zero calculation
+            #    if parity_matrix_totals[index] == 2:
+            #        qubit_list.append(index)
             if len(qubit_list) == 3:
                 self.cx(self.__data[logical_qubit][qubit_list[1]],
                         self.__data[logical_qubit][qubit_list[0]])

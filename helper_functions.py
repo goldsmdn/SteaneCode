@@ -127,13 +127,6 @@ def count_valid_output_strings(counts, codewords, data_location = 0,
             raise ValueError('Validity calculation not designed for both post_selection and simple')
         if len(codewords) != 1:
             raise ValueError('Only send a one bit codeword with simple calculation')
-        parity_matrix_totals = calculate_parity_matrix_totals()
-        simple_parity_bits = []
-        count = 0
-        for items in parity_matrix_totals:
-            if items == 2:
-                simple_parity_bits.append(count)
-            count = count + 1
     count_valid = 0
     count_invalid = 0
     count_outside_codeword = 0
@@ -146,40 +139,117 @@ def count_valid_output_strings(counts, codewords, data_location = 0,
         #need to reverse the data string showing the relevant qubits as 
         #the codewords and the data have a different format 
         reversed_data_string = string_reverse(data)
-        if post_selection:
+        valid, invalid, outside_codeword = counts_valid_strings(value = value, codewords = codewords, 
+                                                                reversed_data_string = reversed_data_string, 
+                                                                post_selection = post_selection, 
+                                                                simple = simple, 
+                                                                single = single, 
+                                                                single_bit = single_bit
+                                                                )
+        count_valid = count_valid + valid
+        count_invalid = count_invalid + invalid
+        count_outside_codeword = count_outside_codeword + outside_codeword
+    return(count_valid, count_invalid, count_outside_codeword)
+
+def counts_valid_strings(value, codewords, reversed_data_string, post_selection = False, 
+                        simple = False, single = False, single_bit = 0):
+    """Finds the number of valid and invalid output bit strings 
+    in a given location in a dictionary representing
+    the counts for each output bit string.  
+    Various algorithms for determining validaty are supported,
+    including post selection, where a bit is only valid if it is the codewords,
+    simple decoding based on the parity of three bits and
+    looking at a single bit only.
+
+    Parameters
+    ----------
+    value : int
+        number of strings for this data string
+    codewords : list
+        holds allowed codewords 
+    reversed_data_string : str
+        string holding element to be processed
+    post_selection : bool
+        if true then only strings in logical zero are invalid.
+        Strings outside the codespace are counted separately.
+    simple : bool
+        looks only at the parity of bits with exactly two non-zero columns in the parity matrix
+    single : bool
+        look at single bit only
+    single_bit : int
+        single bit to validate against
+
+    Returns
+    -------
+    valid : int
+        value if the bit string is valid
+    invalid : int
+        value if the bit string is invalid
+    outside_codeword : int
+        value if the bit string is outside the codespace
+
+    Notes
+    -----
+    This code was originally designed to handle the codewords 
+    in a list of lists, but will also work fine
+    with a list of strings.  
+
+    """
+    valid = 0
+    invalid = 0
+    outside_codeword = 0
+    if post_selection:
             logical_zero = codewords
             logical_one = flip_code_words(codewords)
             if reversed_data_string in logical_zero:
-                count_valid = count_valid + value
+                valid = value
             elif reversed_data_string in logical_one:
-                count_invalid = count_invalid + value
+                invalid = value
             else:
-                count_outside_codeword = count_outside_codeword + value
-        elif simple:
-            parity = '0'
-            for bit_location in simple_parity_bits:
-                if reversed_data_string[bit_location] == '1':
-                    #parity has changed
-                    if parity == '0':
-                        parity = '1'
-                    else:
-                        parity = '0'
-            if parity == codewords:
-                count_valid = count_valid + value
-            else:
-                count_invalid = count_invalid + value    
-        elif single:
-            if reversed_data_string[single_bit] == codewords:    
-                count_valid = count_valid + value
-            else:
-                count_invalid = count_invalid + value    
+                outside_codeword = outside_codeword + value
+    elif simple:
+        parity = '0'
+        simple_parity_bits = calculate_simple_parity_bits()
+        for bit_location in simple_parity_bits:
+            if reversed_data_string[bit_location] == '1':
+                #parity has changed
+                if parity == '0':
+                    parity = '1'
+                else:
+                    parity = '0'
+        if parity == codewords:
+            valid = value
         else:
-            if reversed_data_string in codewords:
-                count_valid = count_valid + value
-            else:
-                count_invalid = count_invalid + value
-    return(count_valid, count_invalid, count_outside_codeword)
+            invalid = value    
+    elif single:
+        if reversed_data_string[single_bit] == codewords:    
+            valid = value
+        else:
+            invalid = value    
+    else:
+        if reversed_data_string in codewords:
+            valid = value
+        else:
+            invalid = value
 
+    return(valid, invalid, outside_codeword)
+
+def calculate_simple_parity_bits():
+    """returns a list of qubits with exactly two non zero rows in the parity matrix
+    
+    Returns
+    -------
+    simple_parity_bits : list
+        A list of all qubits with exactly two non zero rows in the parity matrix
+    """
+    parity_matrix_totals = calculate_parity_matrix_totals()
+    simple_parity_bits = []
+    count = 0
+    for items in parity_matrix_totals:
+        if items == 2:
+            simple_parity_bits.append(count)
+        count = count + 1
+    return(simple_parity_bits)
 
 def find_individual_ancilla_values(ancilla_values, data_qubits, 
                                     ancilla_qubits, label_string = ''):
@@ -673,7 +743,8 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
                         ancilla_start = 0, data_meas_start = 0, data_start = 0,
                         ancilla_types = 2, ancilla_qubits = 0, ancilla_meas_repeats = 1,
                         data_meas_qubits = 0, data_meas_repeats = 0,
-                        post_selection = False
+                        post_selection = False,
+
                         ):
     """Process results from fault tolerant processing.
 

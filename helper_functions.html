@@ -240,9 +240,14 @@ This code corrects bit string errors only, not phase errors</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.count_valid_output_strings">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">count_valid_output_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the number of valid and invalid output bit strings in a given location in a dictionary representing
-the counts for each output bit string.</p>
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">count_valid_output_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_bit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.count_valid_output_strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the number of valid and invalid output bit strings
+in a given location in a dictionary representing
+the counts for each output bit string.
+Various algorithms for determining validaty are supported,
+including post selection, where a bit is only valid if it is the codewords,
+simple decoding based on the parity of three bits and
+looking at a single bit only.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -253,6 +258,8 @@ combination of qubit</p></li>
 <li><p><strong>post_selection</strong> (<em>bool</em>) – if true then only strings in logical zero are invalid.
 Strings outside the codespace are counted separately.</p></li>
 <li><p><strong>simple</strong> (<em>bool</em>) – looks only at the parity of bits with exactly two non-zero columns in the parity matrix</p></li>
+<li><p><strong>single</strong> (<em>bool</em>) – look at single bit only</p></li>
+<li><p><strong>single_bit</strong> (<em>int</em>) – single bit to validate against</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

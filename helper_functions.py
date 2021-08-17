@@ -68,9 +68,16 @@ def find_parity(counts, data_qubits):
         parity_count[str(parity)] = new_count
     return(parity_count)
 
-def count_valid_output_strings(counts, codewords, data_location = 0, post_selection = False, simple = False):
-    """Finds the number of valid and invalid output bit strings in a given location in a dictionary representing
-    the counts for each output bit string.
+def count_valid_output_strings(counts, codewords, data_location = 0, 
+                                post_selection = False, simple = False,
+                                single = False, single_bit = 0):
+    """Finds the number of valid and invalid output bit strings 
+    in a given location in a dictionary representing
+    the counts for each output bit string.  
+    Various algorithms for determining validaty are supported,
+    including post selection, where a bit is only valid if it is the codewords,
+    simple decoding based on the parity of three bits and
+    looking at a single bit only.
 
     Parameters
     ----------
@@ -86,6 +93,10 @@ def count_valid_output_strings(counts, codewords, data_location = 0, post_select
         Strings outside the codespace are counted separately.
     simple : bool
         looks only at the parity of bits with exactly two non-zero columns in the parity matrix
+    single : bool
+        look at single bit only
+    single_bit : int
+        single bit to validate against
 
     Returns
     -------
@@ -103,11 +114,19 @@ def count_valid_output_strings(counts, codewords, data_location = 0, post_select
     with a list of strings.  
 
     """
+    validate_integer(single_bit)
+    if single:
+        if len(codewords) != 1:
+            raise ValueError('Only send a one bit codeword with calculation using a single bit')
+        if simple:
+            raise ValueError('Validity calculation not designed for both simple algorithm and single_bit')
+        if post_selection:
+            raise ValueError('Validity calculation not designed for both post_selection and single_bit')
     if simple:
         if post_selection:
             raise ValueError('Validity calculation not designed for both post_selection and simple')
         if len(codewords) != 1:
-            raise ValueError('Only send a one bit codeword with simple selection')
+            raise ValueError('Only send a one bit codeword with simple calculation')
         parity_matrix_totals = calculate_parity_matrix_totals()
         simple_parity_bits = []
         count = 0
@@ -148,7 +167,12 @@ def count_valid_output_strings(counts, codewords, data_location = 0, post_select
             if parity == codewords:
                 count_valid = count_valid + value
             else:
-                count_invalid = count_invalid + value        
+                count_invalid = count_invalid + value    
+        elif single:
+            if reversed_data_string[single_bit] == codewords:    
+                count_valid = count_valid + value
+            else:
+                count_invalid = count_invalid + value    
         else:
             if reversed_data_string in codewords:
                 count_valid = count_valid + value

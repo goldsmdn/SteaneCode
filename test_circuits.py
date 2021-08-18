@@ -198,7 +198,7 @@ def test_count_valid_output_strings_simple_zero():
                  '1100110': 16, 
                  '1111000': 14
                  }
-    count_valid , count_invalid, _ = count_valid_output_strings(counts, '0', 
+    count_valid , count_invalid, _ = count_valid_output_strings(counts, ['0'], 
                                                     simple = True
                                                     )
     assert count_valid == 100  #calculated from example given
@@ -215,7 +215,7 @@ def test_count_valid_output_strings_simple_one():
                  '0000111': 11, 
                  '1111111': 12
                  }
-    count_valid , count_invalid, _ = count_valid_output_strings(counts, '1', 
+    count_valid , count_invalid, _ = count_valid_output_strings(counts, ['1'], 
                                                     simple = True
                                                     )
     assert count_valid == 100  #calculated from example given
@@ -236,7 +236,7 @@ def test_count_valid_output_strings_simple_zero_random_codewords():
                  '0100000': 13, #flip 5th bit - invalid
                  '1000000': 11  #flip 6th bit - valid as no impact
                  }
-    count_valid , count_invalid, _ = count_valid_output_strings(counts, '0', 
+    count_valid , count_invalid, _ = count_valid_output_strings(counts, ['0'], 
                                                     simple = True
                                                     )
     assert count_valid == 16 + 18 + 12 + 11  #calculated from example above

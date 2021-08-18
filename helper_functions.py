@@ -139,7 +139,7 @@ def count_valid_output_strings(counts, codewords, data_location = 0,
         #need to reverse the data string showing the relevant qubits as 
         #the codewords and the data have a different format 
         reversed_data_string = string_reverse(data)
-        valid, invalid, outside_codeword = counts_valid_strings(value = value, codewords = codewords, 
+        valid, invalid, outside_codeword = compute_string_validity(value = value, codewords = codewords, 
                                                                 reversed_data_string = reversed_data_string, 
                                                                 post_selection = post_selection, 
                                                                 simple = simple, 
@@ -151,8 +151,8 @@ def count_valid_output_strings(counts, codewords, data_location = 0,
         count_outside_codeword = count_outside_codeword + outside_codeword
     return(count_valid, count_invalid, count_outside_codeword)
 
-def counts_valid_strings(value, codewords, reversed_data_string, post_selection = False, 
-                        simple = False, single = False, single_bit = 0):
+def compute_string_validity(value, codewords, reversed_data_string, post_selection = False, 
+                            simple = False, single = False, single_bit = 0):
     """Finds the number of valid and invalid output bit strings 
     in a given location in a dictionary representing
     the counts for each output bit string.  
@@ -195,9 +195,13 @@ def counts_valid_strings(value, codewords, reversed_data_string, post_selection 
     with a list of strings.  
 
     """
+    if simple:
+        if post_selection:
+            raise Exception('simple and post selection algorithm are exclusive')
     valid = 0
     invalid = 0
     outside_codeword = 0
+    #print('in compute_string_validity simple, codewords, reversed_data_string', simple, codewords, reversed_data_string)
     if post_selection:
             logical_zero = codewords
             logical_one = flip_code_words(codewords)
@@ -217,7 +221,8 @@ def counts_valid_strings(value, codewords, reversed_data_string, post_selection 
                     parity = '1'
                 else:
                     parity = '0'
-        if parity == codewords:
+        #print('reversed_data_string, parity, codewords', reversed_data_string, parity, codewords )
+        if parity in codewords:
             valid = value
         else:
             invalid = value    
@@ -743,9 +748,9 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
                         ancilla_start = 0, data_meas_start = 0, data_start = 0,
                         ancilla_types = 2, ancilla_qubits = 0, ancilla_meas_repeats = 1,
                         data_meas_qubits = 0, data_meas_repeats = 0,
-                        post_selection = False,
-
+                        post_selection = False, simple = False,
                         ):
+
     """Process results from fault tolerant processing.
 
     Parameters
@@ -782,6 +787,8 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
         number of times data measurements are repeated.  Normally 3 or 1.
     post_select: bool
         if true then only strings in logical zero are invalid
+    simple : book
+        if true then simple decoding based on three bits shall be used.
 
     Returns
     -------
@@ -813,16 +820,16 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
     validate_integer(data_meas_repeats)  
     total_keys = ancilla_types * ancilla_qubits * ancilla_meas_repeats
     total_keys = total_keys + (data_meas_qubits * data_meas_repeats) + 1   
-    valid = 0
-    invalid = 0
+    count_valid = 0
+    count_invalid = 0
+    count_outside_codeword = 0
     ancilla_rejected = 0
     ancilla_accepted = 0
     data_rejected = 0
     data_accepted = 0
     rejected = 0
     accepted = 0
-    outside_codewords = 0
-    for string, count in counts.items():
+    for string, value in counts.items():
         qubit_strings = []
         data_syndrome_strings = []
         data_OK = False
@@ -842,7 +849,7 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
         else:
             raise Exception('At present only 3 or zero data measurements are coded for')
         if data_OK:
-            data_accepted = data_accepted + count
+            data_accepted = data_accepted + value
             if ancilla_qubits == 0:
                 #no ancilla
                 ancilla_accepted = data_accepted
@@ -881,37 +888,52 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
                                             raise Exception('Error in processing strings for i, j, k = {i}, {j}, {k}')
                 if count_ancilla_OK == ancilla_qubits * ancilla_types:
                     ancilla_OK = True
-                    ancilla_accepted = ancilla_accepted + count
+                    ancilla_accepted = ancilla_accepted + value
                     #always first three ancilla with Steane code
                     ancilla = X[0] + X[1] + X[2]
                     corrected_data_string = correct_qubit(data_string, ancilla, data_qubits)
                 else:
                     ancilla_OK = False
-                    ancilla_rejected = ancilla_rejected + count
+                    ancilla_rejected = ancilla_rejected + value
             else:
                 raise Exception('Can only process ancilla strings of 0, 1 or 3 qubits')
             if ancilla_OK:
                 #need to reverse string because of Qisit convention
-                if post_selection:
-                    logical_zero = codewords
-                    logical_one = flip_code_words(codewords)  
-                    if string_reverse(corrected_data_string) in logical_zero:
-                        valid = valid + count
-                    elif string_reverse(corrected_data_string) in logical_one:
-                        invalid = invalid + count
-                    else:
-                        outside_codewords = outside_codewords + count
-                else:
-                    if string_reverse(corrected_data_string) in codewords:
-                        valid = valid + count
-                    else:
-                        invalid = invalid + count
+                reversed_data_string = string_reverse(corrected_data_string)
+                #print('corrected_data_string, reversed_data_string', corrected_data_string, reversed_data_string)
+                valid, invalid, outside_codeword = compute_string_validity(value, 
+                                                                        codewords, 
+                                                                        reversed_data_string, 
+                                                                        post_selection = post_selection, 
+                                                                        simple = simple, 
+                                                                        )
+                #print('value, codewords, reversed_data_string, simple',value, codewords, reversed_data_string, simple)
+                #print('valid, invalid, count_outside_codeword',valid, invalid, count_outside_codeword, )
+                count_valid = count_valid + valid
+                count_invalid = count_invalid + invalid
+                count_outside_codeword = count_outside_codeword + outside_codeword
+                
+                
+                #if post_selection:
+                #    logical_zero = codewords
+                #    logical_one = flip_code_words(codewords)  
+                #    if string_reverse(corrected_data_string) in logical_zero:
+                #        valid = valid + count
+                #    elif string_reverse(corrected_data_string) in logical_one:
+                #        invalid = invalid + count
+                #    else:
+                #        outside_codewords = outside_codewords + count
+                #else:
+                #    if string_reverse(corrected_data_string) in codewords:
+                #        valid = valid + count
+                #    else:
+                #        invalid = invalid + count
         else:
-            data_rejected = data_rejected + count
+            data_rejected = data_rejected + value
 
     if ancilla_accepted != 0:
         # calculate on ancilla_accepted because this always holds the amounts to be validated
-        error_rate = invalid / ancilla_accepted
+        error_rate = count_invalid / ancilla_accepted
     else:   
         error_rate = 0
         print('Error rate not defined as no strings accepted')
@@ -926,11 +948,11 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
         print(f'There are {ancilla_rejected} strings rejected and {ancilla_accepted} strings submitted for validation')
         print(f'Making {ancilla_rejected + ancilla_accepted} in total submitted to check against ancilla') 
         print()
-        print(f'Of these {ancilla_accepted} strings validated there are {valid} valid strings and {invalid} invalid_strings')
+        print(f'Of these {ancilla_accepted} strings validated there are {count_valid} valid strings and {count_invalid} invalid_strings')
         if post_selection:
-            print(f'There were {outside_codewords} strings that were neither logical one or logical zero')
+            print(f'There were {count_outside_codeword} strings that were neither logical one or logical zero')
         print(f'The error rate is {error_rate:.4f}')
-    return(error_rate, rejected, accepted, valid, invalid)
+    return(error_rate, rejected, accepted, count_valid, count_invalid)
 
 def get_parity_check_matrix():
     """Stores the parity matrix in one place"""
@@ -964,4 +986,3 @@ def calculate_parity_matrix_totals():
         for index in range(n):
             parity_matrix_totals[index] = parity_matrix_totals[index] + int(parity_string[index])
     return(parity_matrix_totals)
-

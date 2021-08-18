@@ -225,3 +225,19 @@ def test_calculate_simple_parity_bits():
     """test the simple parity bits for the standard parity matrix used"""
     simple_parity_bits = calculate_simple_parity_bits()
     assert simple_parity_bits == [2, 4, 5]
+
+def test_count_valid_output_strings_simple_zero_random_codewords():
+    """Check that validity for random codewords with a bit flip in one place is correctly calculated with simple software decoding"""
+    counts =    {'0000001': 16, #flip 0th bit - valid as no impact
+                 '0011100': 18, #flip 1st bit - valid as no impact
+                 '0101001': 10, #flip 2nd bit - invalid
+                 '0001000': 12, #flip 3rd bit - valid as no impact
+                 '0010000': 8,  #flip 4th bit - invalid
+                 '0100000': 13, #flip 5th bit - invalid
+                 '1000000': 11  #flip 6th bit - valid as no impact
+                 }
+    count_valid , count_invalid, _ = count_valid_output_strings(counts, '0', 
+                                                    simple = True
+                                                    )
+    assert count_valid == 16 + 18 + 12 + 11  #calculated from example above
+    assert count_invalid == 10 + 8 + 13  #calculated from example above

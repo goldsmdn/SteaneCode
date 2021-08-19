@@ -205,7 +205,7 @@ def test_count_valid_output_strings_simple_zero():
     assert count_invalid == 0  #calculated from example given
 
 def test_count_valid_output_strings_simple_one():
-    """Check that each logical zero codeword is identified as valid"""
+    """Check that each logical one codeword is identified as valid"""
     counts =    {'0011001': 17, 
                  '0101010': 17, 
                  '0110100': 9, 

@@ -222,7 +222,7 @@ def test_count_valid_output_strings_simple_one():
     assert count_invalid == 0  #calculated from example given
 
 def test_calculate_simple_parity_bits():
-    """test the simple parity bits for the standard parity matrix used"""
+    """Checks the function to produce the bits for the simple parity checking."""
     simple_parity_bits = calculate_simple_parity_bits()
     assert simple_parity_bits == [2, 4, 5]
 

@@ -174,6 +174,20 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.calculate_simple_parity_bits">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_simple_parity_bits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_simple_parity_bits" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a list of qubits with exactly two non zero rows in the parity matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>simple_parity_bits</strong> – A list of all qubits with exactly two non zero rows in the parity matrix</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.calculate_standard_error">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_standard_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_standard_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the standard error of a list of numbers</p>
@@ -190,6 +204,44 @@ result of calculation</p></li>
 </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.compute_string_validity">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">compute_string_validity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reversed_data_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_bit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.compute_string_validity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the number of valid and invalid output bit strings
+in a given location in a dictionary representing
+the counts for each output bit string.
+Various algorithms for determining validaty are supported,
+including post selection, where a bit is only valid if it is the codewords,
+simple decoding based on the parity of three bits and
+looking at a single bit only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>int</em>) – number of strings for this data string</p></li>
+<li><p><strong>codewords</strong> (<em>list</em>) – holds allowed codewords</p></li>
+<li><p><strong>reversed_data_string</strong> (<em>str</em>) – string holding element to be processed</p></li>
+<li><p><strong>post_selection</strong> (<em>bool</em>) – if true then only strings in logical zero are invalid.
+Strings outside the codespace are counted separately.</p></li>
+<li><p><strong>simple</strong> (<em>bool</em>) – looks only at the parity of bits with exactly two non-zero columns in the parity matrix</p></li>
+<li><p><strong>single</strong> (<em>bool</em>) – look at single bit only</p></li>
+<li><p><strong>single_bit</strong> (<em>int</em>) – single bit to validate against</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>valid</strong> (<em>int</em>) – value if the bit string is valid</p></li>
+<li><p><strong>invalid</strong> (<em>int</em>) – value if the bit string is invalid</p></li>
+<li><p><strong>outside_codeword</strong> (<em>int</em>) – value if the bit string is outside the codespace</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This code was originally designed to handle the codewords
+in a list of lists, but will also work fine
+with a list of strings.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -451,7 +503,7 @@ logical zero, or outside the code base.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.process_FT_results">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">process_FT_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['0']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anc_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anc_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_meas_repeats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_repeats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.process_FT_results" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">process_FT_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_strings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['0']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anc_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anc_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancilla_meas_repeats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_meas_repeats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.process_FT_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process results from fault tolerant processing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -472,6 +524,7 @@ logical zero, or outside the code base.</p>
 <li><p><strong>data_meas_qubits</strong> (<em>int</em>) – number of distinct data measurement qubits.  Normally 7, 1 or 0</p></li>
 <li><p><strong>data_meas_repeats</strong> (<em>int</em>) – number of times data measurements are repeated.  Normally 3 or 1.</p></li>
 <li><p><strong>post_select</strong> (<em>bool</em>) – if true then only strings in logical zero are invalid</p></li>
+<li><p><strong>simple</strong> (<em>book</em>) – if true then simple decoding based on three bits shall be used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

@@ -169,6 +169,12 @@
   <div class="section" id="module-test_circuits">
 <span id="test-circuits-module"></span><h1>test_circuits module<a class="headerlink" href="#module-test_circuits" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="test_circuits.test_calculate_simple_parity_bits">
+<span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_calculate_simple_parity_bits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_calculate_simple_parity_bits" title="Permalink to this definition">¶</a></dt>
+<dd><p>test the simple parity bits for the standard parity matrix used</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_correct_qubit">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_correct_qubit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_correct_qubit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks that the data qubit correction helper function is working correctly</p>
@@ -183,13 +189,19 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_count_valid_output_strings_simple_one">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_count_valid_output_strings_simple_one</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_count_valid_output_strings_simple_one" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check that each logical zero codeword is identified as valid</p>
+<dd><p>Check that each logical one codeword is identified as valid</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="test_circuits.test_count_valid_output_strings_simple_zero">
 <span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_count_valid_output_strings_simple_zero</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_count_valid_output_strings_simple_zero" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that each logical zero codeword is identified as valid</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="test_circuits.test_count_valid_output_strings_simple_zero_random_codewords">
+<span class="sig-prename descclassname"><span class="pre">test_circuits.</span></span><span class="sig-name descname"><span class="pre">test_count_valid_output_strings_simple_zero_random_codewords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_circuits.test_count_valid_output_strings_simple_zero_random_codewords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that validity for random codewords with a bit flip in one place is correctly calculated with simple software decoding</p>
 </dd></dl>
 
 <dl class="py function">

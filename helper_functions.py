@@ -227,7 +227,7 @@ def compute_string_validity(value, codewords, reversed_data_string, post_selecti
         else:
             invalid = value    
     elif single:
-        if reversed_data_string[single_bit] == codewords:    
+        if reversed_data_string[single_bit] in codewords:    
             valid = value
         else:
             invalid = value    

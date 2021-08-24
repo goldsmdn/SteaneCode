@@ -189,6 +189,14 @@
 <dt class="sig sig-object py" id="helper_functions.calculate_parity_matrix_totals">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_parity_matrix_totals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_parity_matrix_totals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the number of items in each row of the parity matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>parity_matrix_totals</strong> – List holding parity matrix totals for each row in the parity matrix.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -227,9 +235,8 @@ result of calculation</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.compute_string_validity">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">compute_string_validity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codewords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reversed_data_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_bit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.compute_string_validity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the number of valid and invalid output bit strings
-in a given location in a dictionary representing
-the counts for each output bit string.
+<dd><p>Categorises a string as valid, invalid or outside the codeword and based on this assigns
+the number of counts of that string to the values returned.
 Various algorithms for determining validaty are supported,
 including post selection, where a bit is only valid if it is the codewords,
 simple decoding based on the parity of three bits and
@@ -355,7 +362,7 @@ with a list of strings.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>counts</strong> (<em>dictionary</em>) – counts for each possible output bit string</p></li>
-<li><p><strong>anicilla_qubits</strong> (<em>int</em>) – number of ancilla qubits</p></li>
+<li><p><strong>ancilla_qubits</strong> (<em>int</em>) – number of ancilla qubits</p></li>
 <li><p><strong>ancilla_location</strong> (<em>int</em>) – designates which bit string is relevant</p></li>
 </ul>
 </dd>
@@ -395,7 +402,7 @@ ancilla bit string</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.find_parity">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_parity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.find_parity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the parity of the output bit string.</p>
+<dd><p>Finds the parity of the output bit string held in the counts dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>counts</strong> (<em>dictionary</em>) – Holds the observed output bit strings</p>
@@ -417,7 +424,7 @@ the list of codewords for the logical zero
 by flipped each bit of the input codewords.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>codewords</strong> (<em>list</em>) – logical codewords in seven bit Steane code data qubit
+<dd class="field-odd"><p><strong>codewords_in</strong> (<em>list</em>) – logical codewords in seven bit Steane code data qubit
 for the logical zero</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -432,7 +439,15 @@ for the logical zero</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.get_codewords">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">get_codewords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.get_codewords" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stores the codewords in one place</p>
+<dd><p>Stores the codewords for the logical zero in one place</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>codewords</strong> – A list of valid codewords for the logical zero</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -451,7 +466,7 @@ for the logical zero</p>
 <li><p><strong>noisy_qubit_list</strong> (<em>list of list</em>) – list of list of noisy qubits on which  errors are applied</p></li>
 <li><p><strong>decohere</strong> (<em>bool</em>) – Add extra noise to represent de-coherence</p></li>
 <li><p><strong>dummy_gate_set</strong> (<em>list</em>) – Set of dummy gates on which the de-coherence error is applied.  Normally [‘id’].</p></li>
-<li><p><strong>dummy_gate_error</strong> (<em>flot</em>) – error to apply to dummy gate which is set up to model de-coherence at certain stages in the circuit.</p></li>
+<li><p><strong>dummy_gate_error</strong> (<em>float</em>) – error to apply to dummy gate which is set up to model de-coherence at certain stages in the circuit.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -539,7 +554,7 @@ logical zero, or outside the code base.</p>
 <li><p><strong>data_meas_qubits</strong> (<em>int</em>) – number of distinct data measurement qubits.  Normally 7, 1 or 0</p></li>
 <li><p><strong>data_meas_repeats</strong> (<em>int</em>) – number of times data measurements are repeated.  Normally 3 or 1.</p></li>
 <li><p><strong>post_select</strong> (<em>bool</em>) – if true then only strings in logical zero are invalid</p></li>
-<li><p><strong>simple</strong> (<em>book</em>) – if true then simple decoding based on three bits shall be used.</p></li>
+<li><p><strong>simple</strong> (<em>bool</em>) – if true then simple decoding based on three bits shall be used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -635,7 +650,7 @@ to show each qubit as 0, 1, or 2 instead of the full bit string.</p>
 <li><p><strong>logical_one_strings</strong> (<em>list</em>) – list of strings in logical zero</p></li>
 <li><p><strong>data1_location</strong> (<em>int</em>) – where in the counts bit string data1 is held</p></li>
 <li><p><strong>data2_location</strong> (<em>int</em>) – where in the counts bit string data2 is held</p></li>
-<li><p><strong>simple</strong> (<em>bool</em>) – use the simple decoding based on bit parity</p></li>
+<li><p><strong>simple</strong> (<em>bool</em>) – use simple decoding based on bit parity</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

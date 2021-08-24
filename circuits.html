@@ -209,7 +209,7 @@ Should be either 0 or 1 at present.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.BaconShorCodeLogicalQubit.define_registers">
 <span class="sig-name descname"><span class="pre">define_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.BaconShorCodeLogicalQubit.define_registers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up registers used based on number of logical qubits
+<dd><p>Set up registers to be used based on the number of logical qubits
 and whether error checking is needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -359,7 +359,7 @@ fault tolerant encoding</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Uses super to inherit methods from parent.
+<p>Uses super to inherit methods from QuantumCircuit parent.
 The code is derived from the parity matrix.
 The parity matrix is validated to ensure each row
 is orthogonal to each valid codeword.
@@ -367,10 +367,10 @@ The number of data qubits is calculated from the length
 of rows in the parity matrix.
 The number of ancilla is calculated from the number
 of columns in the parity matrix.
-Ancilla qubits are only set up if these are needed.
-For error correction without MCT gates these ancilla are extended.
+Ancilla qubits are only set up if needed.
+For error correction without MCT gates extra ancilla are set up.
 An extra qubit can be added for a fault tolerant logical zero.
-Extra measurement ancilla are set up if there is more than one
+Extra classical measurement ancilla are set up if there is more than one
 ancilla measurement round.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.correct_errors">
@@ -387,14 +387,17 @@ Should be either 0 or 1 at present.</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>Need to swap ancilla bits to match how printed out.
-Reads through Parity matrix to determine the corrections to be applied.</p>
+Reads through parity matrix to determine the corrections to be applied.</p>
 <p>The error correcting circuit is either set up with MCT gates,
-which is logically simpler but needs
+which is simpler but needs
 more gates, or without MCT gates, which is more difficult to
 program but needs less gates.
-In the latter case the complexity is to take into account corrections
-already applied when looking at
-two or three bit corrections.</p>
+In the latter case corrections
+already applied need to be taken into account</p>
+<blockquote>
+<div><p>when looking at</p>
+</div></blockquote>
+<p>two or three bit corrections.</p>
 <p>In both cases the error correcting gates are determined from the parity matrix.</p>
 <p>The errors detected by the Z operators are bit flips,
 so are corrected by CX gates.
@@ -417,8 +420,10 @@ Should be either 0 or 1 at present.</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Generally this is a reversal of the encoding circuit.
+<p>The full circuit reverses the encoding circuit.
 The gates needed are determined from the parity matrix.</p>
+<p>For the simple decoding the logical status is determined from
+the parity of three bits.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -439,7 +444,7 @@ the multiple classical rounds are only on the second qubit.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="circuits.SteaneCodeLogicalQubit.define_registers">
 <span class="sig-name descname"><span class="pre">define_registers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuits.SteaneCodeLogicalQubit.define_registers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up registers used based on number of logical qubits
+<dd><p>Set up registers to be used based on number of logical qubits
 and whether error checking is needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -483,9 +488,9 @@ retained in case it is useful in future.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>control_qubits</strong> (<em>list</em>) – List of control qubits</p></li>
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to encode fault tolerantly.
 Should be either 0 or 1 at present.</p></li>
-<li><p><strong>control_qubits</strong> (<em>list</em>) – List of control qubits</p></li>
 </ul>
 </dd>
 </dl>
@@ -500,9 +505,9 @@ Should be either 0 or 1 at present.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force X error on.</p></li>
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on.
 Should be either 0 or 1 at present.</p></li>
-<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force X error on.</p></li>
 </ul>
 </dd>
 </dl>
@@ -515,9 +520,9 @@ Should be either 0 or 1 at present.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force Z error on.</p></li>
 <li><p><strong>logical_qubit</strong> (<em>int</em>) – Number of the logical “data” qubits to force error on.
 Should be either 0 or 1 at present.</p></li>
-<li><p><strong>physical_qubit</strong> (<em>int</em>) – Number of qubit to force Z error on.</p></li>
 </ul>
 </dd>
 </dl>
@@ -704,7 +709,9 @@ Should be either 0 or 1 at present.</p></li>
 <p class="rubric">Notes</p>
 <p>Columns of the parity matrix with only one entry are
 prepared in the + state.
-CX gates from these + state to the parity matrix entries
+CX gates are set up from these + state to
+data qubits associated with
+parity matrix entries
 in the same row which are unity.</p>
 <p>If reduced = True possible unnecessary
 duplicate CX gates are identified.

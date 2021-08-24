@@ -45,7 +45,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         
         Notes
         -----
-        Uses super to inherit methods from parent.  
+        Uses super to inherit methods from QuantumCircuit parent.  
         The code is derived from the parity matrix.
         The parity matrix is validated to ensure each row 
         is orthogonal to each valid codeword.
@@ -53,10 +53,10 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
         of rows in the parity matrix.  
         The number of ancilla is calculated from the number 
         of columns in the parity matrix.
-        Ancilla qubits are only set up if these are needed.
-        For error correction without MCT gates these ancilla are extended.
+        Ancilla qubits are only set up if needed.
+        For error correction without MCT gates extra ancilla are set up.
         An extra qubit can be added for a fault tolerant logical zero.
-        Extra measurement ancilla are set up if there is more than one 
+        Extra classical measurement ancilla are set up if there is more than one 
         ancilla measurement round.
         """
 
@@ -157,7 +157,7 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             self.__extra_ancilla_classical = []
 
     def define_registers(self, d):
-        """Set up registers used based on number of logical qubits 
+        """Set up registers to be used based on number of logical qubits 
         and whether error checking is needed.
 
         Parameters
@@ -305,7 +305,9 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             -----
             Columns of the parity matrix with only one entry are 
             prepared in the + state.
-            CX gates from these + state to the parity matrix entries 
+            CX gates are set up from these + state to 
+            data qubits associated with
+            parity matrix entries 
             in the same row which are unity.  
 
             If reduced = True possible unnecessary 
@@ -446,11 +448,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
             Parameters
             ----------
+            physical_qubit : int
+                Number of qubit to force X error on.            
             logical_qubit: int
                 Number of the logical "data" qubits to force error on. 
                 Should be either 0 or 1 at present.
-            physical_qubit : int
-                Number of qubit to force X error on.
+
         """
         self._validate_physical_qubit_number(physical_qubit)
         self._validate_logical_qubit_number(logical_qubit)
@@ -461,11 +464,12 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
             Parameters
             ---------- 
+            physical_qubit : int
+                Number of qubit to force Z error on.
             logical_qubit: int
                 Number of the logical "data" qubits to force error on. 
                 Should be either 0 or 1 at present.
-            physical_qubit : int
-                Number of qubit to force Z error on.
+
         """
         self._validate_physical_qubit_number(physical_qubit)
         self._validate_logical_qubit_number(logical_qubit)
@@ -716,14 +720,15 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
             Notes
             -----
             Need to swap ancilla bits to match how printed out.
-            Reads through Parity matrix to determine the corrections to be applied.
+            Reads through parity matrix to determine the corrections to be applied.
             
             The error correcting circuit is either set up with MCT gates, 
-            which is logically simpler but needs
+            which is simpler but needs
             more gates, or without MCT gates, which is more difficult to 
             program but needs less gates.
-            In the latter case the complexity is to take into account corrections 
-            already applied when looking at
+            In the latter case corrections 
+            already applied need to be taken into account
+             when looking at
             two or three bit corrections.
             
             In both cases the error correcting gates are determined from the parity matrix.
@@ -922,8 +927,11 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
             Notes
             -----
-            Generally this is a reversal of the encoding circuit.
+            The full circuit reverses the encoding circuit.
             The gates needed are determined from the parity matrix.
+
+            For the simple decoding the logical status is determined from 
+            the parity of three bits.
         """
         self._validate_logical_qubit_number(logical_qubit)
         parity_matrix_totals = calculate_parity_matrix_totals()
@@ -1173,12 +1181,11 @@ class SteaneCodeLogicalQubit(QuantumCircuit):
 
             Parameters
             ----------
+            control_qubits: list
+                List of control qubits
             logical_qubit: int
                 Number of the logical "data" qubits to encode fault tolerantly. 
                 Should be either 0 or 1 at present.
-            control_qubits: list
-                List of control qubits
-            
 
             Notes
             -----
@@ -1239,7 +1246,7 @@ class BaconShorCodeLogicalQubit(QuantumCircuit):
         self.__ancilla_classical = []
 
     def define_registers(self, d):
-        """Set up registers used based on number of logical qubits 
+        """Set up registers to be used based on the number of logical qubits 
         and whether error checking is needed.
 
         Parameters

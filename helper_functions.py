@@ -4,7 +4,6 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import (
     pauli_error, 
     depolarizing_error,
-    thermal_relaxation_error
     )
 from statistics import stdev
 from math import sqrt
@@ -31,43 +30,59 @@ def string_reverse(input_string):
 
     return(reversed_string)
 
-def find_parity(counts, data_qubits):
+def find_parity(counts):
     """Finds the parity of the output bit string.
 
     Parameters
     ----------
     counts : dictionary
         Holds the observed output bit strings
-    data_qubits : integer
-        number of data qubits
         
     Returns
     ----------
     parity_count : dict
-        A dictionary holding the partiy count for each observed output bit string.     
+        A dictionary holding the parity count for each observed output bit string.     
     """
-
+    
     #initialise dictionary to hold counts
     parity_count = {str(i) : 0 for i in range(2)}
     for key, value in counts.items():
         #split out data part of key
         data = key.split()[1]
-        parity = 0
-        for i in range(data_qubits):
-            bit = data[i]
-            if bit == '1':
-                #parity has changed
-                if parity == 0:
-                    parity = 1
-                elif parity == 1:
-                    parity = 0
-                else:
-                    raise Exception("Unexpected error calculating parity")
+        parity = calculate_parity(data)
         old_count = parity_count[str(parity)]
         new_count = old_count + value
         parity_count[str(parity)] = new_count
     return(parity_count)
 
+def calculate_parity(bit_string):
+    """ Calculates the parity of a bit string
+    
+    Parameters
+    ----------
+    bit_string : str
+        bit string on which parity is to be calculated
+    
+    Returns
+    -------
+    parity :int
+        0 if even parity
+        1 if odd parity
+    """
+
+    parity = 0
+    for i in range(len(bit_string)):
+        bit = bit_string[i]
+        if bit == '1':
+            #parity has changed
+            if parity == 0:
+                parity = 1
+            elif parity == 1:
+                parity = 0
+            else:
+                raise Exception("Unexpected error calculating parity")
+    return(parity)
+    
 def count_valid_output_strings(counts, codewords, data_location = 0, 
                                 post_selection = False, simple = False,
                                 single = False, single_bit = 0):
@@ -114,7 +129,7 @@ def count_valid_output_strings(counts, codewords, data_location = 0,
     with a list of strings.  
 
     """
-    validate_integer(single_bit)
+
     if single:
         if len(codewords) != 1:
             raise ValueError('Only send a one bit codeword with calculation using a single bit')
@@ -201,7 +216,6 @@ def compute_string_validity(value, codewords, reversed_data_string, post_selecti
     valid = 0
     invalid = 0
     outside_codeword = 0
-    #print('in compute_string_validity simple, codewords, reversed_data_string', simple, codewords, reversed_data_string)
     if post_selection:
             logical_zero = codewords
             logical_one = flip_code_words(codewords)
@@ -212,16 +226,11 @@ def compute_string_validity(value, codewords, reversed_data_string, post_selecti
             else:
                 outside_codeword = outside_codeword + value
     elif simple:
-        parity = '0'
         simple_parity_bits = calculate_simple_parity_bits()
+        bit_string = ['']
         for bit_location in simple_parity_bits:
-            if reversed_data_string[bit_location] == '1':
-                #parity has changed
-                if parity == '0':
-                    parity = '1'
-                else:
-                    parity = '0'
-        #print('reversed_data_string, parity, codewords', reversed_data_string, parity, codewords )
+            bit_string.append(reversed_data_string[bit_location])
+        parity = str(calculate_parity(bit_string))
         if parity in codewords:
             valid = value
         else:
@@ -240,7 +249,7 @@ def compute_string_validity(value, codewords, reversed_data_string, post_selecti
     return(valid, invalid, outside_codeword)
 
 def calculate_simple_parity_bits():
-    """returns a list of qubits with exactly two non zero rows in the parity matrix
+    """Returns a list of qubits with exactly two non zero rows in the parity matrix
     
     Returns
     -------
@@ -651,7 +660,7 @@ def convert_codewords(codewords):
     return(list_of_strings)
 
 def summarise_logical_counts(counts, logical_zero_strings, logical_one_strings, 
-                            data1_location, data2_location):
+                            data1_location, data2_location,  simple = False):
     """Simplifies bit strings for logical operations 
     to show each qubit as 0, 1, or 2 instead of the full bit string.
         0.  means qubit is the logical zero
@@ -670,17 +679,27 @@ def summarise_logical_counts(counts, logical_zero_strings, logical_one_strings,
         where in the counts bit string data1 is held
     data2_location : int
         where in the counts bit string data2 is held
+    simple : bool
+        use the simple decoding based on bit parity
     
     Returns
     -------
     new_counts : dict
         simplified results
     """
-    # convert list of list to list of strings
-    #logical_zero_strings = convert_codewords(logical_zero)
-    #logical_one_strings = convert_codewords(logical_one)
-
     #set up dictionary to hold answer
+    if type(logical_zero_strings) != list:
+        raise Exception('logical_zero_strings should be a list')
+    if type(logical_one_strings) != list:
+        raise Exception('logical_one_strings should be a list')
+    validate_integer(data1_location)
+    validate_integer(data2_location)
+    if simple:
+        if len(logical_zero_strings) != 1:
+            raise Exception('with simple decoding logical zero should be a list with one entry')
+        if len(logical_zero_strings) != 1:
+            raise Exception('with simple decoding logical one should be a list with one entry')
+        simple_parity_bits = calculate_simple_parity_bits()
     new_counts = {str(i) + str(j):0 for i in range(3) for j in range(3)}
     for key, value in counts.items():
         #split out the data parts of key
@@ -689,8 +708,18 @@ def summarise_logical_counts(counts, logical_zero_strings, logical_one_strings,
         #need to reverse the string from qiskit format
         reverse1 = string_reverse(data1)
         reverse2 = string_reverse(data2)
-        new_data1 = look_up_data(reverse1, logical_zero_strings, logical_one_strings)
-        new_data2 = look_up_data(reverse2, logical_zero_strings, logical_one_strings)
+        if simple:
+            #string is calculated from parity
+            bit_string1 = ['']
+            bit_string2 = ['']
+            for bit_location in simple_parity_bits:
+                bit_string1.append(reverse1[bit_location])
+                bit_string2.append(reverse2[bit_location])
+            new_data1 = str(calculate_parity(bit_string1))
+            new_data2 = str(calculate_parity(bit_string2))
+        else:
+            new_data1 = look_up_data(reverse1, logical_zero_strings, logical_one_strings)
+            new_data2 = look_up_data(reverse2, logical_zero_strings, logical_one_strings)
         new_key = new_data1 + new_data2
         if new_counts.get(new_key) == None: 
              new_counts.update({new_key: value})
@@ -900,34 +929,15 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
             if ancilla_OK:
                 #need to reverse string because of Qisit convention
                 reversed_data_string = string_reverse(corrected_data_string)
-                #print('corrected_data_string, reversed_data_string', corrected_data_string, reversed_data_string)
                 valid, invalid, outside_codeword = compute_string_validity(value, 
                                                                         codewords, 
                                                                         reversed_data_string, 
                                                                         post_selection = post_selection, 
                                                                         simple = simple, 
                                                                         )
-                #print('value, codewords, reversed_data_string, simple',value, codewords, reversed_data_string, simple)
-                #print('valid, invalid, count_outside_codeword',valid, invalid, count_outside_codeword, )
                 count_valid = count_valid + valid
                 count_invalid = count_invalid + invalid
                 count_outside_codeword = count_outside_codeword + outside_codeword
-                
-                
-                #if post_selection:
-                #    logical_zero = codewords
-                #    logical_one = flip_code_words(codewords)  
-                #    if string_reverse(corrected_data_string) in logical_zero:
-                #        valid = valid + count
-                #    elif string_reverse(corrected_data_string) in logical_one:
-                #        invalid = invalid + count
-                #    else:
-                #        outside_codewords = outside_codewords + count
-                #else:
-                #    if string_reverse(corrected_data_string) in codewords:
-                #        valid = valid + count
-                #    else:
-                #        invalid = invalid + count
         else:
             data_rejected = data_rejected + value
 
@@ -976,7 +986,7 @@ def get_codewords():
     return(codewords)
 
 def calculate_parity_matrix_totals():
-    """calculates the number of items in each row of the parity matrix"""
+    """Calculates the number of items in each row of the parity matrix"""
     parity_check_matrix = get_parity_check_matrix()
     n = len(parity_check_matrix[0])
     parity_matrix_totals = [ 0 for x in range(n)] # define an empty list 

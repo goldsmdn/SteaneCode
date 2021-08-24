@@ -191,7 +191,7 @@ def test_standard_error():
     np.testing.assert_almost_equal(standard_error, 0.70710678, decimal = 7, verbose = True)
 
 def test_count_valid_output_strings_simple_zero():
-    """Check that each logical zero codeword is identified as valid"""
+    """Check that each logical zero codeword is identified as valid with simple software decoding"""
     counts =    {'0000000': 12, 
                  '0011110': 12, 
                  '0101101': 9, 
@@ -208,7 +208,7 @@ def test_count_valid_output_strings_simple_zero():
     assert count_invalid == 0  #calculated from example given
 
 def test_count_valid_output_strings_simple_one():
-    """Check that each logical one codeword is identified as valid"""
+    """Check that each logical one codeword is identified as valid with simple software decoding"""
     counts =    {'0011001': 17, 
                  '0101010': 17, 
                  '0110100': 9, 
@@ -258,7 +258,7 @@ def test_calculate_parity_odd():
     assert parity == 1
 
 def test_summarise_logical_counts():
-    """tests summarisation of strings on some manufactured data"""
+    """Checks the summarisation of strings on some manufactured data"""
 
     corrected_counts = {'010 000 0011100 100 000 0011101': 1,  
                         # 0 0 first string in logical, second with indetectable error
@@ -286,7 +286,7 @@ def test_summarise_logical_counts():
     assert new_counts == expected_result
 
 def test_process_FT_results_B():
-    """tests the processing of FT results for scheme B"""
+    """Checks the processing of FT results for scheme B"""
     
     input = {'0000000 0000000 0000000 0000000': 1,  #valid string - accepted
              '0011110 0101101 0110011 1001011': 2,  #valid string - accepted
@@ -309,7 +309,7 @@ def test_process_FT_results_B():
     np.testing.assert_almost_equal(calc_error, error, decimal = 7, verbose = True)
 
 def test_process_FT_results_C():
-    """tests the processing of FT results for scheme C"""
+    """Checks the processing of FT results for scheme C"""
     
     input = {'0 0 0 0000000': 1,  #valid string - valid
              '1 0 0 0000001': 2,  #invalid first string - rejected,  
@@ -334,7 +334,7 @@ def test_process_FT_results_C():
     np.testing.assert_almost_equal(calc_error, error, decimal = 7, verbose = True)                                                           
                                                           
 def test_process_FT_results_D():
-    """tests the processing of FT results for scheme D"""
+    """Checks the processing of FT results for scheme D"""
     
     input = {'0000000 0000000 0000000 0000000': 1,  #valid string - accepted
              '0011110 0101101 0110011 1001011': 2,  #valid string - accepted
@@ -357,7 +357,7 @@ def test_process_FT_results_D():
     np.testing.assert_almost_equal(calc_error, error, decimal = 7, verbose = True)
 
 def test_process_FT_results_C_anc():
-    """tests the processing of FT results for scheme C with FT ancillas"""
+    """Checks the processing of FT results for scheme C with FT ancillas"""
     
     input = {'0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 0 0011110': 1,
              #valid data string

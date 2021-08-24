@@ -31,7 +31,7 @@ def string_reverse(input_string):
     return(reversed_string)
 
 def find_parity(counts):
-    """Finds the parity of the output bit string.
+    """Finds the parity of the output bit string held in the counts dictionary.
 
     Parameters
     ----------
@@ -168,9 +168,8 @@ def count_valid_output_strings(counts, codewords, data_location = 0,
 
 def compute_string_validity(value, codewords, reversed_data_string, post_selection = False, 
                             simple = False, single = False, single_bit = 0):
-    """Finds the number of valid and invalid output bit strings 
-    in a given location in a dictionary representing
-    the counts for each output bit string.  
+    """Categorises a string as valid, invalid or outside the codeword and based on this assigns 
+    the number of counts of that string to the values returned.   
     Various algorithms for determining validaty are supported,
     including post selection, where a bit is only valid if it is the codewords,
     simple decoding based on the parity of three bits and
@@ -312,7 +311,7 @@ def find_ancilla_values(counts, ancilla_qubits, ancilla_location = 0):
     ----------
     counts : dictionary
         counts for each possible output bit string
-    anicilla_qubits : int
+    ancilla_qubits : int
         number of ancilla qubits
     ancilla_location : int
         designates which bit string is relevant
@@ -463,7 +462,7 @@ def flip_code_words(codewords_in):
 
     Parameters
     ----------
-    codewords : list
+    codewords_in : list
         logical codewords in seven bit Steane code data qubit 
         for the logical zero
     
@@ -518,7 +517,7 @@ def get_noise(p_meas, single_qubit_error,
         Add extra noise to represent de-coherence
     dummy_gate_set : list
         Set of dummy gates on which the de-coherence error is applied.  Normally ['id'].
-    dummy_gate_error : flot
+    dummy_gate_error : float
         error to apply to dummy gate which is set up to model de-coherence at certain stages in the circuit. 
 
     Returns
@@ -680,7 +679,7 @@ def summarise_logical_counts(counts, logical_zero_strings, logical_one_strings,
     data2_location : int
         where in the counts bit string data2 is held
     simple : bool
-        use the simple decoding based on bit parity
+        use simple decoding based on bit parity
     
     Returns
     -------
@@ -816,7 +815,7 @@ def process_FT_results(counts, codewords, data_meas_strings = ['0'],
         number of times data measurements are repeated.  Normally 3 or 1.
     post_select: bool
         if true then only strings in logical zero are invalid
-    simple : book
+    simple : bool
         if true then simple decoding based on three bits shall be used.
 
     Returns
@@ -973,7 +972,15 @@ def get_parity_check_matrix():
     return(parity_check_matrix)
 
 def get_codewords():
-    """Stores the codewords in one place"""
+    """Stores the codewords for the logical zero in one place
+    
+    Returns
+    -------
+    codewords : list
+        A list of valid codewords for the logical zero
+
+    """
+
     codewords =['0000000',
                 '1010101',
                 '0110011',
@@ -986,7 +993,15 @@ def get_codewords():
     return(codewords)
 
 def calculate_parity_matrix_totals():
-    """Calculates the number of items in each row of the parity matrix"""
+    """Calculates the number of items in each row of the parity matrix
+    
+    Returns
+    -------
+    parity_matrix_totals : list
+        List holding parity matrix totals for each row in the parity matrix.
+
+    """
+
     parity_check_matrix = get_parity_check_matrix()
     n = len(parity_check_matrix[0])
     parity_matrix_totals = [ 0 for x in range(n)] # define an empty list 

@@ -16,7 +16,10 @@ from helper_functions import (
     mean_of_list,
     calculate_standard_error, 
     correct_qubit,
-    calculate_simple_parity_bits
+    calculate_simple_parity_bits,
+    calculate_parity,
+    summarise_logical_counts,
+    process_FT_results
     )
 
 SINGLE_GATE_SET = ['id', 'ry', 'rx']
@@ -241,3 +244,155 @@ def test_count_valid_output_strings_simple_zero_random_codewords():
                                                     )
     assert count_valid == 16 + 18 + 12 + 11  #calculated from example above
     assert count_invalid == 10 + 8 + 13  #calculated from example above
+
+def test_calculate_parity_even():
+    """Checks the parity is properly calculated for an even parity bit string"""
+    bit_string = '011'
+    parity = calculate_parity(bit_string)
+    assert parity == 0
+
+def test_calculate_parity_odd():
+    """Checks the parity is properly calculated for an odd parity bit string"""
+    bit_string = '0110111'
+    parity = calculate_parity(bit_string)
+    assert parity == 1
+
+def test_summarise_logical_counts():
+    """tests summarisation of strings on some manufactured data"""
+
+    corrected_counts = {'010 000 0011100 100 000 0011101': 1,  
+                        # 0 0 first string in logical, second with indetectable error
+                        '010 000 1010101 101 011 0000111': 2,  
+                        # 0 1 first string in logical, second in logical zero
+                        '010 000 0000001 010 010 0101010': 4, 
+                        # 0 1 first string in logical zero with indetectable error, second in logical one
+                        '010 000 1000000 101 000 1000000': 8,  
+                        # 0 0 first and second string in logical zero with indetectable error
+                        '010 000 0100000 110 000 1000000': 16, 
+                        # 1 0 first string in logical zero with detectable error, second in logical zero with detectable error
+                        '010 000 0000111 101 010 0000111': 3,  
+                        # 1 1 first and second string in logical one
+                        }
+    
+    expected_result = {'00': 9, '01': 6, '02': 0, '10': 16, '11': 3, '12': 0, '20': 0, '21': 0, '22': 0}
+
+    new_counts = summarise_logical_counts(corrected_counts, 
+                                              logical_zero_strings = ['0'], 
+                                              logical_one_strings = ['1'],
+                                              data1_location = 2, 
+                                              data2_location = 5,
+                                              simple = True
+                                              )
+    assert new_counts == expected_result
+
+def test_process_FT_results_B():
+    """tests the processing of FT results for scheme B"""
+    
+    input = {'0000000 0000000 0000000 0000000': 1,  #valid string - accepted
+             '0011110 0101101 0110011 1001011': 2,  #valid string - accepted
+             '0011111 0101101 0110011 1001011': 4,  #invalid first string - rejected
+             '0011110 0001101 0110011 1001011': 8,  #invalid second string - rejected
+             '0011110 0101101 1111111 1001011': 16, #invalid third string - rejected
+             '0011110 0101101 0000000 1001111': 32, #invalid data - invalid
+            }
+    error, rej, acc, valid, invalid = process_FT_results(input, codewords,
+                                                        data_start = 3, 
+                                                        data_meas_qubits = 1,
+                                                        data_meas_repeats = 3, 
+                                                        data_meas_strings = codewords
+                                                        )
+    calc_error = invalid / acc
+    assert valid == 3       #valid results
+    assert invalid == 32    #invalid results
+    assert acc == 35        #accepted for processing
+    assert rej == 28        #rejected before processing
+    np.testing.assert_almost_equal(calc_error, error, decimal = 7, verbose = True)
+
+def test_process_FT_results_C():
+    """tests the processing of FT results for scheme C"""
+    
+    input = {'0 0 0 0000000': 1,  #valid string - valid
+             '1 0 0 0000001': 2,  #invalid first string - rejected,  
+             '0 1 0 0011110': 4,  #invalid second string - rejected, 
+             '0 0 1 1000000': 8,  #invalid third string - rejected, 
+             '1 0 1 0000000': 16,  #invalid two strings - rejected, 
+             '1 1 1 0000000': 31,  #invalid three strings - rejected, 
+             '0 0 0 0000001': 32,  #invalid data string - invalid
+             '0 0 0 1111111': 33,  #invalid data string - invalid
+            }
+    error, rej, acc, valid, invalid = process_FT_results(input, codewords, 
+                                                          data_start = 3, 
+                                                          data_meas_qubits = 1,
+                                                          data_meas_repeats = 3, 
+                                                          data_meas_strings = ['0'],
+                                                          )
+    calc_error = invalid / acc
+    assert valid == 1       #valid results
+    assert invalid == 65    #invalid results
+    assert acc == 66        #accepted for processing
+    assert rej == 61        #rejected before processing
+    np.testing.assert_almost_equal(calc_error, error, decimal = 7, verbose = True)                                                           
+                                                          
+def test_process_FT_results_D():
+    """tests the processing of FT results for scheme D"""
+    
+    input = {'0000000 0000000 0000000 0000000': 1,  #valid string - accepted
+             '0011110 0101101 0110011 1001011': 2,  #valid string - accepted
+             '0011111 0101101 0110011 1001011': 4,  #invalid first string - rejected
+             '0011110 0001101 0110011 1001011': 8,  #invalid second string - rejected
+             '0011110 0101101 1111111 1001011': 16, #invalid third string - rejected
+             '0011110 0101101 0000000 1001111': 32, #invalid data - invalid
+            }
+    error, rej, acc, valid, invalid = process_FT_results(input, codewords,
+                                                        data_start = 3, 
+                                                        data_meas_qubits = 1,
+                                                        data_meas_repeats = 3, 
+                                                        data_meas_strings = codewords
+                                                        )
+    calc_error = invalid / acc
+    assert valid == 3       #valid results
+    assert invalid == 32    #invalid results
+    assert acc == 35        #accepted for processing
+    assert rej == 28        #rejected before processing
+    np.testing.assert_almost_equal(calc_error, error, decimal = 7, verbose = True)
+
+def test_process_FT_results_C_anc():
+    """tests the processing of FT results for scheme C with FT ancillas"""
+    
+    input = {'0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 0 0011110': 1,
+             #valid data string
+             '0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1 0 0 0011110': 3, 
+             #invalid first string - rejected,  
+             '0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 1 0 0000001': 5, 
+             #invalid second string - rejected,
+             '0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 1 0000000': 7, 
+             #invalid third string - rejected,
+             '0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1 0 1 0000000': 11, 
+            # two invalid strings - rejected
+             '0001 0001 0001 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 0 0000001': 13,
+            #correctable error in zeroth qubit - valid
+             '0000 0000 0000 0001 0001 0001 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 0 0000010': 17,
+            # correctable error in first qubit - valid
+             '0001 0001 0001 0001 0001 0001 0001 0001 0001 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 0 0111000': 19,
+            # correctable error in final qubit - valid
+             '0001 0000 0001 0001 0001 0001 0001 0001 0001 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 0 0111000': 23,
+            #ancilla not the same - reject
+             '0001 0001 0001 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0 0 0 0000011': 29,
+            #error in zeroth qubit - invalid after correction
+            }
+    error, rej, acc, valid, invalid = process_FT_results(input, codewords,
+                                                         anc_zero = '0000',
+                                                         anc_one = '0001',
+                                                         data_meas_start = 18, 
+                                                         data_start = 21,
+                                                         ancilla_qubits = 3, 
+                                                         ancilla_meas_repeats = 3,
+                                                         data_meas_qubits = 1, 
+                                                         data_meas_repeats = 3,
+                                                         )
+    calc_error = invalid / acc
+    assert valid == 50               #valid results
+    assert invalid == 29             #invalid results
+    assert acc == valid + invalid    #accepted for processing
+    assert rej == 49                 #rejected before processing
+    np.testing.assert_almost_equal(calc_error, error, decimal = 7, verbose = True)   

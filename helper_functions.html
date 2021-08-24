@@ -168,15 +168,33 @@
   <div class="section" id="module-helper_functions">
 <span id="helper-functions-module"></span><h1>helper_functions module<a class="headerlink" href="#module-helper_functions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="helper_functions.calculate_parity">
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_parity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bit_string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_parity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the parity of a bit string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bit_string</strong> (<em>str</em>) – bit string on which parity is to be calculated</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parity</strong> – 0 if even parity
+1 if odd parity</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.calculate_parity_matrix_totals">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_parity_matrix_totals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_parity_matrix_totals" title="Permalink to this definition">¶</a></dt>
-<dd><p>calculates the number of items in each row of the parity matrix</p>
+<dd><p>Calculates the number of items in each row of the parity matrix</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.calculate_simple_parity_bits">
 <span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_simple_parity_bits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.calculate_simple_parity_bits" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns a list of qubits with exactly two non zero rows in the parity matrix</p>
+<dd><p>Returns a list of qubits with exactly two non zero rows in the parity matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>simple_parity_bits</strong> – A list of all qubits with exactly two non zero rows in the parity matrix</p>
@@ -376,17 +394,14 @@ ancilla bit string</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.find_parity">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_parity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_qubits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.find_parity" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">find_parity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.find_parity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the parity of the output bit string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>counts</strong> (<em>dictionary</em>) – Holds the observed output bit strings</p></li>
-<li><p><strong>data_qubits</strong> (<em>integer</em>) – number of data qubits</p></li>
-</ul>
+<dd class="field-odd"><p><strong>counts</strong> (<em>dictionary</em>) – Holds the observed output bit strings</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>parity_count</strong> – A dictionary holding the partiy count for each observed output bit string.</p>
+<dd class="field-even"><p><strong>parity_count</strong> – A dictionary holding the parity count for each observed output bit string.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
@@ -602,7 +617,7 @@ data and ancilla checks.  If so the data keyword is validated.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helper_functions.summarise_logical_counts">
-<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">summarise_logical_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2_location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.summarise_logical_counts" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helper_functions.</span></span><span class="sig-name descname"><span class="pre">summarise_logical_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_zero_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_one_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helper_functions.summarise_logical_counts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simplifies bit strings for logical operations
 to show each qubit as 0, 1, or 2 instead of the full bit string.</p>
 <blockquote>
@@ -620,6 +635,7 @@ to show each qubit as 0, 1, or 2 instead of the full bit string.</p>
 <li><p><strong>logical_one_strings</strong> (<em>list</em>) – list of strings in logical zero</p></li>
 <li><p><strong>data1_location</strong> (<em>int</em>) – where in the counts bit string data1 is held</p></li>
 <li><p><strong>data2_location</strong> (<em>int</em>) – where in the counts bit string data2 is held</p></li>
+<li><p><strong>simple</strong> (<em>bool</em>) – use the simple decoding based on bit parity</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
